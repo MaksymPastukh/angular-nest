@@ -1,0 +1,113 @@
+@use "tailwindcss";
+@use "fonts";
+
+
+@theme {
+  --font-family: "Causten", sans-serif;
+  --color-reggg: #344343
+}
+
+:root {
+  --coresans-family: "CoreSans", sans-serif;
+}
+
+$color-categories: #2a2f2f;
+$color-grey: #807d7e;
+$color-active: #3c4242;
+
+
+p-accordion-panel {
+  border-bottom: 1px solid rgba(190, 188, 189, 0.4) !important;
+  border-top: 1px solid rgba(190, 188, 189, 0.4) !important;
+}
+
+p-accordion-header {
+  color: var(--primary-color) !important;
+  background-color: #3c4242 !important;
+}
+
+
+.p-accordioncontent-content {
+  background-color: #3c4242 !important;
+  p {
+    color: #f6f6f6;
+  }
+}
+
+.p-dropdown {
+  height: 44px !important;
+  border: none!important;
+  align-items: center!important;
+}
+
+.p-inputtext {
+  background: #f6f6f6!important;
+  border: none!important;
+}
+
+
+
+
+@layer components {
+  .footer-title {
+    @apply font-family;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 217%;
+    color: #f6f6f6;
+  }
+
+
+  .footer-menu li {
+    @apply font-family;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 217%;
+    color: #f6f6f6;
+  }
+
+  .menu li {
+    @apply font-family;
+    font-weight: 500;
+    font-size: 22px;
+    color: $color-grey;
+
+    &.active {
+      color: $color-active;
+    }
+  }
+
+  .header-button {
+    @apply px-[48px] py-[9px] text-center text-lg font-medium font-family h-[46px] inline-block rounded-lg;
+    border: 1px solid #3c4242;
+    color: #8a33fd;
+
+    &.active {
+      color: #ffffff;
+      background: #8a33fd;
+      border: none!important;
+    }
+  }
+
+  button {
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+
+  .submit-button {
+    border: 1px solid #3c4242;
+    color: #8a33fd!important;
+  }
+
+  .auth-button {
+    @apply flex rounded-lg justify-center items-center w-xl max-w-full border p-4 border-[#3c4242] cursor-pointer
+  }
+
+  .auth-input {
+    @apply w-xl max-w-full border p-4 rounded-lg
+  }
+
+}
+
+
+
+
