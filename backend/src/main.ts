@@ -1,8 +1,63 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+/**
+ * Главная функция запуска приложения
+ * Инициализирует NestJS приложение и настраивает middleware
+ */
 async function bootstrap() {
+  // Создаём экземпляр NestJS приложения
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
+  /**
+   * Настройка CORS (Cross-Origin Resource Sharing)
+   * Разрешает запросы с фронтенда (Angular) на другом домене/порту
+   */
+  app.enableCors({
+    origin: ['http://localhost:4200', 'http://localhost:3000'], // Разрешённые домены
+    credentials: true, // Разрешить отправку cookies и заголовков авторизации
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Разрешённые HTTP методы
+    allowedHeaders: ['Content-Type', 'Authorization'], // Разрешённые заголовки
+  });
+
+  /**
+   * Глобальный pipe для автоматической валидации
+   * Проверяет все входящие данные согласно DTO с декораторами class-validator
+   */
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Автоматически удаляет свойства, которых нет в DTO
+      forbidNonWhitelisted: true, // Выбрасывает ошибку, если в запросе есть лишние свойства
+      transform: true, // Автоматически преобразует типы (например, строки в числа)
+      transformOptions: {
+        enableImplicitConversion: true, // Включает неявное преобразование типов
+      },
+    }),
+  );
+
+  /**
+   * Устанавливаем глобальный префикс для всех роутов
+   * Теперь все эндпоинты будут начинаться с /api
+   * Например: /api/auth/login, /api/auth/register
+   */
+  app.setGlobalPrefix('api');
+
+  // Запускаем сервер на порту из .env или 3000 по умолчанию
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+
+  console.log(`
+  🚀 Сервер успешно запущен!
+  📡 URL: http://localhost:${port}
+  🔗 API: http://localhost:${port}/api
+  📝 Документация endpoints:
+     - POST   /api/auth/register - Регистрация
+     - POST   /api/auth/login    - Вход
+     - GET    /api/auth/profile  - Профиль (требуется JWT)
+     - GET    /api/auth/me       - Проверка токена
+  `);
 }
+
+// Запускаем приложение
 bootstrap();
