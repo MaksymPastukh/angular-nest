@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthorizationInterface } from '../types/authorization.interface';
-import { catchError, Observable, Subject, tap, throwError } from 'rxjs';
+import {catchError, map, Observable, Subject, tap, throwError} from 'rxjs';
 import { DefaultResponseInterface } from '../../../shared/types/default-response.interface';
 import { environment } from '../../../../environments/environment';
-import { CurrentUserInterface } from '../types/current-user.interface';
+import { CurrentUserResponseInterface} from '../types/current-user.interface';
 import { LoginInterface } from '../types/login.interface';
 import { ProfileInterface } from '../types/profile.interface';
+import {RegisterDataInterface} from '../types/registerData.interface';
+import {LoginDataInterface} from '../types/loginData.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -26,22 +27,40 @@ export class AuthService {
     return this.isLogged;
   }
 
-  register(
-    params: AuthorizationInterface,
-  ): Observable<CurrentUserInterface | DefaultResponseInterface> {
-    return this.http.post<CurrentUserInterface | DefaultResponseInterface>(
-      environment.api + 'auth/register',
-      params,
-    );
+  register(registerData: RegisterDataInterface): Observable<CurrentUserResponseInterface> {
+    const url = `${environment.api}auth/register`;
+    return this.http.post<CurrentUserResponseInterface | DefaultResponseInterface>(url, registerData).pipe(
+      map((response: CurrentUserResponseInterface | DefaultResponseInterface) => {
+        if ((response as DefaultResponseInterface).message !== undefined) {
+          throw new Error((response as DefaultResponseInterface).message)
+        }
+
+        const loginResponse: CurrentUserResponseInterface = response as CurrentUserResponseInterface
+        if (!loginResponse.access_token || !loginResponse.user.id) {
+          throw new Error('Error during registration. Please try again.')
+        }
+
+        return loginResponse
+      })
+    )
   }
 
-  login(
-    params: AuthorizationInterface,
-  ): Observable<LoginInterface | DefaultResponseInterface> {
-    return this.http.post<LoginInterface | DefaultResponseInterface>(
-      environment.api + 'auth/login',
-      params,
-    );
+  login(loginData: LoginDataInterface): Observable<CurrentUserResponseInterface> {
+    const url = `${environment.api}auth/login`;
+    return this.http.post<CurrentUserResponseInterface | DefaultResponseInterface>(url, loginData).pipe(
+      map((response: CurrentUserResponseInterface | DefaultResponseInterface) => {
+        if ((response as DefaultResponseInterface).message !== undefined) {
+          throw new Error((response as DefaultResponseInterface).message)
+        }
+
+        const loginResponse: CurrentUserResponseInterface = response as CurrentUserResponseInterface
+        if (!loginResponse.access_token || !loginResponse.user.id) {
+          throw new Error('Error during login. Please try again.')
+        }
+
+        return loginResponse
+      })
+    )
   }
 
   refresh(): Observable<LoginInterface | DefaultResponseInterface> {

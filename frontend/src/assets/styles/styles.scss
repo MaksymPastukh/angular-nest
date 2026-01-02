@@ -98,6 +98,12 @@ p-accordion-header {
       @apply ml-2 font-family cursor-pointer select-none;
     }
   }
+  .authResponseButton {
+    @apply mt-4 w-[184px] max-w-xl p-4 rounded-lg
+    font-[var(--font-coresans)] font-medium text-lg text-white cursor-pointer
+    bg-[#8a33fd] hover:bg-[#7a2ee0]
+    transition-all duration-300;
+  }
 
   .errors {
     @apply flex flex-col gap-1;

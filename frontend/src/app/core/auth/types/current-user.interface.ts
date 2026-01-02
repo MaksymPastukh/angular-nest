@@ -1,6 +1,11 @@
-export interface CurrentUserInterface {
+export interface CurrentUserResponseInterface {
+  access_token: string
+  user: User
+}
+
+export interface User {
+  id: number
+  firstName: string
   email: string
-  password: string
-  _id: string
-  __v: number
+  roles: string
 }
