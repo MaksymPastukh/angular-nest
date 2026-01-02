@@ -1,0 +1,126 @@
+@use "tailwindcss";
+@use "fonts";
+
+@theme {
+  // Шрифты
+  --font-family: "Causten", sans-serif;
+  --font-coresans: "CoreSans", sans-serif;
+  --font-causten: "Causten", sans-serif;
+
+  // Цвета
+  --color-reggg: #344343;
+  --color-primary: #8a33fd;
+  --color-text-base: #3c4242;
+  --color-text-gray: #807d7e;
+}
+
+// PrimeNG компоненты
+p-accordion-panel {
+  border-top: 1px solid rgba(190, 188, 189, 0.4) !important;
+  border-bottom: 1px solid rgba(190, 188, 189, 0.4) !important;
+}
+
+p-accordion-header {
+  background-color: #3c4242 !important;
+  color: var(--primary-color) !important;
+}
+
+.p-accordioncontent-content {
+  background-color: #3c4242 !important;
+
+  p {
+    color: #f6f6f6;
+  }
+}
+
+.p-dropdown {
+  height: 44px !important;
+  align-items: center !important;
+  border: none !important;
+}
+
+.p-inputtext {
+  background: #f6f6f6 !important;
+  border: none !important;
+}
+
+// Компоненты
+@layer components {
+  .footer-title {
+    @apply font-family font-bold text-[28px] leading-[217%] text-[#f6f6f6];
+  }
+
+  .footer-menu li {
+    @apply font-family font-medium text-lg leading-[217%] text-[#f6f6f6];
+  }
+
+  .menu li {
+    @apply font-family font-medium text-[22px] text-[#807d7e] transition-colors;
+
+    &.active {
+      @apply text-[#3c4242];
+    }
+  }
+
+  .header-button {
+    @apply px-12 h-[46px] inline-flex items-center justify-center
+    rounded-lg border border-[#3c4242]
+    font-family font-medium text-lg text-[#8a33fd]
+    transition-all duration-300
+    hover:bg-[#8a33fd] hover:text-white hover:border-transparent;
+
+    &.active {
+      @apply bg-[#8a33fd] text-white border-transparent;
+    }
+  }
+
+  .auth-button {
+    @apply flex items-center justify-center w-full max-w-xl
+    p-4 rounded-lg border border-[#3c4242]
+    cursor-pointer transition-all duration-300
+    hover:bg-[#8a33fd]/5;
+  }
+
+  .auth-input {
+    @apply w-full max-w-xl p-4 rounded-lg border border-[#3c4242]
+    outline-none transition-all duration-200
+    focus:ring-2 focus:ring-[#8a33fd]/40 focus:border-[#8a33fd];
+  }
+
+  .auth-checkbox {
+    @apply flex items-start;
+
+    input[type="checkbox"] {
+      @apply mt-1 cursor-pointer;
+    }
+
+    label {
+      @apply ml-2 font-family cursor-pointer select-none;
+    }
+  }
+
+  .errors {
+    @apply flex flex-col gap-1;
+    animation: slideDown 0.2s ease-out;
+
+    .error {
+      @apply text-red-500 text-sm;
+    }
+  }
+
+  .color-text-base {
+    @apply text-[#3c4242];
+  }
+}
+
+// Анимация появления ошибок
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
