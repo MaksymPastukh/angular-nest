@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component, inject,
   OnDestroy,
-  OnInit,
+  OnInit, signal,
 } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -20,8 +20,6 @@ import {
   Subscription,
   switchMap,
   takeUntil,
-  tap,
-  throwError,
 } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { DefaultResponseInterface } from '../../../../shared/types/default-response.interface';
@@ -29,6 +27,8 @@ import { CurrentUserInterface } from '../../types/current-user.interface';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { HttpErrorResponse } from '@angular/common/http';
+import {RegisterDataInterface} from '../../types/registerData.interface';
+import {debounce, email, Field, form, minLength, pattern, required, validate} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-register',
@@ -38,6 +38,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     RouterLink,
     ReactiveFormsModule,
     ToastModule,
+    Field,
   ],
   providers: [MessageService],
   templateUrl: './register.html',
@@ -45,7 +46,69 @@ import { HttpErrorResponse } from '@angular/common/http';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register implements OnInit, OnDestroy {
-  public isPasswordVisible = false;
+  private authService = inject(AuthService)
+  // private authState = inject(AuthState)
+  private subscription: Subscription | null = null
+  isPasswordVisible = signal(false)
+  isConfirmPasswordVisible = signal(false)
+  registerModel = signal<RegisterDataInterface>({
+    firstName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    agreeToTerms: false,
+    subscribeToNewsletter: false,
+  })
+
+  registerForm = form(this.registerModel, (controlSchema) => {
+    required(controlSchema.firstName, {message: 'Name is required.'})
+    minLength(controlSchema.firstName, 3, {message: 'Name must be at least 3 characters long.'})
+
+    debounce(controlSchema.email, 300)
+    required(controlSchema.email, {message: 'Email is required.'})
+    email(controlSchema.email, {message: 'Please enter a valid email address.'})
+
+    required(controlSchema.password, {message: 'Password is required.'})
+    minLength(controlSchema.password, 6, {message: 'Password must be at least 6 characters long.'})
+    pattern(controlSchema.password, /^(?=.*[A-Z])(?=.*\d)/, {message: 'Password must contain at least one uppercase letter and one number.'})
+    required(controlSchema.confirmPassword, {message: 'Please confirm your password.'})
+
+    validate(controlSchema.confirmPassword, ({ value, valueOf }) => {
+      const confirmPassword: string = value()
+      const password: string = valueOf(controlSchema.password)
+
+      if(confirmPassword !== password) {
+        return {
+          kind: 'passwordMismatch',
+          message: 'Passwords do not match.'
+        }
+      }
+      return null
+    })
+    required(controlSchema.agreeToTerms, {message: 'You must agree to the terms and conditions.'})
+  })
+
+  register() : void {
+
+    if(!this.registerForm().valid()) {
+      return
+    }
+
+    const formModel = this.registerModel()
+
+    const registerData: RegisterDataInterface = {
+      firstName: formModel.firstName,
+      email: formModel.email,
+      password: formModel.password,
+      confirmPassword: formModel.confirmPassword,
+      agreeToTerms: formModel.agreeToTerms,
+      subscribeToNewsletter: formModel.subscribeToNewsletter,
+    }
+  }
+
+
+
+
   public formRegister!: FormGroup;
   private destroy$ = new Subject<void>();
 
@@ -56,7 +119,6 @@ export class Register implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService,
     private messageService: MessageService,
   ) {}
 
@@ -138,9 +200,6 @@ export class Register implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  togglePasswordVisibility() {
-    this.isPasswordVisible = !this.isPasswordVisible;
-  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
