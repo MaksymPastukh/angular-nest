@@ -2,12 +2,16 @@
 @use "fonts";
 
 @theme {
+  // Шрифты
   --font-family: "Causten", sans-serif;
-  --color-reggg: #344343;
-}
+  --font-coresans: "CoreSans", sans-serif;
+  --font-causten: "Causten", sans-serif;
 
-:root {
-  --coresans-family: "CoreSans", sans-serif;
+  // Цвета
+  --color-reggg: #344343;
+  --color-primary: #8a33fd;
+  --color-text-base: #3c4242;
+  --color-text-gray: #807d7e;
 }
 
 // PrimeNG компоненты
