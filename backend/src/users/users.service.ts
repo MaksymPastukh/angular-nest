@@ -26,8 +26,8 @@ export class UsersService {
    * @param email - Email пользователя
    * @param password - Пароль в открытом виде (будет захеширован)
    * @param firstName - Имя пользователя
-   * @param lastName - Фамилия пользователя
-   * @param phone - Телефон (опционально)
+   * @param agreeToTerms - Согласие с условиями использования
+   * @param subscribeToNewsletter - Подписка на рассылку (опционально)
    * @returns Созданный пользователь без поля пароля
    * @throws ConflictException - если email уже существует
    */
@@ -35,8 +35,8 @@ export class UsersService {
     email: string,
     password: string,
     firstName: string,
-    lastName: string,
-    phone?: string,
+    agreeToTerms: boolean,
+    subscribeToNewsletter?: boolean,
   ): Promise<User> {
     // Проверяем, не существует ли уже пользователь с таким email
     const existingUser = await this.userModel.findOne({ email }).exec();
@@ -54,8 +54,8 @@ export class UsersService {
       email,
       password: hashedPassword,
       firstName,
-      lastName,
-      phone,
+      agreeToTerms,
+      subscribeToNewsletter: subscribeToNewsletter || false,
     });
 
     // Сохраняем в базу данных

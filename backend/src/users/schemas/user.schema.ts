@@ -42,18 +42,18 @@ export class User {
   firstName: string;
 
   /**
-   * Фамилия пользователя
-   * @required - обязательное поле
+   * Согласие с условиями использования
+   * @default false - по умолчанию false
    */
-  @Prop({ required: true, trim: true })
-  lastName: string;
+  @Prop({ default: false })
+  agreeToTerms: boolean;
 
   /**
-   * Номер телефона пользователя
-   * @optional - необязательное поле
+   * Подписка на рассылку
+   * @default false - по умолчанию false
    */
-  @Prop({ trim: true })
-  phone?: string;
+  @Prop({ default: false })
+  subscribeToNewsletter: boolean;
 
   /**
    * Роль пользователя в системе

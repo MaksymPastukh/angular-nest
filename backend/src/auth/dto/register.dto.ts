@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -12,6 +13,15 @@ import {
  */
 export class RegisterDto {
   /**
+   * Имя пользователя
+   * @IsString - должно быть строкой
+   * @IsNotEmpty - не должно быть пустым
+   */
+  @IsString({ message: 'Имя должно быть строкой' })
+  @IsNotEmpty({ message: 'Имя обязательно' })
+  firstName: string;
+
+  /**
    * Email пользователя
    * @IsEmail - валидация формата email
    * @IsNotEmpty - поле не должно быть пустым
@@ -23,38 +33,38 @@ export class RegisterDto {
   /**
    * Пароль пользователя
    * @IsString - должен быть строкой
-   * @MinLength(6) - минимум 6 символов
+   * @MinLength(8) - минимум 8 символов
    * @IsNotEmpty - не должен быть пустым
    */
   @IsString({ message: 'Пароль должен быть строкой' })
-  @MinLength(6, { message: 'Пароль должен содержать минимум 6 символов' })
+  @MinLength(8, { message: 'Пароль должен содержать минимум 8 символов' })
   @IsNotEmpty({ message: 'Пароль обязателен' })
   password: string;
 
   /**
-   * Имя пользователя
+   * Подтверждение пароля
    * @IsString - должно быть строкой
    * @IsNotEmpty - не должно быть пустым
    */
-  @IsString({ message: 'Имя должно быть строкой' })
-  @IsNotEmpty({ message: 'Имя обязательно' })
-  firstName: string;
+  @IsString({ message: 'Подтверждение пароля должно быть строкой' })
+  @IsNotEmpty({ message: 'Подтверждение пароля обязательно' })
+  confirmPassword: string;
 
   /**
-   * Фамилия пользователя
-   * @IsString - должна быть строкой
-   * @IsNotEmpty - не должна быть пустой
+   * Согласие с условиями использования
+   * @IsBoolean - должно быть булевым значением
+   * @IsNotEmpty - обязательное поле
    */
-  @IsString({ message: 'Фамилия должна быть строкой' })
-  @IsNotEmpty({ message: 'Фамилия обязательна' })
-  lastName: string;
+  @IsBoolean({ message: 'Согласие с условиями должно быть булевым значением' })
+  @IsNotEmpty({ message: 'Необходимо согласие с условиями использования' })
+  agreeToTerms: boolean;
 
   /**
-   * Телефон пользователя (опционально)
+   * Подписка на рассылку (опционально)
    * @IsOptional - поле необязательное
-   * @IsString - если заполнено, должно быть строкой
+   * @IsBoolean - если заполнено, должно быть булевым значением
    */
   @IsOptional()
-  @IsString({ message: 'Телефон должен быть строкой' })
-  phone?: string;
+  @IsBoolean({ message: 'Подписка на рассылку должна быть булевым значением' })
+  subscribeToNewsletter?: boolean;
 }
