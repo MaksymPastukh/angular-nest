@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
+import { UserWithId } from '../auth/interfaces/auth-response.interface';
 import { User, UserDocument } from './schemas/user.schema';
 
 /**
@@ -37,7 +38,7 @@ export class UsersService {
     firstName: string,
     agreeToTerms: boolean,
     subscribeToNewsletter?: boolean,
-  ): Promise<User> {
+  ): Promise<UserWithId> {
     // Проверяем, не существует ли уже пользователь с таким email
     const existingUser = await this.userModel.findOne({ email }).exec();
     if (existingUser) {
@@ -81,7 +82,7 @@ export class UsersService {
    * @returns Найденный пользователь без пароля
    * @throws NotFoundException - если пользователь не найден
    */
-  async findById(id: string): Promise<User> {
+  async findById(id: string): Promise<UserWithId> {
     const user = await this.userModel.findById(id).exec();
 
     if (!user) {
@@ -95,7 +96,7 @@ export class UsersService {
    * Получение всех пользователей (для админки)
    * @returns Массив всех пользователей без паролей
    */
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserWithId[]> {
     const users = await this.userModel.find().exec();
     return users.map((user) => this.sanitizeUser(user));
   }
@@ -107,7 +108,7 @@ export class UsersService {
    * @returns Обновлённый пользователь без пароля
    * @throws NotFoundException - если пользователь не найден
    */
-  async update(id: string, updateData: Partial<User>): Promise<User> {
+  async update(id: string, updateData: Partial<User>): Promise<UserWithId> {
     // Если в данных для обновления есть пароль, нужно его захешировать
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
@@ -163,9 +164,10 @@ export class UsersService {
    * @param user - Документ пользователя из БД
    * @returns Объект пользователя без поля password
    */
-  private sanitizeUser(user: UserDocument): User {
-    const userObject = user.toObject();
-    delete userObject.password;
-    return userObject;
+  private sanitizeUser(user: UserDocument): UserWithId {
+    const userObj = user.toObject() as UserWithId & { password: string };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = userObj;
+    return userWithoutPassword;
   }
 }

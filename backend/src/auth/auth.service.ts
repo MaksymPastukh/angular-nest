@@ -1,8 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import {
+  AuthResponse,
+  JwtPayload,
+  UserWithId,
+} from './interfaces/auth-response.interface';
 
 /**
  * Сервис аутентификации
@@ -27,7 +33,7 @@ export class AuthService {
    * @returns Объект с access_token и данными пользователя
    * @throws UnauthorizedException - если пароли не совпадают
    */
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto): Promise<AuthResponse> {
     // Проверяем, что пароли совпадают
     if (registerDto.password !== registerDto.confirmPassword) {
       throw new UnauthorizedException('Пароли не совпадают');
@@ -44,8 +50,8 @@ export class AuthService {
     );
 
     // Генерируем JWT токен для нового пользователя
-    const payload = {
-      sub: user['_id'].toString(), // ID пользователя
+    const payload: JwtPayload = {
+      sub: (user as UserWithId)._id.toString(), // ID пользователя
       email: user.email,
       role: user.role,
     };
@@ -53,7 +59,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        id: user['_id'],
+        id: (user as UserWithId)._id.toString(),
         email: user.email,
         firstName: user.firstName,
         role: user.role,
@@ -68,7 +74,7 @@ export class AuthService {
    * @returns Объект с access_token и данными пользователя
    * @throws UnauthorizedException - если email или пароль неверны
    */
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<AuthResponse> {
     // Проверяем учётные данные пользователя
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
@@ -77,7 +83,7 @@ export class AuthService {
     }
 
     // Генерируем JWT токен для пользователя
-    const payload = {
+    const payload: JwtPayload = {
       sub: user._id.toString(),
       email: user.email,
       role: user.role,
@@ -86,7 +92,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
         firstName: user.firstName,
         role: user.role,
@@ -101,7 +107,10 @@ export class AuthService {
    * @param password - Пароль в открытом виде
    * @returns Объект пользователя если данные верны, null если нет
    */
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<UserDocument | null> {
     // Ищем пользователя по email
     const user = await this.usersService.findByEmail(email);
 
