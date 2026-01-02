@@ -17,6 +17,7 @@
       class="flex flex-col w-full max-w-xl"
       novalidate
       autocomplete="on"
+      (submit)="login($event)"
     >
       <h1 class="font-coresans font-semibold text-3xl sm:text-4xl">
         Sign In
@@ -59,7 +60,7 @@
         <div class="border-t flex-grow"></div>
       </div>
 
-      <div class="mt-8 flex flex-col gap-2 color-text-base">
+      <div class="flex flex-col gap-2 color-text-base relative mt-8">
         <label class="font-family font-normal text-lg" for="email">
           Email Address
         </label>
@@ -75,18 +76,16 @@
           }"
           aria-describedby="email-help"
         />
-        <div class="min-h-[20px]">
-          @if (loginForm.email().touched() && loginForm.email().invalid()) {
-            <div class="errors" role="alert" aria-live="polite">
-              @for (error of loginForm.email().errors(); track error) {
-                <span class="error">{{ error.message }}</span>
-              }
-            </div>
-          }
-        </div>
+
+        @if (loginForm.email().touched() && loginForm.email().invalid()) {
+          <div class="errors absolute top-1/2 -translate-y-1/2 right-[12px]" role="alert" aria-live="polite">
+            <div class="error">{{ loginForm.password().errors()[0].message }}</div>
+          </div>
+        }
+
       </div>
 
-      <div class="flex flex-col gap-2 color-text-base">
+      <div class="flex flex-col gap-2 color-text-base relative mt-5">
         <div class="flex justify-between">
           <label class="font-family font-normal text-lg" for="password">
             Password
@@ -129,27 +128,22 @@
           }"
           aria-describedby="password-help"
         />
-        <div class="min-h-[20px]">
-          @if (loginForm.password().touched() && loginForm.password().invalid()) {
-            <div class="errors" role="alert" aria-live="polite">
-              @for (error of loginForm.password().errors(); track error) {
-                <span class="error">{{ error.message }}</span>
-              }
-            </div>
-          }
-        </div>
+        @if (loginForm.password().touched() && loginForm.password().invalid()) {
+          <div class="errors absolute top-1/2 -translate-y-1/2 right-[12px]">
+            <div class="error">{{ loginForm.password().errors()[0].message }}</div>
+          </div>
+        }
       </div>
-      <div class="flex items-end flex-col">
+      <div class="flex items-end flex-col mt-3">
         <a routerLink="/reset-password"
            class="text-base text-[#3c4242] font-family underline">
           Forgot your password</a>
       </div>
 
       <button
-        type="button"
-        (click)="login()"
+        type="submit"
         [disabled]="loginForm().invalid()"
-        class="w-[184px]! header-button mt-12 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#8a33fd] disabled:hover:border-[#3c4242]"
+        class="authResponseButton mt-8 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#8a33fd] disabled:hover:border-[#3c4242]"
       >
         Sign In
       </button>
