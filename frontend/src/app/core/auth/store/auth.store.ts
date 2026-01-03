@@ -296,7 +296,7 @@ export const AuthStore = signalStore(
       },
 
       /**
-       * МЕТОД: clearError
+       * МЕТОД: clearError2
        *
        * Очищает ошибку из state
        * Полезно для закрытия уведомлений об ошибках
