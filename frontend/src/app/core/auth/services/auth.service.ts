@@ -1,11 +1,10 @@
 import {inject, Injectable} from '@angular/core'
 import {HttpClient} from '@angular/common/http'
-import {catchError, map, Observable, Subject, tap, throwError} from 'rxjs'
+import {catchError, map, Observable, throwError} from 'rxjs'
 import {DefaultResponseInterface} from '../../../shared/types/default-response.interface'
 import {environment} from '../../../../environments/environment'
 import {CurrentUserResponseInterface} from '../types/current-user.interface'
 import {LoginInterface} from '../types/login.interface'
-import {ProfileInterface} from '../types/profile.interface'
 import {RegisterDataInterface} from '../types/registerData.interface'
 import {LoginDataInterface} from '../types/loginData.interface'
 import {AUTHORIZATION_STATE} from '../types/authorization.constants';
@@ -63,7 +62,7 @@ export class AuthService {
     const token = this.getTokens()
     if (token && token.refreshToken) {
       return this.http
-        .post<LoginInterface>(`${environment.api}auth/refresh`, {
+        .post<LoginInterface>(`${environment.api}/auth/refresh`, {
           refreshToken: token.refreshToken,
         })
         .pipe(

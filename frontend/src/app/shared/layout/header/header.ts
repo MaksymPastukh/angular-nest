@@ -61,14 +61,4 @@ export class HeaderComponent {
   ]
 
   selectedLanguage = 'en-US'
-
-  /**
-   * МЕТОД ДЛЯ ВЫХОДА
-   *
-   * Просто вызываем метод logout из store
-   * Все остальное (очистка данных, навигация, уведомления) происходит автоматически
-   */
-  logout(): void {
-    this.authStore.logout()
-  }
 }

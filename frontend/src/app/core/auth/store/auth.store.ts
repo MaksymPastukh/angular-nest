@@ -12,49 +12,19 @@ import {AuthService} from '../services/auth.service'
 import {RegisterDataInterface} from '../types/registerData.interface'
 import {CurrentUserResponseInterface} from '../types/current-user.interface'
 import {Router} from '@angular/router'
-import {MessageService} from 'primeng/api'
 import {AuthState} from '../types/auth-state.interface'
 import {AUTHORIZATION_STATE} from '../types/authorization.constants';
 import {LoginDataInterface} from '../types/loginData.interface';
+import {AuthErrorMessage} from '../types/auth-error-message';
+import {HttpErrorResponse} from '@angular/common/http';
 
-const initialState: AuthState = (() => {
-  /**
-   * НАЧАЛЬНОЕ СОСТОЯНИЕ
-   *
-   * Проверяем localStorage при инициализации:
-   * - Если есть токен и данные пользователя - восстанавливаем сессию
-   * - Если нет - начинаем с пустого состояния
-   */
-    // Пытаемся получить токен из localStorage
-  const token: string | null = localStorage.getItem(AUTHORIZATION_STATE.authAccessTokenKey)
-  const userJson: string | null = localStorage.getItem(AUTHORIZATION_STATE.currentUserKey)
-
-  // Если есть и токен, и данные пользователя - восстанавливаем состояние
-  if (token && userJson) {
-    try {
-      const user: CurrentUserResponseInterface | null = JSON.parse(userJson)
-      return {
-        user,
-        isLoading: false,
-        error: null,
-        isAuthenticated: true,
-      }
-    } catch (e) {
-      // Если не удалось распарсить - очищаем localStorage
-      localStorage.removeItem(AUTHORIZATION_STATE.authAccessTokenKey)
-      localStorage.removeItem(AUTHORIZATION_STATE.authRefreshTokenKey)
-      localStorage.removeItem(AUTHORIZATION_STATE.currentUserKey)
-    }
-  }
-
-  // Возвращаем пустое состояние
-  return {
-    user: null,
-    isLoading: false,
-    error: null,
-    isAuthenticated: false,
-  }
-})()
+const initialState: AuthState = {
+  user: null,
+  isLoading: false,
+  error: null,
+  isAuthenticated: false,
+   event: null
+}
 
 /**
  * AUTH STORE
@@ -88,13 +58,13 @@ export const AuthStore = signalStore(
    */
   withComputed((store) => ({
     // Получаем имя пользователя из user.firstName или возвращаем 'Guest'
-    userName: computed(() => store.user()?.user?.firstName ?? 'Guest'),
-
-    // Проверяем, есть ли у пользователя определенная роль
-    hasRole: computed(() => (role: string): boolean => {
-      const userRoles = store.user()?.user?.roles ?? []
-      return userRoles.includes(role)
+    userName: computed(() => {
+      const currentUser: CurrentUserResponseInterface | null = store.user()
+      return currentUser?.user?.firstName ?? 'Guest'
     }),
+
+    roles: computed(() => store.user()?.user?.roles ?? []),
+
   })),
 
   /**
@@ -109,9 +79,73 @@ export const AuthStore = signalStore(
     // Инжектим зависимости
     const authService = inject(AuthService)
     const router = inject(Router)
-    const messageService = inject(MessageService)
+
+    /**
+     * Вспомогательная функция для обработки успешной аутентификации
+     * Убирает дублирование кода между register и login
+     */
+    const handleAuthSuccess = (
+      response: CurrentUserResponseInterface,
+      message: string,
+      type: 'loginSuccess' | 'registerSuccess'
+    ) => {
+      // Сохраняем токены напрямую (они строки)
+      localStorage.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
+      localStorage.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
+      // User объект через authService.setItem (он сделает stringify)
+      authService.setItem(AUTHORIZATION_STATE.currentUserKey, response.user)
+
+      // Обновляем state
+      patchState(store, {
+        user: response,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+        event: {
+          type,
+          userName: response.user.firstName,
+        },
+      })
+
+      // Перенаправляем на главную
+      router.navigate(['/']).catch(console.error)
+    }
 
     return {
+      rehydrate: () => {
+        const accessToken = localStorage.getItem(AUTHORIZATION_STATE.authAccessTokenKey)
+        const refreshToken = localStorage.getItem(AUTHORIZATION_STATE.authRefreshTokenKey)
+        const userJson = localStorage.getItem(AUTHORIZATION_STATE.currentUserKey)
+
+        if (!accessToken || !refreshToken || !userJson) {
+          return
+        }
+
+        try {
+          const user = JSON.parse(userJson)
+
+          patchState(store, {
+            user: {
+              access_token: accessToken,
+              refresh_token: refreshToken,
+              user,
+            },
+            isAuthenticated: true,
+          })
+        } catch {
+          localStorage.removeItem(AUTHORIZATION_STATE.authAccessTokenKey)
+          localStorage.removeItem(AUTHORIZATION_STATE.authRefreshTokenKey)
+          localStorage.removeItem(AUTHORIZATION_STATE.currentUserKey)
+          patchState(store, initialState)
+        }
+      },
+
+
+      hasRole: (role: string): boolean => {
+        return store.roles().includes(role)
+      },
+
+
       /**
        * МЕТОД: register
        *
@@ -135,49 +169,23 @@ export const AuthStore = signalStore(
               isLoading: true,
               error: null,
             })
-          }),
-
-          // switchMap - отменяет предыдущий запрос, если пришел новый
-          // Вызываем API метод регистрации
-          switchMap(
+          }), switchMap(
             (
               registerData: RegisterDataInterface
             ): Observable<CurrentUserResponseInterface | null> =>
               authService.register(registerData).pipe(
                 // Обрабатываем успешный ответ
-                tap((response: CurrentUserResponseInterface) => {
-                  // ВАЖНО: Сохраняем данные в localStorage
-                  // Это позволит восстановить сессию после перезагрузки страницы
-                  authService.setItem(AUTHORIZATION_STATE.currentUserKey, JSON.stringify(response))
-                  authService.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
-                  authService.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
-
-                  // Обновляем state с данными пользователя
-                  patchState(store, {
-                    user: response,
-                    isAuthenticated: true,
-                    isLoading: false,
-                    error: null,
-                  })
-
-                  // Показываем уведомление об успехе
-                  messageService.add({
-                    severity: 'success',
-                    summary: 'Registration Successful',
-                    detail: `Welcome, ${response.user.firstName}!`,
-                  })
-
-                  // Перенаправляем на главную страницу
-                  router.navigate(['/']).catch(console.error)
-                }),
+                tap((response) => handleAuthSuccess(response, 'Registration Successful', 'registerSuccess')),
 
                 // Обрабатываем ошибки
-                catchError((error: any): Observable<null> => {
+                catchError((error: HttpErrorResponse): Observable<null> => {
                   // Формируем понятное сообщение об ошибке
-                  const errorMessage: string =
-                    error?.error?.message ||
-                    error?.message ||
-                    'Registration failed. Please try again.'
+                  const errorMessage: AuthErrorMessage = {
+                    message:
+                      error?.error?.message ??
+                      error?.message ??
+                      'Registration failed. Please try again.',
+                  }
 
                   // Обновляем state с ошибкой
                   patchState(store, {
@@ -185,13 +193,10 @@ export const AuthStore = signalStore(
                     isLoading: false,
                     isAuthenticated: false,
                     user: null,
-                  })
-
-                  // Показываем уведомление об ошибке
-                  messageService.add({
-                    severity: 'error',
-                    summary: 'Registration Failed',
-                    detail: errorMessage,
+                    event: {
+                      type: 'registerError',
+                      message: errorMessage.message,
+                    },
                   })
 
                   // Возвращаем пустой observable, чтобы не прерывать поток
@@ -220,42 +225,24 @@ export const AuthStore = signalStore(
           switchMap(
             (loginData: LoginDataInterface): Observable<CurrentUserResponseInterface | null> =>
               authService.login(loginData).pipe(
-                tap((response: CurrentUserResponseInterface) => {
-                  authService.setItem(AUTHORIZATION_STATE.currentUserKey, JSON.stringify(response))
-                  authService.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
-                  authService.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
-
-                  patchState(store, {
-                    user: response,
-                    isAuthenticated: true,
-                    isLoading: false,
-                    error: null,
-                  })
-
-                  messageService.add({
-                    severity: 'success',
-                    summary: 'Login Successful',
-                    detail: `Welcome back, ${response.user.firstName}!`,
-                  })
-
-                  router.navigate(['/']).catch(console.error)
-                }), catchError((error: any): Observable<null> => {
-                  const errorMessage: string =
-                    error?.error?.message ||
-                    error?.message ||
-                    'Login failed. Please try again.'
+                tap((response) => handleAuthSuccess(response, 'Login Successful', 'loginSuccess')),
+                catchError((error: HttpErrorResponse): Observable<null> => {
+                  const errorMessage: AuthErrorMessage = {
+                    message:
+                      error?.error?.message ??
+                      error?.message ??
+                      'Login failed. Please try again.',
+                  }
 
                   patchState(store, {
                     error: errorMessage,
                     isLoading: false,
                     isAuthenticated: false,
                     user: null,
-                  })
-
-                  messageService.add({
-                    severity: 'error',
-                    summary: 'Login Failed',
-                    detail: errorMessage,
+                    event: {
+                      type: 'loginError',
+                      message: errorMessage.message,
+                    },
                   })
 
                   return of(null)
@@ -279,16 +266,8 @@ export const AuthStore = signalStore(
 
         // Сбрасываем state к начальному состоянию
         patchState(store, {
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-        })
-
-        messageService.add({
-          severity: 'info',
-          summary: 'Logged Out',
-          detail: 'You have been logged out successfully.',
+          ...initialState,
+          event: { type: 'logout' },
         })
 
         // Перенаправляем на страницу логина
@@ -296,7 +275,7 @@ export const AuthStore = signalStore(
       },
 
       /**
-       * МЕТОД: clearError2
+       * МЕТОД: clearError
        *
        * Очищает ошибку из state
        * Полезно для закрытия уведомлений об ошибках
@@ -312,19 +291,24 @@ export const AuthStore = signalStore(
        * Используется в AuthInterceptor при 401 ошибке
        */
       updateAfterRefresh: (response: CurrentUserResponseInterface) => {
-        // Сохраняем новые токены и данные пользователя в localStorage
-        authService.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
-        authService.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
-        authService.setItem(AUTHORIZATION_STATE.currentUserKey, JSON.stringify(response))
+        // Сохраняем токены напрямую (они строки)
+        localStorage.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
+        localStorage.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
+        // User объект через setItem (он сделает stringify один раз)
+        authService.setItem(AUTHORIZATION_STATE.currentUserKey, response.user)
 
         // Обновляем state с новыми данными
         patchState(store, {
           user: response,
           isAuthenticated: true,
-          isLoading: false,
           error: null,
         })
       },
+
+      clearEvent: () => {
+        patchState(store, { event: null })
+      }
     }
   })
 )
+
