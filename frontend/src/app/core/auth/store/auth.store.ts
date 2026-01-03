@@ -1,25 +1,21 @@
-import { computed, inject } from '@angular/core'
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { pipe, tap, switchMap, catchError, of, Observable } from 'rxjs'
-import { AuthService } from '../services/auth.service'
-import { RegisterDataInterface } from '../types/registerData.interface'
-import { CurrentUserResponseInterface } from '../types/current-user.interface'
-import { Router } from '@angular/router'
-import { MessageService } from 'primeng/api'
-import { AuthState } from '../types/auth-state.interface'
-
-/**
- * AUTH STORE - NgRx SignalStore
- *
- * SignalStore - это современный подход к управлению состоянием в Angular,
- * который использует signals (сигналы) для реактивности.
- *
- * Основные концепции:
- * 1. State (состояние) - данные, которые мы храним
- * 2. Computed (вычисляемые значения) - производные от state
- * 3. Methods (методы) - функции для изменения state
- */
+import {computed, inject} from '@angular/core'
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals'
+import {rxMethod} from '@ngrx/signals/rxjs-interop'
+import {pipe, tap, switchMap, catchError, of, Observable} from 'rxjs'
+import {AuthService} from '../services/auth.service'
+import {RegisterDataInterface} from '../types/registerData.interface'
+import {CurrentUserResponseInterface} from '../types/current-user.interface'
+import {Router} from '@angular/router'
+import {MessageService} from 'primeng/api'
+import {AuthState} from '../types/auth-state.interface'
+import {AUTHORIZATION_STATE} from '../types/authorization.constants';
+import {LoginDataInterface} from '../types/loginData.interface';
 
 const initialState: AuthState = (() => {
   /**
@@ -29,14 +25,14 @@ const initialState: AuthState = (() => {
    * - Если есть токен и данные пользователя - восстанавливаем сессию
    * - Если нет - начинаем с пустого состояния
    */
-  // Пытаемся получить токен из localStorage
-  const token: string | null = localStorage.getItem('authToken')
-  const userJson: string | null = localStorage.getItem('currentUser')
+    // Пытаемся получить токен из localStorage
+  const token: string | null = localStorage.getItem(AUTHORIZATION_STATE.authAccessTokenKey)
+  const userJson: string | null = localStorage.getItem(AUTHORIZATION_STATE.currentUserKey)
 
   // Если есть и токен, и данные пользователя - восстанавливаем состояние
   if (token && userJson) {
     try {
-      const user = JSON.parse(userJson)
+      const user: CurrentUserResponseInterface | null = JSON.parse(userJson)
       return {
         user,
         isLoading: false,
@@ -45,8 +41,9 @@ const initialState: AuthState = (() => {
       }
     } catch (e) {
       // Если не удалось распарсить - очищаем localStorage
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('currentUser')
+      localStorage.removeItem(AUTHORIZATION_STATE.authAccessTokenKey)
+      localStorage.removeItem(AUTHORIZATION_STATE.authRefreshTokenKey)
+      localStorage.removeItem(AUTHORIZATION_STATE.currentUserKey)
     }
   }
 
@@ -71,7 +68,7 @@ const initialState: AuthState = (() => {
 
 export const AuthStore = signalStore(
   // Уникальный идентификатор store (можно использовать для DevTools)
-  { providedIn: 'root' },
+  {providedIn: 'root'},
 
   /**
    * ШАГ 1: Определяем STATE
@@ -132,8 +129,6 @@ export const AuthStore = signalStore(
         pipe(
           // tap - выполняем side-effect, не изменяя поток данных
           tap(() => {
-            console.log('🔄 [AuthStore] Начинаем регистрацию...')
-
             // patchState - функция для обновления части state
             // Мерджит новые значения с текущим state
             patchState(store, {
@@ -151,12 +146,11 @@ export const AuthStore = signalStore(
               authService.register(registerData).pipe(
                 // Обрабатываем успешный ответ
                 tap((response: CurrentUserResponseInterface) => {
-                  console.log('✅ [AuthStore] Регистрация успешна:', response)
-
                   // ВАЖНО: Сохраняем данные в localStorage
                   // Это позволит восстановить сессию после перезагрузки страницы
-                  localStorage.setItem('authToken', response.access_token)
-                  localStorage.setItem('currentUser', JSON.stringify(response))
+                  authService.setItem(AUTHORIZATION_STATE.currentUserKey, JSON.stringify(response))
+                  authService.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
+                  authService.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
 
                   // Обновляем state с данными пользователя
                   patchState(store, {
@@ -179,8 +173,6 @@ export const AuthStore = signalStore(
 
                 // Обрабатываем ошибки
                 catchError((error: any): Observable<null> => {
-                  console.error('❌ [AuthStore] Ошибка регистрации:', error)
-
                   // Формируем понятное сообщение об ошибке
                   const errorMessage: string =
                     error?.error?.message ||
@@ -217,6 +209,62 @@ export const AuthStore = signalStore(
        * Вы можете реализовать его самостоятельно по аналогии с register
        */
 
+      login: rxMethod<LoginDataInterface>(
+        pipe(
+          tap(() => {
+            patchState(store, {
+              isLoading: true,
+              error: null,
+            })
+          }),
+          switchMap(
+            (loginData: LoginDataInterface): Observable<CurrentUserResponseInterface | null> =>
+              authService.login(loginData).pipe(
+                tap((response: CurrentUserResponseInterface) => {
+                  authService.setItem(AUTHORIZATION_STATE.currentUserKey, JSON.stringify(response))
+                  authService.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
+                  authService.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
+
+                  patchState(store, {
+                    user: response,
+                    isAuthenticated: true,
+                    isLoading: false,
+                    error: null,
+                  })
+
+                  messageService.add({
+                    severity: 'success',
+                    summary: 'Login Successful',
+                    detail: `Welcome back, ${response.user.firstName}!`,
+                  })
+
+                  router.navigate(['/']).catch(console.error)
+                }), catchError((error: any): Observable<null> => {
+                  const errorMessage: string =
+                    error?.error?.message ||
+                    error?.message ||
+                    'Login failed. Please try again.'
+
+                  patchState(store, {
+                    error: errorMessage,
+                    isLoading: false,
+                    isAuthenticated: false,
+                    user: null,
+                  })
+
+                  messageService.add({
+                    severity: 'error',
+                    summary: 'Login Failed',
+                    detail: errorMessage,
+                  })
+
+                  return of(null)
+                })
+              )
+          )
+        )
+      ),
+
       /**
        * МЕТОД: logout
        *
@@ -224,11 +272,10 @@ export const AuthStore = signalStore(
        * Очищает state и localStorage
        */
       logout: () => {
-        console.log('🚪 [AuthStore] Выход из системы...')
-
         // Очищаем localStorage
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('currentUser')
+        localStorage.removeItem(AUTHORIZATION_STATE.authAccessTokenKey)
+        localStorage.removeItem(AUTHORIZATION_STATE.authRefreshTokenKey)
+        localStorage.removeItem(AUTHORIZATION_STATE.currentUserKey)
 
         // Сбрасываем state к начальному состоянию
         patchState(store, {
@@ -245,7 +292,7 @@ export const AuthStore = signalStore(
         })
 
         // Перенаправляем на страницу логина
-        router.navigate(['/login'])
+        router.navigate(['/login']).catch(console.error)
       },
 
       /**
@@ -255,7 +302,28 @@ export const AuthStore = signalStore(
        * Полезно для закрытия уведомлений об ошибках
        */
       clearError: () => {
-        patchState(store, { error: null })
+        patchState(store, {error: null})
+      },
+
+      /**
+       * МЕТОД: updateAfterRefresh
+       *
+       * Обновляет state после обновления токенов через refresh
+       * Используется в AuthInterceptor при 401 ошибке
+       */
+      updateAfterRefresh: (response: CurrentUserResponseInterface) => {
+        // Сохраняем новые токены и данные пользователя в localStorage
+        authService.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
+        authService.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
+        authService.setItem(AUTHORIZATION_STATE.currentUserKey, JSON.stringify(response))
+
+        // Обновляем state с новыми данными
+        patchState(store, {
+          user: response,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        })
       },
     }
   })

@@ -85,9 +85,6 @@ export class Register {
       }
 
       this.authStore.register(registerData)
-
-      console.log('📝 [Register Component] Данные отправлены в AuthStore')
-      return undefined
     }).catch(console.error)
   }
 }

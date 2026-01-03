@@ -30,9 +30,9 @@ import { LocalStrategy } from './strategies/local.strategy';
           // Секретный ключ для подписи токенов (из .env файла)
           secret: configService.get<string>('JWT_SECRET') || 'fallback-secret',
 
-          // Опции подписи токена
+          // Опции подписи токена по умолчанию
+          // В AuthService переопределяются для access (15m) и refresh (7d) токенов
           signOptions: {
-            // Срок действия токена (из .env файла, по умолчанию 7 дней)
             expiresIn: '7d' as const,
           },
         };

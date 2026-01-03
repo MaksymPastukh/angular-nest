@@ -4,7 +4,7 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { AuthResponse, JwtPayload } from './interfaces/auth-response.interface';
+import { AuthResponse, JwtPayload, UserWithId } from './interfaces/auth-response.interface';
 
 /**
  * Сервис аутентификации
@@ -23,10 +23,44 @@ export class AuthService {
   ) {}
 
   /**
+   * Генерация пары токенов (access и refresh)
+   * @param user - Документ пользователя
+   * @returns Объект с access_token, refresh_token и данными пользователя
+   */
+  private generateTokens(user: UserWithId): AuthResponse {
+    const payload: JwtPayload = {
+      sub: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    };
+
+    // Access токен с коротким сроком действия (15 минут)
+    const access_token = this.jwtService.sign(payload, {
+      expiresIn: '15m',
+    });
+
+    // Refresh токен с длительным сроком действия (7 дней)
+    const refresh_token = this.jwtService.sign(payload, {
+      expiresIn: '7d',
+    });
+
+    return {
+      access_token,
+      refresh_token,
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        firstName: user.firstName,
+        role: user.role,
+      },
+    };
+  }
+
+  /**
    * Регистрация нового пользователя
-   * Создаёт нового пользователя в БД и возвращает JWT токен
+   * Создаёт нового пользователя в БД и возвращает JWT токены
    * @param registerDto - Данные для регистрации (firstName, email, password, confirmPassword, agreeToTerms, subscribeToNewsletter)
-   * @returns Объект с access_token и данными пользователя
+   * @returns Объект с access_token, refresh_token и данными пользователя
    * @throws UnauthorizedException - если пароли не совпадают
    */
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
@@ -45,29 +79,15 @@ export class AuthService {
       registerDto.subscribeToNewsletter,
     );
 
-    // Генерируем JWT токен для нового пользователя
-    const payload: JwtPayload = {
-      sub: user._id.toString(), // ID пользователя
-      email: user.email,
-      role: user.role,
-    };
-
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user._id.toString(),
-        email: user.email,
-        firstName: user.firstName,
-        role: user.role,
-      },
-    };
+    // Генерируем пару токенов для нового пользователя
+    return this.generateTokens(user);
   }
 
   /**
    * Вход пользователя в систему
-   * Проверяет учётные данные и возвращает JWT токен
+   * Проверяет учётные данные и возвращает JWT токены
    * @param loginDto - Данные для входа (email, password)
-   * @returns Объект с access_token и данными пользователя
+   * @returns Объект с access_token, refresh_token и данными пользователя
    * @throws UnauthorizedException - если email или пароль неверны
    */
   async login(loginDto: LoginDto): Promise<AuthResponse> {
@@ -78,22 +98,8 @@ export class AuthService {
       throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    // Генерируем JWT токен для пользователя
-    const payload: JwtPayload = {
-      sub: user._id.toString(),
-      email: user.email,
-      role: user.role,
-    };
-
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user._id.toString(),
-        email: user.email,
-        firstName: user.firstName,
-        role: user.role,
-      },
-    };
+    // Генерируем пару токенов для пользователя
+    return this.generateTokens(user);
   }
 
   /**
@@ -127,6 +133,31 @@ export class AuthService {
 
     // Возвращаем пользователя (пароль будет удалён в контроллере)
     return user;
+  }
+
+  /**
+   * Обновление access токена с помощью refresh токена
+   * @param refreshToken - Refresh токен пользователя
+   * @returns Новая пара токенов
+   * @throws UnauthorizedException - если refresh токен невалиден или пользователь не найден
+   */
+  async refreshTokens(refreshToken: string): Promise<AuthResponse> {
+    try {
+      // Проверяем refresh токен
+      const payload = this.jwtService.verify<JwtPayload>(refreshToken);
+
+      // Получаем пользователя из БД
+      const user = await this.usersService.findById(payload.sub);
+
+      if (!user || !user.isActive) {
+        throw new UnauthorizedException('Пользователь не найден или неактивен');
+      }
+
+      // Генерируем новую пару токенов
+      return this.generateTokens(user);
+    } catch (error) {
+      throw new UnauthorizedException('Невалидный refresh токен');
+    }
   }
 
   /**

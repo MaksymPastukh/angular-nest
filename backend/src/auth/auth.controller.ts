@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@n
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -89,6 +90,39 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  /**
+   * Обновление access токена с помощью refresh токена
+   * POST /auth/refresh
+   *
+   * Принимает refresh токен и выдаёт новую пару токенов
+   *
+   * @param refreshTokenDto - Refresh токен
+   * @returns Новая пара access_token и refresh_token
+   *
+   * Пример запроса:
+   * POST /auth/refresh
+   * {
+   *   "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   * }
+   *
+   * Пример ответа:
+   * {
+   *   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+   *   "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+   *   "user": {
+   *     "id": "507f1f77bcf86cd799439011",
+   *     "email": "user@example.com",
+   *     "firstName": "Иван",
+   *     "role": "user"
+   *   }
+   * }
+   */
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshTokens(refreshTokenDto.refresh_token);
   }
 
   /**

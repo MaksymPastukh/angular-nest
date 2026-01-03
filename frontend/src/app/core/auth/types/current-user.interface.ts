@@ -1,5 +1,6 @@
 export interface CurrentUserResponseInterface {
   access_token: string
+  refresh_token: string
   user: User
 }
 
