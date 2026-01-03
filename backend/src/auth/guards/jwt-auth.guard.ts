@@ -1,8 +1,4 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 /**
@@ -38,11 +34,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * @param status - Статус HTTP ответа
    * @returns Объект пользователя или выбрасывает исключение
    */
-  handleRequest<TUser = any>(
-    err: any,
-    user: TUser | false | null,
-    info: any,
-  ): TUser {
+  handleRequest<TUser = any>(err: any, user: TUser | false | null, info: any): TUser {
     // Если произошла ошибка или пользователь не найден, выбрасываем исключение
     if (err || !user) {
       // info может содержать сообщение от стратегии (например, "jwt expired")

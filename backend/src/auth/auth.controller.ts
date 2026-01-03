@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { LoginDto } from './dto/login.dto';
@@ -128,8 +120,8 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@CurrentUser() user: any) {
-    return this.authService.getProfile(user.id);
+  async getProfile(@CurrentUser('id') userId: string) {
+    return this.authService.getProfile(userId);
   }
 
   /**
@@ -144,7 +136,7 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getMe(@CurrentUser() user: any) {
+  getMe(@CurrentUser() user: any) {
     return {
       message: 'JWT токен валиден',
       user,

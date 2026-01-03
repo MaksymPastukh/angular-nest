@@ -56,9 +56,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // Проверяем, существует ли пользователь и активен ли его аккаунт
     if (!user || !user.isActive) {
-      throw new UnauthorizedException(
-        'Пользователь не найден или деактивирован',
-      );
+      throw new UnauthorizedException('Пользователь не найден или деактивирован');
     }
 
     // Возвращаем данные пользователя, которые будут доступны в req.user

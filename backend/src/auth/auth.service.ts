@@ -4,11 +4,7 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import {
-  AuthResponse,
-  JwtPayload,
-  UserWithId,
-} from './interfaces/auth-response.interface';
+import { AuthResponse, JwtPayload } from './interfaces/auth-response.interface';
 
 /**
  * Сервис аутентификации
@@ -51,7 +47,7 @@ export class AuthService {
 
     // Генерируем JWT токен для нового пользователя
     const payload: JwtPayload = {
-      sub: (user as UserWithId)._id.toString(), // ID пользователя
+      sub: user._id.toString(), // ID пользователя
       email: user.email,
       role: user.role,
     };
@@ -59,7 +55,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        id: (user as UserWithId)._id.toString(),
+        id: user._id.toString(),
         email: user.email,
         firstName: user.firstName,
         role: user.role,
@@ -107,10 +103,7 @@ export class AuthService {
    * @param password - Пароль в открытом виде
    * @returns Объект пользователя если данные верны, null если нет
    */
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<UserDocument | null> {
+  async validateUser(email: string, password: string): Promise<UserDocument | null> {
     // Ищем пользователя по email
     const user = await this.usersService.findByEmail(email);
 
@@ -125,10 +118,7 @@ export class AuthService {
     }
 
     // Сравниваем введённый пароль с хешем из БД
-    const isPasswordValid = await this.usersService.comparePasswords(
-      password,
-      user.password,
-    );
+    const isPasswordValid = await this.usersService.comparePasswords(password, user.password);
 
     // Если пароль неверный
     if (!isPasswordValid) {

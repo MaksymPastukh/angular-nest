@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { RequestWithUser } from '../interfaces/request-with-user.interface';
@@ -34,13 +29,10 @@ export class RolesGuard implements CanActivate {
    */
   canActivate(context: ExecutionContext): boolean {
     // Извлекаем требуемые роли из метаданных, установленных декоратором @Roles()
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
-      ROLES_KEY,
-      [
-        context.getHandler(), // Метаданные из метода контроллера
-        context.getClass(), // Метаданные из класса контроллера
-      ],
-    );
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
+      context.getHandler(), // Метаданные из метода контроллера
+      context.getClass(), // Метаданные из класса контроллера
+    ]);
 
     // Если роли не указаны, доступ разрешён всем аутентифицированным пользователям
     if (!requiredRoles) {
@@ -54,9 +46,7 @@ export class RolesGuard implements CanActivate {
 
     // Если роль не подходит, выбрасываем исключение
     if (!hasRole) {
-      throw new ForbiddenException(
-        'У вас недостаточно прав для выполнения этого действия',
-      );
+      throw new ForbiddenException('У вас недостаточно прав для выполнения этого действия');
     }
 
     return hasRole;
