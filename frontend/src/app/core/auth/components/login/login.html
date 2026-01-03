@@ -61,15 +61,15 @@
       </div>
 
       <div class="flex flex-col gap-2 color-text-base relative mt-8">
-        <label class="font-family font-normal text-lg" for="email">
+        <h3 class="font-family font-normal text-lg">
           Email Address
-        </label>
+        </h3>
         <input
           type="text"
           id="email"
           autocomplete="email"
           [field]="loginForm.email"
-          placeholder="Enter your email"
+          placeholder=""
           [class]="{
             'auth-input': true,
             'border-red-500': loginForm.email().touched() && loginForm.email().invalid(),
@@ -87,9 +87,9 @@
 
       <div class="flex flex-col gap-2 color-text-base relative mt-5">
         <div class="flex justify-between">
-          <label class="font-family font-normal text-lg" for="password">
+          <h3 class="font-family font-normal text-lg">
             Password
-          </label>
+          </h3>
           <button
             type="button"
             (click)="isPasswordVisible.set(!isPasswordVisible())"
@@ -120,7 +120,7 @@
         <input
           [field]="loginForm.password"
           [type]="isPasswordVisible() ? 'text' : 'password'"
-          placeholder="Enter your password"
+          placeholder=""
           autocomplete="new-password"
           [class]="{
             'auth-input': true,

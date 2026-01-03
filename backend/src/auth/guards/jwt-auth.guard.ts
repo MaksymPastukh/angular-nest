@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 /**
@@ -14,13 +18,43 @@ import { AuthGuard } from '@nestjs/passport';
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   /**
-   * Этот guard автоматически:
-   * 1. Извлекает JWT токен из заголовка Authorization
-   * 2. Проверяет подпись токена
-   * 3. Проверяет срок действия токена
-   * 4. Вызывает метод validate() из JwtStrategy
-   * 5. Добавляет данные пользователя в req.user
-   *
-   * Если любая из проверок не пройдена, возвращает 401 Unauthorized
+   * Переопределяем метод canActivate для добавления дополнительной логики
+   * @param context - Контекст выполнения запроса
+   * @returns Promise<boolean> - результат проверки аутентификации
    */
+  canActivate(context: ExecutionContext) {
+    // Вызываем стандартную логику AuthGuard('jwt')
+    // Это запустит процесс проверки JWT токена через JwtStrategy
+    return super.canActivate(context);
+  }
+
+  /**
+   * Обрабатывает результат аутентификации
+   * Вызывается после того, как JWT токен был проверен и validate() выполнен
+   * @param err - Ошибка, если произошла во время аутентификации
+   * @param user - Объект пользователя, возвращённый из validate()
+   * @param info - Дополнительная информация об ошибке (например, jwt expired)
+   * @param context - Контекст выполнения запроса
+   * @param status - Статус HTTP ответа
+   * @returns Объект пользователя или выбрасывает исключение
+   */
+  handleRequest<TUser = any>(
+    err: any,
+    user: TUser | false | null,
+    info: any,
+  ): TUser {
+    // Если произошла ошибка или пользователь не найден, выбрасываем исключение
+    if (err || !user) {
+      // info может содержать сообщение от стратегии (например, "jwt expired")
+      const message: string =
+        info && typeof info === 'object' && 'message' in info
+          ? String((info as { message: unknown }).message)
+          : 'Неверный или истёкший токен';
+
+      throw err || new UnauthorizedException(message);
+    }
+
+    // Возвращаем пользователя, который будет добавлен в req.user
+    return user as TUser;
+  }
 }

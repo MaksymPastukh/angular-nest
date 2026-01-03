@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-
+import { RequestWithUser } from '../interfaces/request-with-user.interface';
 /**
  * Guard для проверки ролей пользователя
  * Работает вместе с декоратором @Roles()
@@ -47,8 +47,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    // Получаем объект запроса и извлекаем пользователя (добавлен JwtAuthGuard)
-    const { user } = context.switchToHttp().getRequest();
+    const { user } = context.switchToHttp().getRequest<RequestWithUser>();
 
     // Проверяем, есть ли роль пользователя в списке требуемых ролей
     const hasRole = requiredRoles.some((role) => user.role === role);
