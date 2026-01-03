@@ -11,7 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, NgOptimizedImage, RouterLink, Toast, Field],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, Field],
   providers: [MessageService],
   templateUrl: './login.html',
   styleUrl: './login.scss',
