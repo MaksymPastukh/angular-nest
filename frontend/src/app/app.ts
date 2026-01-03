@@ -12,43 +12,44 @@ import {MessageService} from 'primeng/api';
 })
 export class App implements OnInit {
   protected readonly authStore = inject(AuthStore);
-  protected readonly title = signal('frontend')
+  protected readonly title = signal('Euphoria')
   private messageService = inject(MessageService)
-  private router = inject(Router)
 
   constructor() {
     effect(() => {
-      const event = this.authStore.event()
-      if (!event) return
+      const event = this.authStore.event();
+      console.log('Auth Event:', event);
+      if (!event) return;
 
       switch (event.type) {
         case 'loginSuccess':
         case 'registerSuccess':
           this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: `Welcome, ${event.userName}!`,
-          })
-          break
+            summary: event.type === 'loginSuccess' ? 'Login Successful' : 'Registration Successful',
+            detail: `Welcome, ${event.userName}!`
+          });
+          break;
 
         case 'loginError':
         case 'registerError':
           this.messageService.add({
             severity: 'error',
-            summary: 'Error',
-            detail: event.message,
-          })
-          break
+            summary: event.type === 'loginError' ? 'Login Failed' : 'Registration Failed',
+            detail: event.message
+          });
+          break;
 
         case 'logout':
           this.messageService.add({
             severity: 'info',
-            summary: 'Logged out',
-          })
-          this.router.navigate(['/login'])
-          break
+            summary: 'Logged Out',
+            detail: 'You have been logged out successfully.'
+          });
+          break;
       }
 
+      // Очищаем event после обработки
       this.authStore.clearEvent()
     })
   }

@@ -7,7 +7,6 @@ import { FloatLabel } from 'primeng/floatlabel'
 import { FormsModule } from '@angular/forms'
 import { InputText } from 'primeng/inputtext'
 import { Select } from 'primeng/select'
-// ИМПОРТИРУЕМ AuthStore
 import { AuthStore } from '../../../core/auth/store/auth.store'
 
 @Component({

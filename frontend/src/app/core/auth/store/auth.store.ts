@@ -15,15 +15,15 @@ import {Router} from '@angular/router'
 import {AuthState} from '../types/auth-state.interface'
 import {AUTHORIZATION_STATE} from '../types/authorization.constants';
 import {LoginDataInterface} from '../types/loginData.interface';
-import {AuthErrorMessage} from '../types/auth-error-message';
 import {HttpErrorResponse} from '@angular/common/http';
+import {AuthEventInterface} from '../types/auth-event.interface';
 
 const initialState: AuthState = {
   user: null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
-   event: null
+  event: null
 }
 
 /**
@@ -95,7 +95,6 @@ export const AuthStore = signalStore(
       // User объект через authService.setItem (он сделает stringify)
       authService.setItem(AUTHORIZATION_STATE.currentUserKey, response.user)
 
-      // Обновляем state
       patchState(store, {
         user: response,
         isAuthenticated: true,
@@ -104,7 +103,7 @@ export const AuthStore = signalStore(
         event: {
           type,
           userName: response.user.firstName,
-        },
+        } as AuthEventInterface
       })
 
       // Перенаправляем на главную
@@ -179,27 +178,22 @@ export const AuthStore = signalStore(
 
                 // Обрабатываем ошибки
                 catchError((error: HttpErrorResponse): Observable<null> => {
-                  // Формируем понятное сообщение об ошибке
-                  const errorMessage: AuthErrorMessage = {
-                    message:
-                      error?.error?.message ??
-                      error?.message ??
-                      'Registration failed. Please try again.',
-                  }
+                  const message =
+                    error?.error?.message ??
+                    error?.message ??
+                    'Something went wrong.'
 
-                  // Обновляем state с ошибкой
                   patchState(store, {
-                    error: errorMessage,
+                    error: { message },
                     isLoading: false,
                     isAuthenticated: false,
                     user: null,
                     event: {
                       type: 'registerError',
-                      message: errorMessage.message,
-                    },
+                      message,
+                    } as AuthEventInterface
                   })
 
-                  // Возвращаем пустой observable, чтобы не прерывать поток
                   return of(null)
                 })
               )
@@ -227,22 +221,20 @@ export const AuthStore = signalStore(
               authService.login(loginData).pipe(
                 tap((response) => handleAuthSuccess(response, 'Login Successful', 'loginSuccess')),
                 catchError((error: HttpErrorResponse): Observable<null> => {
-                  const errorMessage: AuthErrorMessage = {
-                    message:
-                      error?.error?.message ??
-                      error?.message ??
-                      'Login failed. Please try again.',
-                  }
+                  const message =
+                    error?.error?.message ??
+                    error?.message ??
+                    'Something went wrong.'
 
                   patchState(store, {
-                    error: errorMessage,
+                    error: { message },
                     isLoading: false,
                     isAuthenticated: false,
                     user: null,
                     event: {
                       type: 'loginError',
-                      message: errorMessage.message,
-                    },
+                      message,
+                    } as AuthEventInterface
                   })
 
                   return of(null)

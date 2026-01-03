@@ -33,6 +33,10 @@ export class AuthService {
           }
 
           return loginResponse
+        }),
+        catchError((error) => {
+          const errorMessage = error?.error?.message || error?.message || 'Error during registration. Please try again.'
+          return throwError(() => new Error(errorMessage))
         })
       )
   }
@@ -54,6 +58,10 @@ export class AuthService {
           }
 
           return loginResponse
+        }),
+        catchError((error) => {
+          const errorMessage = error?.error?.message || error?.message || 'Error during login. Please try again.'
+          return throwError(() => new Error(errorMessage))
         })
       )
   }

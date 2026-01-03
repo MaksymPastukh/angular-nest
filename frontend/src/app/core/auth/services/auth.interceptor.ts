@@ -27,10 +27,19 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('refresh')) {
+      // Обрабатываем 401 ошибку только для защищенных маршрутов
+      // НЕ обрабатываем для login/register/refresh
+      const shouldRefreshToken =
+        error.status === 401 &&
+        !req.url.includes('/login') &&
+        !req.url.includes('/register') &&
+        !req.url.includes('/refresh');
+
+      if (shouldRefreshToken) {
         return handle401Error(req, next, authService, authStore);
       }
 
+      // Для всех остальных ошибок (включая 401 при login/register) просто пробрасываем дальше
       return throwError(() => error);
     })
   );
