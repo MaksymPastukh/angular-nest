@@ -1,4 +1,4 @@
 export interface DefaultResponseInterface {
-  error: boolean,
+  error: boolean
   message: string
 }

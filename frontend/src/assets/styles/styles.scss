@@ -1,11 +1,11 @@
-@use "tailwindcss";
-@use "fonts";
+@use 'tailwindcss';
+@use 'fonts';
 
 @theme {
   // Шрифты
-  --font-family: "Causten", sans-serif;
-  --font-coresans: "CoreSans", sans-serif;
-  --font-causten: "Causten", sans-serif;
+  --font-family: 'Causten', sans-serif;
+  --font-coresans: 'CoreSans', sans-serif;
+  --font-causten: 'Causten', sans-serif;
 
   // Цвета
   --color-reggg: #344343;
@@ -90,7 +90,7 @@ p-accordion-header {
   .auth-checkbox {
     @apply flex items-start;
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
       @apply mt-1 cursor-pointer;
     }
 

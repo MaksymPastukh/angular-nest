@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core';
-import { ProductType } from '../product.type';
+import { Injectable } from '@angular/core'
+import { ProductType } from '../product.type'
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
-
   constructor() {}
 
   productInTheLimelight: ProductType[] = [
@@ -36,6 +35,6 @@ export class ProductService {
   ]
 
   getProductInTheLimelight(): ProductType[] {
-    return this.productInTheLimelight;
+    return this.productInTheLimelight
   }
 }

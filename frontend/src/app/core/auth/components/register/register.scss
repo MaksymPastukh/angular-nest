@@ -2,7 +2,7 @@
   input {
     appearance: none;
     -webkit-appearance: none;
-    border: 0.1rem solid #3C4242;
+    border: 0.1rem solid #3c4242;
     border-radius: 3px;
     width: 18px;
     height: 18px;
@@ -14,12 +14,12 @@
   }
 
   input:checked {
-    background-color: #3C4242;
-    border: 0.1rem solid #3C4242;
+    background-color: #3c4242;
+    border: 0.1rem solid #3c4242;
   }
 
   input:checked::after {
-    content: "✓";
+    content: '✓';
     position: absolute;
     color: white;
     padding: 0;
@@ -30,4 +30,3 @@
     transform: translate(-50%, -50%);
   }
 }
-

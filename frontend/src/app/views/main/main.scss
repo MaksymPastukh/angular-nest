@@ -29,7 +29,7 @@
             border-radius: 8px !important;
             background: white !important;
             color: #000 !important;
-            font-family: "Causten", sans-serif;
+            font-family: 'Causten', sans-serif;
             font-weight: 700 !important;
             font-size: 24px !important;
           }
@@ -112,11 +112,11 @@
     .p-carousel-content {
       display: flex !important;
       justify-content: center !important;
-      flex-wrap: wrap!important;
+      flex-wrap: wrap !important;
     }
 
     .p-carousel-items-content {
-      flex-wrap: wrap!important;
+      flex-wrap: wrap !important;
       display: flex !important;
       justify-content: center !important; // Центровка карточек внутри
     }
@@ -152,6 +152,4 @@
       background: #3c4242 !important;
     }
   }
-
 }
-

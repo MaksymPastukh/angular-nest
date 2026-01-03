@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Categories } from '../types/categories';
+import { Injectable } from '@angular/core'
+import { Categories } from '../types/categories'
 
 @Injectable({
   providedIn: 'root',
@@ -28,9 +28,9 @@ export class CategoriesService {
       category: 'Boxers',
       description: 'Explore Now!',
     },
-  ];
+  ]
 
-  categoriesWomen:Categories[] = [
+  categoriesWomen: Categories[] = [
     {
       image: '/assets/images/categories/categories-women-1.png',
       category: 'Hoodies & Sweetshirt',
@@ -51,14 +51,13 @@ export class CategoriesService {
       category: 'Boxers',
       description: 'Explore Now!',
     },
-  ];
+  ]
 
   getCategoriesMen(): Categories[] {
-    return this.categoriesMen;
+    return this.categoriesMen
   }
 
   getCategoriesWoman(): Categories[] {
-    return this.categoriesWomen;
+    return this.categoriesWomen
   }
-
 }

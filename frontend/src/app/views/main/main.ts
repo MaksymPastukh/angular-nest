@@ -1,20 +1,15 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Carousel } from 'primeng/carousel';
-import { GalleriaModule } from 'primeng/galleria';
-import { Button } from 'primeng/button';
-import { CategoriesCardComponent } from '../../shared/components/categories-card/categories-card';
-import { CategoriesService } from '../../shared/services/categories.service';
-import { Categories } from '../../shared/types/categories';
-import { ProductCardComponent } from '../../shared/components/product-card/product-card';
-import { ProductService } from '../../shared/services/product.service';
-import { ProductType } from '../../shared/product.type';
-import { RatingComponent } from '../../shared/components/rating/rating';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { Carousel } from 'primeng/carousel'
+import { GalleriaModule } from 'primeng/galleria'
+import { Button } from 'primeng/button'
+import { CategoriesCardComponent } from '../../shared/components/categories-card/categories-card'
+import { CategoriesService } from '../../shared/services/categories.service'
+import { Categories } from '../../shared/types/categories'
+import { ProductCardComponent } from '../../shared/components/product-card/product-card'
+import { ProductService } from '../../shared/services/product.service'
+import { ProductType } from '../../shared/product.type'
+import { RatingComponent } from '../../shared/components/rating/rating'
 
 @Component({
   selector: 'app-main',
@@ -32,11 +27,11 @@ import { RatingComponent } from '../../shared/components/rating/rating';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainComponent implements OnInit {
-  categoryService: CategoriesService = inject(CategoriesService);
-  productService: ProductService = inject(ProductService);
-  categoriesMen: Categories[] = [];
-  categoriesWoman: Categories[] = [];
-  productsInTheLimelight: ProductType[] = [];
+  categoryService: CategoriesService = inject(CategoriesService)
+  productService: ProductService = inject(ProductService)
+  categoriesMen: Categories[] = []
+  categoriesWoman: Categories[] = []
+  productsInTheLimelight: ProductType[] = []
   // В компоненте
   slides = [
     {
@@ -51,7 +46,7 @@ export class MainComponent implements OnInit {
       title: 'Winter Collection',
       description: 'warm / stylish / trendy',
     },
-  ];
+  ]
 
   discounts = [
     {
@@ -66,26 +61,29 @@ export class MainComponent implements OnInit {
       title: 'Breezy Summer Style',
       description: 'UPTO 50% OFF',
     },
-  ];
+  ]
 
   feedback = [
     {
       image: '/assets/images/feedback/feedback-person-1.png',
       rating: 5,
       name: 'Floyd Miles',
-      description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
+      description:
+        'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
     },
     {
       image: '/assets/images/feedback/feedback-person-2.png',
       rating: 3.5,
       name: 'Name',
-      description: 'ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
+      description:
+        'ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
     },
     {
       image: '/assets/images/feedback/feedback-person-3.png',
       rating: 4,
       name: 'Savannah Nguyen',
-      description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
+      description:
+        'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
     },
     {
       image: '/assets/images/feedback/feedback-person-4.png',
@@ -99,7 +97,7 @@ export class MainComponent implements OnInit {
       name: 'Name',
       description: 'Feedback',
     },
-  ];
+  ]
 
   newArrival = [
     {
@@ -122,14 +120,13 @@ export class MainComponent implements OnInit {
       image: '/assets/images/arrival/item-5.png',
       title: 'Plain T-Shirt',
     },
-  ];
+  ]
 
   constructor() {}
 
   ngOnInit() {
-    this.categoriesMen = this.categoryService.getCategoriesMen();
-    this.categoriesWoman = this.categoryService.getCategoriesWoman();
-    this.productsInTheLimelight =
-      this.productService.getProductInTheLimelight();
+    this.categoriesMen = this.categoryService.getCategoriesMen()
+    this.categoriesWoman = this.categoryService.getCategoriesWoman()
+    this.productsInTheLimelight = this.productService.getProductInTheLimelight()
   }
 }
