@@ -41,6 +41,9 @@ export class ProductFilterComponent {
   sizes = this.SIZES;
   selectorColor: string | null = null; // Удалим позже, используем selectedColors
 
+  // Таймеры для управления задержкой закрытия меню
+  private menuHideTimeout: any = null;
+
   readonly colors: readonly ColorOption[] = [
     {name: 'Purple', value: '#8e44ad'},
     {name: 'Black', value: '#000000'},
@@ -57,7 +60,7 @@ export class ProductFilterComponent {
   ] as const;
 
 
-  readonly items: MenuItem[] = [
+  readonly itemsMainMenu: MenuItem[] = [
     {
       label: 'Tops',
       items: [

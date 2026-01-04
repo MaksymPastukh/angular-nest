@@ -20,6 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([AuthInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
+      overlayAppendTo: 'body',
       theme: {
         preset: AuraLight,
         options: {

@@ -1,5 +1,6 @@
 <p-accordion
-  class="flex flex-col w-[295px]"
+  styleClass="filter-accordion"
+  class="flex flex-col w-2xs"
   [value]="openedPanels"
   [multiple]="true"
   (valueChange)="onAccordionChange($event)"
@@ -7,7 +8,28 @@
   <p-accordion-panel value="0">
     <p-accordion-header>Filter</p-accordion-header>
     <p-accordion-content>
-      <p-tieredMenu [model]="items" [style]="{'border': 'none'}"></p-tieredMenu>
+      <p-tieredMenu
+        #mainMenu
+        [model]="itemsMainMenu"
+        [popup]="true"
+      ></p-tieredMenu>
+      @for (itemMainMenu of itemsMainMenu; track $index) {
+        <button
+          type="button"
+          class="w-full text-left mt-2 px-2 py-1 rounded-lg font-causten text-lg font-semibold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
+          (click)="mainMenu.toggle($event)"
+        >
+          <span>{{ itemMainMenu.label }}</span>
+          <svg
+            class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      }
     </p-accordion-content>
   </p-accordion-panel>
 
@@ -123,7 +145,28 @@
   <p-accordion-panel value="4">
     <p-accordion-header>Dress Style</p-accordion-header>
     <p-accordion-content>
-      <p-tieredMenu class="mt-[20px]" [model]="itemsStyle" [style]="{'border': 'none'}"></p-tieredMenu>
+      <p-tieredMenu
+        #styleMenu
+        [model]="itemsStyle"
+        [popup]="true"
+      ></p-tieredMenu>
+      @for (itemStyle of itemsStyle; track $index) {
+        <button
+          type="button"
+          class="w-full text-left mt-2 px-2 py-1 rounded-lg font-causten text-lg font-semibold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
+          (click)="styleMenu.toggle($event)"
+        >
+          <span>{{ itemStyle.label }}</span>
+          <svg
+            class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      }
     </p-accordion-content>
   </p-accordion-panel>
 </p-accordion>

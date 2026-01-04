@@ -16,6 +16,7 @@
   --color-primary: #8a33fd;
   --color-text-base: #3c4242;
   --color-text-gray: #807d7e;
+  --color-text-menu-gray: #8a8989;
 }
 
 // PrimeNG компоненты - светлая тема
@@ -49,6 +50,90 @@ p-accordion-header {
   background: #f6f6f6 !important;
   border: none !important;
   color: #3c4242 !important; // Темный текст
+}
+
+// Глобальные стили для TieredMenu popup (рендерится в body)
+.p-tieredmenu.p-component {
+  background: #ffffff !important;
+  padding: 0 !important;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 6px !important;
+  transform: translateX(245px) !important;
+
+  .p-tieredmenu-root-list {
+    padding: 4px !important;
+  }
+
+  .p-tieredmenu-item {
+    margin: 0 !important;
+  }
+
+  .p-tieredmenu-item-content {
+    background: #ffffff !important;
+  }
+
+  .p-tieredmenu-item-link {
+    background: #ffffff !important;
+    padding: 8px 16px !important;
+    margin-top: 8px !important;
+    border-radius: 6px !important;
+    border: 1px solid transparent !important;
+    transition: all 0.3s ease-in-out !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    &:hover {
+      background: rgba(168, 85, 247, 0.08) !important;
+
+      .p-tieredmenu-item-label {
+        color: #8a33fd !important;
+      }
+
+      .p-tieredmenu-submenu-icon {
+        color: #8a33fd !important;
+      }
+    }
+
+    &:focus {
+      background: rgba(168, 85, 247, 0.12) !important;
+      box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.3) !important;
+    }
+
+    .p-tieredmenu-item-label {
+      font-family: 'Causten', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 18px !important;
+      color: #8a8989 !important;
+      transition: color 0.3s ease-in-out !important;
+    }
+
+    .p-tieredmenu-submenu-icon {
+      color: #8a8989 !important;
+      transition: color 0.3s ease-in-out !important;
+      margin-left: auto !important;
+    }
+  }
+
+  // Submenu (вложенное меню)
+  .p-submenu-list {
+    background: #ffffff !important;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 6px !important;
+    padding: 4px !important;
+
+
+    .p-tieredmenu-item-link {
+      font-size: 16px !important;
+
+      .p-tieredmenu-item-label {
+        font-size: 16px !important;
+        font-weight: 500 !important;
+      }
+    }
+  }
 }
 
 // Компоненты
@@ -138,16 +223,10 @@ p-accordion-header {
   }
 }
 
-// ============================================
-// PrimeNG 21 - Принудительная светлая тема
-// ============================================
-
-// Глобальные переопределения для светлой темы
 :root {
   color-scheme: light !important;
 }
 
-// Все PrimeNG компоненты - светлый фон
 .p-component {
   background: #ffffff;
   color: #3c4242 !important;
@@ -168,28 +247,6 @@ p-accordion-header {
   .p-accordioncontent {
     background: #ffffff !important;
     color: #3c4242 !important;
-  }
-}
-
-// TieredMenu
-.p-tieredmenu {
-  background: #ffffff !important;
-
-  .p-menuitem {
-    background: #ffffff !important;
-
-    .p-menuitem-link {
-      background: #ffffff !important;
-      color: #3c4242 !important;
-
-      &:hover {
-        background: #f6f6f6 !important;
-      }
-    }
-  }
-
-  .p-submenu-list {
-    background: #ffffff !important;
   }
 }
 
