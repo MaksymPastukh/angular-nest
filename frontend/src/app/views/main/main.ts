@@ -41,7 +41,7 @@ export class MainComponent implements OnInit {
       description: 'cool / colorful / comfy',
     },
     {
-      image: '/assets/images/shop-slide-2.webp',
+      image: '/assets/images/shop-slide-2.jpg',
       category: 'Jackets / Coats',
       title: 'Winter Collection',
       description: 'warm / stylish / trendy',

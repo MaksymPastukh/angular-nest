@@ -74,11 +74,6 @@
 
       @if (authStore.isAuthenticated()) {
         <div class="flex items-center gap-2 sm:gap-3">
-          <!-- User name display -->
-          <span class="hidden md:block text-sm font-medium text-gray-700">
-            Welcome, {{ authStore.userName() }}!
-          </span>
-
           <!-- Wishlist -->
           <a [routerLink]="['/']" class="flex-shrink-0">
             <svg
