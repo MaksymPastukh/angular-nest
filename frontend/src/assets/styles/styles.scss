@@ -1,16 +1,17 @@
 @use 'tailwindcss';
 @use 'fonts';
+@import 'variables'; // Импорт глобальных переменных
 // PrimeNG 21 - иконки
 @import 'primeicons/primeicons.css';
 
 
 @theme {
-  // Шрифты
+  // Шрифты (для Tailwind)
   --font-family: 'Causten', sans-serif;
   --font-coresans: 'CoreSans', sans-serif;
   --font-causten: 'Causten', sans-serif;
 
-  // Цвета
+  // Цвета (для Tailwind)
   --color-reggg: #344343;
   --color-primary: #8a33fd;
   --color-text-base: #3c4242;
