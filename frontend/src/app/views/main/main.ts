@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { CommonModule } from '@angular/common'
 import { Carousel } from 'primeng/carousel'
 import { GalleriaModule } from 'primeng/galleria'
-import { Button } from 'primeng/button'
 import { CategoriesCardComponent } from '../../shared/components/categories-card/categories-card'
 import { CategoriesService } from '../../shared/services/categories.service'
 import { Categories } from '../../shared/types/categories'
@@ -10,6 +9,7 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 import { ProductService } from '../../shared/services/product.service'
 import { ProductType } from '../../shared/product.type'
 import { RatingComponent } from '../../shared/components/rating/rating'
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -17,10 +17,10 @@ import { RatingComponent } from '../../shared/components/rating/rating'
     CommonModule,
     Carousel,
     GalleriaModule,
-    Button,
     CategoriesCardComponent,
     ProductCardComponent,
     RatingComponent,
+    RouterLink,
   ],
   templateUrl: './main.html',
   styleUrl: './main.scss',

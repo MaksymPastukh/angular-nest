@@ -15,6 +15,10 @@ export const routes: Routes = [
         canActivate: [authForwardGuard],
         data: { hideFooter: true },
       },
+      {
+        path: '',
+        loadChildren: () => import('./views/views.routes'),
+      },
     ],
   },
 ]

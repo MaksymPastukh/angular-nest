@@ -22,7 +22,12 @@
         <h4 class="font-coresans font-medium text-3xl mb-[40px]">{{ item.category }}</h4>
         <h2 class="font-coresans font-extrabold text-7xl leading-[<20%>] mb-[40px]">{{ item.title }}</h2>
         <p class="font-coresans font-medium text-3xl mb-[40px]">{{ item.description }}</p>
-        <p-button label="Shop Now" />
+        <a
+          routerLink="/shop"
+          class="inline-flex items-center justify-center w-3xs h-[64px] rounded-lg bg-white font-family font-bold text-black text-xl cursor-pointer transition-transform duration-150 ease-in-out hover:scale-97"
+        >
+          Shop Now
+        </a>
       </div>
     </div>
   </ng-template>

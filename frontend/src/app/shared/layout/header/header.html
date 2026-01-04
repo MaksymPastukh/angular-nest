@@ -39,7 +39,7 @@
             class="flex items-center gap-6 lg:gap-8 xl:gap-10 text-base font-medium text-gray-800"
           >
             <li>
-              <a [routerLink]="['/']" class="hover:text-purple-600 transition-colors">Shop</a>
+              <a routerLink="/shop" routerLinkActive="!text-purple-600" class="hover:text-purple-600 transition-colors">Shop</a>
             </li>
             <li><a [routerLink]="['/']" class="hover:text-purple-600 transition-colors">Men</a></li>
             <li>
@@ -75,7 +75,9 @@
       @if (authStore.isAuthenticated()) {
         <div class="flex items-center gap-2 sm:gap-3">
           <!-- Wishlist -->
-          <a [routerLink]="['/']" class="flex-shrink-0">
+          <a [routerLink]="['/']"
+             class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+          >
             <svg
               width="44"
               height="44"
@@ -98,7 +100,10 @@
           </a>
 
           <!-- Profile -->
-          <a [routerLink]="['/']" class="flex-shrink-0">
+          <a
+            [routerLink]="['/']"
+            class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+          >
             <svg
               width="44"
               height="44"
@@ -118,7 +123,9 @@
           </a>
 
           <!-- Cart -->
-          <a [routerLink]="['/']" class="flex-shrink-0">
+          <a [routerLink]="['/']"
+             class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+          >
             <svg
               width="44"
               height="44"
