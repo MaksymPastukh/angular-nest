@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ProductType } from '../../product.type'
 
 @Component({
-  selector: 'app-product-card',
+  selector: 'product-card',
   imports: [CommonModule],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',

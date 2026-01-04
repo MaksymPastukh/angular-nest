@@ -1,5 +1,8 @@
 @use 'tailwindcss';
 @use 'fonts';
+// PrimeNG 21 - иконки
+@import 'primeicons/primeicons.css';
+
 
 @theme {
   // Шрифты
@@ -14,22 +17,23 @@
   --color-text-gray: #807d7e;
 }
 
-// PrimeNG компоненты
+// PrimeNG компоненты - светлая тема
 p-accordion-panel {
   border-top: 1px solid rgba(190, 188, 189, 0.4) !important;
   border-bottom: 1px solid rgba(190, 188, 189, 0.4) !important;
+  background-color: #ffffff !important; // Белый фон
 }
 
 p-accordion-header {
-  background-color: #3c4242 !important;
-  color: var(--primary-color) !important;
+  background-color: #ffffff !important; // Белый фон вместо темного
+  color: #3c4242 !important; // Темный текст на светлом фоне
 }
 
 .p-accordioncontent-content {
-  background-color: #3c4242 !important;
+  background-color: #ffffff !important; // Белый фон вместо темного
 
   p {
-    color: #f6f6f6;
+    color: #3c4242; // Темный текст на светлом фоне
   }
 }
 
@@ -37,11 +41,13 @@ p-accordion-header {
   height: 44px !important;
   align-items: center !important;
   border: none !important;
+  background: #ffffff !important; // Белый фон
 }
 
 .p-inputtext {
   background: #f6f6f6 !important;
   border: none !important;
+  color: #3c4242 !important; // Темный текст
 }
 
 // Компоненты
@@ -130,3 +136,127 @@ p-accordion-header {
     transform: translateY(0);
   }
 }
+
+// ============================================
+// PrimeNG 21 - Принудительная светлая тема
+// ============================================
+
+// Глобальные переопределения для светлой темы
+:root {
+  color-scheme: light !important;
+}
+
+// Все PrimeNG компоненты - светлый фон
+.p-component {
+  background: #ffffff;
+  color: #3c4242 !important;
+}
+
+// Accordion
+.p-accordion {
+  .p-accordionheader a {
+    background: #ffffff !important;
+    color: #3c4242 !important;
+
+    &:hover {
+      background: #f6f6f6 !important;
+    }
+  }
+
+
+  .p-accordioncontent {
+    background: #ffffff !important;
+    color: #3c4242 !important;
+  }
+}
+
+// TieredMenu
+.p-tieredmenu {
+  background: #ffffff !important;
+
+  .p-menuitem {
+    background: #ffffff !important;
+
+    .p-menuitem-link {
+      background: #ffffff !important;
+      color: #3c4242 !important;
+
+      &:hover {
+        background: #f6f6f6 !important;
+      }
+    }
+  }
+
+  .p-submenu-list {
+    background: #ffffff !important;
+  }
+}
+
+// Carousel
+.p-carousel {
+  background: transparent !important;
+
+  .p-carousel-content {
+    background: transparent !important;
+  }
+
+  .p-carousel-indicators {
+    .p-carousel-indicator button {
+      background: #e0e0e0 !important;
+
+      &:hover {
+        background: #c0c0c0 !important;
+      }
+    }
+
+    .p-carousel-indicator-active button {
+      background: #8a33fd !important;
+    }
+  }
+}
+
+// Button
+.p-button {
+  background: #8a33fd !important;
+  border-color: #8a33fd !important;
+  color: #ffffff !important;
+
+  &:hover {
+    background: #7a2ee0 !important;
+    border-color: #7a2ee0 !important;
+  }
+
+  &.p-button-secondary {
+    background: #f6f6f6 !important;
+    color: #3c4242 !important;
+    border-color: #e0e0e0 !important;
+
+    &:hover {
+      background: #e0e0e0 !important;
+    }
+  }
+
+  &.p-button-text {
+    background: transparent !important;
+    color: #3c4242 !important;
+    border-color: transparent !important;
+  }
+}
+
+// Overlay панели
+.p-overlaypanel,
+.p-dialog,
+.p-sidebar {
+  background: #ffffff !important;
+  color: #3c4242 !important;
+}
+
+// Toast уведомления
+.p-toast {
+  .p-toast-message {
+    background: #ffffff !important;
+    color: #3c4242 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+

@@ -1,120 +1,180 @@
+:host {
+  display: block;
+}
+
 :host ::ng-deep {
+  // CSS переменные
+  --filter-border-color: #bebcbd;
+  --filter-text-color: #807d7e;
+  --filter-text-secondary: #8a8989;
+  --filter-primary-color: #a855f7;
+  --filter-slider-bg: #ccc;
+  --filter-font-family: "Causten", sans-serif;
 
-
+  // Основной контейнер аккордеона
   .p-accordion {
-    border-left: 1px solid #bebcbd;
-    border-right: 1px solid #bebcbd;
-    border-bottom: 1px solid #bebcbd;
+    background: white;
+    border-left: 1px solid var(--filter-border-color);
+    border-right: 1px solid var(--filter-border-color);
+    border-bottom: 1px solid var(--filter-border-color);
     border-radius: 0 0 2px 2px;
-    font-family: "Causten", sans-serif;
-    color: #807d7e;
+    font-family: var(--filter-font-family);
+    color: var(--filter-text-color);
 
+    // Панели аккордеона
     .p-accordionpanel {
-      overflow: hidden!important;
-      &:last-child {
-        animation: none!important;
-        transition: none!important;
-        border-bottom: 0;
-        overflow: visible!important;
+      background: white;
+      // Убираем overflow: hidden чтобы submenu был виден
 
-        .p-accordionheader {
-          &:first-child {
-            cursor: auto;
-            .p-icon {
-              display: none !important;
-            }
-
-            &:before {
-              display: block;
-              content: '';
-              position: absolute;
-              right: 20px;
-              top: 50%;
-              transform: translateY(-50%);
-              width: 17px;
-              height: 20px;
-              background-image: url("data:image/svg+xml,%3Csvg width='17' height='20' viewBox='0 0 17 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.83333 6.33333L2.83333 1.75M2.83333 18.25L2.83333 10M13.8333 18.25L13.8333 10M8.33333 18.25V13.6667M8.33333 10V1.75M13.8333 6.33333L13.8333 1.75M1 6.33333H4.66667M6.5 13.6667H10.1667M12 6.33333L15.6667 6.33333' stroke='%23807D7E' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
-              background-size: contain;
-              background-repeat: no-repeat;
-            }
-          }
-        }
-      }
-
-      &:first-child {
-        overflow: visible!important;
-        z-index: 1000;
-        .p-accordionheader {
-          &:first-child {
-            cursor: auto;
-            .p-icon {
-              display: none !important;
-            }
-
-            &:before {
-              display: block;
-              content: '';
-              position: absolute;
-              right: 20px;
-              top: 50%;
-              transform: translateY(-50%);
-              width: 17px;
-              height: 20px;
-              background-image: url("data:image/svg+xml,%3Csvg width='17' height='20' viewBox='0 0 17 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.83333 6.33333L2.83333 1.75M2.83333 18.25L2.83333 10M13.8333 18.25L13.8333 10M8.33333 18.25V13.6667M8.33333 10V1.75M13.8333 6.33333L13.8333 1.75M1 6.33333H4.66667M6.5 13.6667H10.1667M12 6.33333L15.6667 6.33333' stroke='%23807D7E' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
-              background-size: contain;
-              background-repeat: no-repeat;
-            }
-          }
-        }
-      }
-
+      // Заголовок панели
       .p-accordionheader {
-        font-weight: 600;
-        font-size: 22px;
+        background: white;
+
+        a {
+          background: white !important;
+          color: var(--filter-text-color) !important;
+          font-weight: 600;
+          font-size: 22px;
+        }
       }
 
+      // Содержимое панели
       .p-accordioncontent {
-        overflow: visible!important;
+        background: white !important;
+        color: var(--filter-text-color) !important;
+        // Убираем overflow: visible чтобы анимация работала плавно
+        transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out !important;
+
         .p-accordioncontent-content {
-          .p-tieredmenu {
-            border: none;
+          background: white;
+          padding: 0 20px 20px 20px !important;
+        }
+      }
 
+      // Overflow: visible только для открытых панелей (когда контент виден)
+      &[data-p-active="true"] {
+        .p-accordioncontent {
+          overflow: visible !important; // Для submenu, но только когда открыто
+        }
+      }
 
-            .p-tieredmenu-item-link {
-              padding-right: 3px;
-              .p-tieredmenu-item-label {
-                font-family: "Causten", sans-serif;
-                font-weight: 500;
-                font-size: 18px;
-                color: #8a8989;
-              }
-            }
+      // Первая панель (Filter) с иконкой настроек
+      &:first-child {
+        z-index: 1000; // Высокий z-index для submenu
 
+        .p-accordionheader:first-child {
+          cursor: auto;
 
+          .p-icon {
+            display: none !important;
           }
-        }
-
-        .p-slider-range {
-          background-color: #a855f7; // фиолетовая линия
-          height: 4px;
-        }
-
-        .p-slider-handle {
-          background-color: #a855f7; // фиолетовые кружки
 
           &::before {
-            background-color: #a855f7;
+            display: block;
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 17px;
+            height: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg width='17' height='20' viewBox='0 0 17 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.83333 6.33333L2.83333 1.75M2.83333 18.25L2.83333 10M13.8333 18.25L13.8333 10M8.33333 18.25V13.6667M8.33333 10V1.75M13.8333 6.33333L13.8333 1.75M1 6.33333H4.66667M6.5 13.6667H10.1667M12 6.33333L15.6667 6.33333' stroke='%23807D7E' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
           }
+        }
+      }
 
-          &:focus-visible  {
-            outline: #a855f7;
+      // Последняя панель (Dress Style) - можно закрывать, submenu виден
+      &:last-child {
+        border-bottom: 0;
+        z-index: 999; // Чуть ниже первой панели для submenu
+      }
+    }
+
+    // TieredMenu стили
+    .p-tieredmenu {
+      background: white !important;
+      border: none;
+      padding: 0 !important; // Убираем лишний padding
+
+      .p-tieredmenu-root-list {
+        padding: 0 !important; // Убираем padding у списка
+      }
+
+      .p-tieredmenu-item-content {
+        background: white !important;
+      }
+
+      .p-tieredmenu-item-link {
+        background: white !important;
+        padding-right: 3px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(168, 85, 247, 0.08) !important; // Легкая фиолетовая подсветка
+
+          .p-tieredmenu-item-label {
+            color: #a855f7 !important; // Фиолетовый текст при hover
           }
         }
 
-        .p-slider {
-          background-color: #ccc; // серая линия позади
-          height: 4px;
-          border-radius: 4px;
+        &:focus {
+          background: rgba(168, 85, 247, 0.12) !important;
+          box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.3);
+        }
+
+        .p-tieredmenu-item-label {
+          font-family: var(--filter-font-family);
+          font-weight: 500;
+          font-size: 18px;
+          color: var(--filter-text-secondary);
+          transition: color 0.2s ease;
+        }
+      }
+
+      // Submenu должен быть виден поверх всех элементов
+      .p-submenu-list {
+        background: white !important;
+        position: absolute !important;
+        z-index: 10000 !important; // Очень высокий z-index чтобы быть поверх всего
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 6px !important;
+        padding: 4px !important;
+        min-width: 180px !important;
+      }
+    }
+
+    // Slider стили
+    .p-slider {
+      background-color: var(--filter-slider-bg);
+      height: 4px;
+      border-radius: 4px;
+
+      .p-slider-range {
+        background-color: var(--filter-primary-color);
+        height: 4px;
+      }
+
+      .p-slider-handle {
+        background-color: var(--filter-primary-color);
+        border: 2px solid var(--filter-primary-color);
+
+        &::before {
+          background-color: var(--filter-primary-color);
+        }
+
+        &:focus-visible {
+          outline-color: var(--filter-primary-color);
+          box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.25);
+        }
+
+        &:hover {
+          background-color: var(--filter-primary-color);
+          border-color: var(--filter-primary-color);
+          transform: scale(1.1);
         }
       }
     }

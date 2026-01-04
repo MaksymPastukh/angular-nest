@@ -6,8 +6,8 @@ import {provideHttpClient, withInterceptors} from '@angular/common/http'
 import {AuthInterceptor} from './core/auth/services/auth.interceptor'
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async'
 import {providePrimeNG} from 'primeng/config'
-import Aura from '@primeuix/themes/aura'
 import {MessageService} from 'primeng/api'
+import {AuraLight} from '../assets/theme/aura-light';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,18 +15,20 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes,
       withViewTransitions(),
       withInMemoryScrolling({
-        scrollPositionRestoration: 'top', // или 'enabled'
+        scrollPositionRestoration: 'top',
       })),
     provideHttpClient(withInterceptors([AuthInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: AuraLight,
         options: {
-          darkModeSelector: '.dark-mode',
-        },
-      },
+          prefix: 'p',
+          darkModeSelector: false, // Отключаем темный режим
+          cssLayer: false,
+        }
+      }
     }),
-    MessageService, // Глобальный провайдер для уведомлений
+    MessageService,
   ],
 }

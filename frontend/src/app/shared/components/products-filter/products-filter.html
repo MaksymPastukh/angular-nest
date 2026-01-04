@@ -1,5 +1,5 @@
 <p-accordion
-  class="flex flex-col w-[295px] !text-[#807d7e]"
+  class="flex flex-col w-[295px]"
   [value]="openedPanels"
   [multiple]="true"
   (valueChange)="onAccordionChange($event)"
@@ -7,60 +7,111 @@
   <p-accordion-panel value="0">
     <p-accordion-header>Filter</p-accordion-header>
     <p-accordion-content>
-      <p-tieredMenu [model]="items" styleClass="custom-tiered-menu" appendTo="body"></p-tieredMenu>
+      <p-tieredMenu [model]="items" [style]="{'border': 'none'}"></p-tieredMenu>
     </p-accordion-content>
   </p-accordion-panel>
+
   <p-accordion-panel value="1">
     <p-accordion-header>Price</p-accordion-header>
     <p-accordion-content>
       <div class="flex flex-col items-center mt-[42px]">
         <p-slider
-          [(ngModel)]="priceRange"
+          class="w-[236px]"
+          [(ngModel)]="priceRangeValues"
           [min]="min"
           [max]="max"
           [range]="true"
-          [style]="{ width: '230px' }"
-          [styleClass]="'custom-slider'"
-        ></p-slider>
-        <div class="flex gap-[30px] font-medium font-family text-base mt-[30px] mb-[35px]">
-          <div class="border border-[#bebcbd] flex justify-center items-end rounded-lg w-[97px] h-[32px]">
-            ${{ priceRange[0] }}
+          (onChange)="onPriceChange($event.values)"
+        />
+        <div class="flex gap-[30px] font-medium text-base mt-[30px] mb-[35px]">
+          <div class="relative">
+            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-[#807d7e] pointer-events-none">$</span>
+            <input
+              type="number"
+              [(ngModel)]="priceRangeValues[0]"
+              [min]="min"
+              [max]="priceRangeValues[1]"
+              (input)="onMinPriceInput($event)"
+              (blur)="validatePriceRange()"
+              class="border border-[#bebcbd] flex justify-center items-center rounded-lg w-[97px] h-[32px] text-[#807d7e] text-center pl-7 pr-2 outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition-all"
+              placeholder="Min"
+            />
           </div>
-          <div class="border border-[#bebcbd] flex justify-center items-end rounded-lg w-[97px] h-[32px]">
-            ${{ priceRange[1] }}
+          <div class="relative">
+            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-[#807d7e] pointer-events-none">$</span>
+            <input
+              type="number"
+              [(ngModel)]="priceRangeValues[1]"
+              [min]="priceRangeValues[0]"
+              [max]="max"
+              (input)="onMaxPriceInput($event)"
+              (blur)="validatePriceRange()"
+              class="border border-[#bebcbd] flex justify-center items-center rounded-lg w-[97px] h-[32px] text-[#807d7e] text-center pl-6 pr-2 outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition-all"
+              placeholder="Max"
+            />
           </div>
         </div>
       </div>
     </p-accordion-content>
   </p-accordion-panel>
+
   <p-accordion-panel value="2">
     <p-accordion-header>Colors</p-accordion-header>
     <p-accordion-content>
-      <div class="grid grid-cols-4 gap-4 mt-[20px]">
+      <div class="grid grid-cols-4 gap-4 mt-[20px] mb-[20px] w-full">
         @for (color of colors; track color.name) {
-          <button class="flex flex-col items-center space-y-1 focus:outline-none cursor-pointer"
-                  (click)="selectColor(color.name)">
-            <div class="w-[36px] h-[36px] rounded-xl border-2 transition duration-200"
-                 [style]="{backgroundColor: color.value}"
-                 [classList]="{'border-black': selectorColor === color.name,
-                             'border-transparent': selectorColor !== color.name}"></div>
-            <span class="text-sm color-gray font-semibold">{{ color.name }}</span>
+          <button
+            type="button"
+            class="flex flex-col items-center space-y-1 focus:outline-none cursor-pointer group"
+            (click)="selectColor(color.name)"
+            [attr.aria-label]="'Select ' + color.name + ' color'"
+            [attr.aria-pressed]="selectedColors().includes(color.name)"
+          >
+            <div
+              [class]="'w-[36px] h-[36px] rounded-xl transition-all duration-200 relative ' +
+                (selectedColors().includes(color.name)
+                  ? 'shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] scale-95'
+                  : 'shadow-[0_1px_3px_rgba(0,0,0,0.1)]')"
+              [style.background-color]="color.value"
+              [style.border]="'0.97px solid ' + (selectedColors().includes(color.name) ? '#f4f1f1' : '#f4f1f1')"
+            >
+              @if (selectedColors().includes(color.name)) {
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <svg
+                    class="w-5 h-5"
+                    [class.text-gray-800]="color.value === '#ffffff'"
+                    [class.text-white]="color.value !== '#ffffff'"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              }
+            </div>
+            <span class="text-sm text-[#8a8989] font-family font-semibold transition-colors">{{ color.name }}</span>
           </button>
-
         }
       </div>
     </p-accordion-content>
   </p-accordion-panel>
+
   <p-accordion-panel value="3">
     <p-accordion-header>Size</p-accordion-header>
     <p-accordion-content>
-      <div class="grid grid-cols-3 mt-[20px] gap-3">
-        @for (size of sizes; track size) {
+      <div class="grid grid-cols-3 mt-[20px] mb-[20px] gap-5 w-full">
+        @for (size of sizes; track $index) {
           <button
+            type="button"
             (click)="toggleSize(size)"
-            class="border border-[#bebcbd] leading-none font-semibold flex items-center justify-center  rounded-lg w-[62px] h-[32px] text-sm transition-all duration-200"
-            [class]="{'text-white bg-[#bebcbd]': selectedSizes.includes(size),
-                        'text-[#3c4242] hover:border-[#bebcbd]': !selectedSizes.includes(size)}"
+            class="border border-gray-400 leading-none font-family font-medium cursor-pointer flex items-center justify-center rounded-lg h-[32px] text-sm transition-all duration-200 hover:border-purple-500"
+            [class.bg-purple-600]="selectedSizes().includes(size)"
+            [class.text-white]="selectedSizes().includes(size)"
+            [class.text-gray-600]="!selectedSizes().includes(size)"
+            [class.bg-white]="!selectedSizes().includes(size)"
+            [attr.aria-label]="'Select size ' + size"
+            [attr.aria-pressed]="selectedSizes().includes(size)"
           >
             {{ size }}
           </button>
@@ -68,10 +119,11 @@
       </div>
     </p-accordion-content>
   </p-accordion-panel>
+
   <p-accordion-panel value="4">
     <p-accordion-header>Dress Style</p-accordion-header>
     <p-accordion-content>
-      <p-tieredMenu class="mt-[20px]" [model]="itemsStyle" styleClass="custom-tiered-menu" appendTo="body"></p-tieredMenu>
+      <p-tieredMenu class="mt-[20px]" [model]="itemsStyle" [style]="{'border': 'none'}"></p-tieredMenu>
     </p-accordion-content>
   </p-accordion-panel>
 </p-accordion>
