@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 
 /**
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
     // Подключаем модули приложения
     UsersModule, // Модуль управления пользователями
     AuthModule, // Модуль аутентификации и авторизации
+    ProductsModule, // Модуль управления продуктами магазина
   ],
   controllers: [AppController],
   providers: [AppService],
