@@ -18,6 +18,7 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "vsicons.presets.nestjs": true
 }
 
