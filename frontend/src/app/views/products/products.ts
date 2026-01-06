@@ -4,12 +4,14 @@ import {ProductFilterComponent} from '../../shared/components/products-filter/pr
 import {ProductType} from '../../shared/product.type';
 import {ProductService} from '../../shared/services/product.service';
 import {FilterState} from '../../shared/types/products-filter.types';
+import {TableBestPrice} from '../../shared/components/table-best-price/table-best-price';
 
 @Component({
   selector: 'app-products',
   imports: [
     ProductCardComponent,
     ProductFilterComponent,
+    TableBestPrice,
   ],
   templateUrl: './products.html',
   styleUrl: './products.scss',
@@ -33,7 +35,6 @@ export class Products implements OnInit {
     this.filteredProducts = this.products.filter(product =>
       // Фильтр по цене
       product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
-      // TODO: Добавить фильтры по размеру и цвету когда ProductType будет расширен
     );
 
     // Обновляем название категории
