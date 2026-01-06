@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, signal} from '@angular/core'
+import {ChangeDetectionStrategy, Component, input} from '@angular/core'
 import { CommonModule } from '@angular/common'
 import {RouterLink} from '@angular/router';
 import {TableBestPriceInterface} from '../../../views/types/table-best-price.interface';
@@ -13,5 +13,5 @@ import {TableBestPriceInterface} from '../../../views/types/table-best-price.int
 
 
 export class TableBestPrice {
-  @Input('itemsTableBestPrice') itemsTableBestPrice = signal<TableBestPriceInterface[]>([]);
+  itemsTableBestPrice = input<TableBestPriceInterface[]>([]);
 }

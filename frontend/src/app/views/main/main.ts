@@ -127,6 +127,5 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.categoriesMen = this.categoryService.getCategoriesMen()
     this.categoriesWoman = this.categoryService.getCategoriesWoman()
-    this.productsInTheLimelight = this.productService.getProductInTheLimelight()
   }
 }

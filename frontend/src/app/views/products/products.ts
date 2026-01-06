@@ -1,8 +1,7 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component} from '@angular/core';
 import {ProductCardComponent} from '../../shared/components/product-card/product-card';
 import {ProductFilterComponent} from '../../shared/components/products-filter/products-filter';
 import {ProductType} from '../../shared/product.type';
-import {ProductService} from '../../shared/services/product.service';
 import {FilterState} from '../../shared/types/products-filter.types';
 import {TableBestPrice} from '../../shared/components/table-best-price/table-best-price';
 import {TableBestPriceInterface} from '../types/table-best-price.interface';
@@ -17,8 +16,7 @@ import {TableBestPriceInterface} from '../types/table-best-price.interface';
   templateUrl: './products.html',
   styleUrl: './products.scss',
 })
-export class Products implements OnInit {
-  productService = inject(ProductService);
+export class Products {
 
   products: ProductType[] = [];
   filteredProducts: ProductType[] = [];
@@ -51,10 +49,6 @@ export class Products implements OnInit {
     },
   ]
 
-  ngOnInit() {
-    this.products = this.productService.getProduct();
-    this.filteredProducts = this.products;
-  }
 
   onFilterChange(filters: FilterState) {
     console.log('Filters applied:', filters);
