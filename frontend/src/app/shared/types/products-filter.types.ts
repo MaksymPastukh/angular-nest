@@ -1,23 +1,14 @@
-export interface ColorOption {
-  name: string;
-  value: string;
-}
+/**
+ * @deprecated Используйте типы из filter.types.ts
+ * Этот файл оставлен для обратной совместимости
+ */
 
-export interface FilterState {
-  priceRange: number[];
-  selectedSizes: string[];
-  selectedColors: string[]; // Изменено с selectedColor на selectedColors (массив)
-  selectedCategories: string[];
-  selectedStyles: string[];
-}
-
-export interface CategoryFilter {
-  category: string;
-  brand: string;
-}
-
-export interface StyleFilter {
-  style: string;
-  brand: string;
-}
-
+// Реэкспорт из нового файла
+export type {
+  ColorOption,
+  FilterState,
+  SelectedFilters,
+  FilterData,
+  CategoryFilter,
+  StyleFilter
+} from './filter.types';

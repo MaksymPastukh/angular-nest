@@ -10,7 +10,7 @@ import { ProductType } from '../../product.type'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
-  @Input() productIn!: ProductType
+  @Input('product') productIn!: ProductType
 
   liked: boolean = false
 

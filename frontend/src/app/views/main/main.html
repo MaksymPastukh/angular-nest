@@ -23,7 +23,7 @@
         <h2 class="font-coresans font-extrabold text-7xl leading-[<20%>] mb-[40px]">{{ item.title }}</h2>
         <p class="font-coresans font-medium text-3xl mb-[40px]">{{ item.description }}</p>
         <a
-          routerLink="/shop"
+          routerLink="/products"
           class="inline-flex items-center justify-center w-3xs h-[64px] rounded-lg bg-white font-family font-bold text-black text-xl cursor-pointer transition-transform duration-150 ease-in-out hover:scale-97"
         >
           Shop Now
@@ -375,7 +375,7 @@
   <div class="w-full flex justify-center">
     <div class="flex flex-wrap gap-[50px]">
       @for (productIn of productsInTheLimelight; track $index) {
-        <product-card [productIn]="productIn"></product-card>
+        <product-card [product]="productIn"></product-card>
       }
     </div>
   </div>

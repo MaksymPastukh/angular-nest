@@ -3,10 +3,32 @@
   <div class="ml-[40px] mt-10 flex flex-col z-1">
     <h2 class="font-bold text-2xl font-family color-active">{{ categoryName }} Clothing</h2>
     <div class="flex flex-wrap mt-10 gap-x-[20px] gap-y-[24px]">
-      @for (productIn of filteredProducts; track $index) {
-        <product-card  class="w-[calc((100%-60px)/4)]" [productIn]="productIn"/>
+      @if (productStore.isLoading()) {
+        <div class="w-full text-center py-8">
+          <p class="text-lg text-gray-600">Загрузка продуктов...</p>
+        </div>
+      } @else if (productStore.error()) {
+        <div class="w-full text-center py-8">
+          <p class="text-lg text-red-600">Ошибка: {{ productStore.error() }}</p>
+          <button
+            (click)="productStore.loadProducts()"
+            class="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Попробовать снова
+          </button>
+        </div>
+      } @else if ((productStore.filteredProducts() || []).length === 0) {
+        <div class="w-full text-center py-8">
+          <p class="text-lg text-gray-600">Продукты не найдены</p>
+          <p class="text-sm text-gray-500 mt-2">Попробуйте изменить фильтры или проверьте подключение к серверу</p>
+        </div>
+      } @else {
+        @for (product of (productStore.filteredProducts() || []); track product.id || product._id) {
+          <product-card class="w-[calc((100%-60px)/4)]" [product]="product" />
+        }
       }
     </div>
   </div>
+
 </section>
 <table-best-price [itemsTableBestPrice]="itemsTableBestPrice"/>
