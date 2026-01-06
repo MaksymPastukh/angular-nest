@@ -20,7 +20,7 @@
 
     <!-- Rows -->
     <div class="divide-y divide-gray-200 font-causten">
-      @for (item of items(); track $index) {
+      @for (item of itemsTableBestPrice(); track $index) {
         <div class="grid grid-cols-[1fr_220px] hover:bg-[#fafafa] transition-colors text-2xl">
           <!-- Name -->
           <div class="relative px-6 py-4 text-gray-600">
@@ -40,7 +40,7 @@
 
   <!-- ===== Mobile ===== -->
   <div class="md:hidden space-y-4 font-causten">
-    @for (item of items(); track $index) {
+    @for (item of itemsTableBestPrice(); track $index) {
       <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-start">
         <p class="text-gray-700 text-sm leading-snug pr-4">{{ item.title }}</p>
         <span class="font-semibold text-[#3c4242] whitespace-nowrap">₹ {{ item.price }}</span>

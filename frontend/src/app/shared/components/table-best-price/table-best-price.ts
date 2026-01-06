@@ -1,12 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, signal} from '@angular/core'
 import { CommonModule } from '@angular/common'
 import {RouterLink} from '@angular/router';
-
-interface Item {
-  title: string;
-  price: number;
-  link: string;
-}
+import {TableBestPriceInterface} from '../../../views/types/table-best-price.interface';
 
 @Component({
   selector: 'table-best-price',
@@ -18,31 +13,5 @@ interface Item {
 
 
 export class TableBestPrice {
-  readonly items = signal<Item[]>([
-    {
-      title: 'Pick Any 4- Womens Plain T-shirt Combo',
-      price: 1099,
-      link: '/#',
-    },
-    {
-      title: 'Pick Any 4 - Plain Womens Boxer Combo',
-      price: 1099,
-      link: '/#',
-    },
-    {
-      title: 'Pick Any 4 - Women Plain Full Sleeve T-shirt Combo',
-      price: 1399,
-      link: '/#',
-    },
-    {
-      title: 'Multicolor Checkered Long Casual Shirts for Women',
-      price: 499,
-      link: '/#',
-    },
-    {
-      title: 'Pick Any 2: Plain Boxy Casual Shirts for Women Combo',
-      price: 799,
-      link: '/#',
-    },
-  ]);
+  @Input('itemsTableBestPrice') itemsTableBestPrice = signal<TableBestPriceInterface[]>([]);
 }

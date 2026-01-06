@@ -1,10 +1,11 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {ProductCardComponent} from '../../shared/components/product-card/product-card';
 import {ProductFilterComponent} from '../../shared/components/products-filter/products-filter';
 import {ProductType} from '../../shared/product.type';
 import {ProductService} from '../../shared/services/product.service';
 import {FilterState} from '../../shared/types/products-filter.types';
 import {TableBestPrice} from '../../shared/components/table-best-price/table-best-price';
+import {TableBestPriceInterface} from '../types/table-best-price.interface';
 
 @Component({
   selector: 'app-products',
@@ -22,6 +23,33 @@ export class Products implements OnInit {
   products: ProductType[] = [];
   filteredProducts: ProductType[] = [];
   categoryName: string = 'All';
+  readonly itemsTableBestPrice: TableBestPriceInterface[] = [
+    {
+      title: 'Pick Any 4- Womens Plain T-shirt Combo',
+      price: 1099,
+      link: '/#',
+    },
+    {
+      title: 'Pick Any 4 - Plain Womens Boxer Combo',
+      price: 1099,
+      link: '/#',
+    },
+    {
+      title: 'Pick Any 4 - Women Plain Full Sleeve T-shirt Combo',
+      price: 1399,
+      link: '/#',
+    },
+    {
+      title: 'Multicolor Checkered Long Casual Shirts for Women',
+      price: 499,
+      link: '/#',
+    },
+    {
+      title: 'Pick Any 2: Plain Boxy Casual Shirts for Women Combo',
+      price: 799,
+      link: '/#',
+    },
+  ]
 
   ngOnInit() {
     this.products = this.productService.getProduct();
