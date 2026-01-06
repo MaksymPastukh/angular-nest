@@ -1,0 +1,25 @@
+@use '../../../../assets/styles/variables' as *;
+
+:host {
+  display: block;
+}
+
+:host ::ng-deep .p-accordion {
+  .p-accordionpanel {
+    background: $color-background-dark!important;
+    .p-accordionheader {
+      background: $color-background-dark!important;
+    }
+
+    .p-accordioncontent {
+      background: $color-background-dark!important;
+
+      .p-accordioncontent-content{
+        background: $color-background-dark!important;
+      }
+      .p-accordioncontent-content p{
+        color: white!important;
+      }
+    }
+  }
+}

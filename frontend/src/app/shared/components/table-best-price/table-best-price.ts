@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, signal} from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { Categories } from '../../types/categories'
 import {RouterLink} from '@angular/router';
 
 interface Item {
