@@ -1,5 +1,4 @@
 <p-accordion
-  styleClass="filter-accordion"
   class="flex flex-col w-2xs"
   [value]="openedPanels"
   [multiple]="true"
@@ -112,7 +111,7 @@
                 </div>
               }
             </div>
-            <span class="text-sm text-[#8a8989] font-family font-semibold transition-colors">{{ color.name }}</span>
+            <span class="text-sm text-[#8a8989] font-causten font-bold transition-colors">{{ color.name }}</span>
           </button>
         }
       </div>
@@ -127,7 +126,7 @@
           <button
             type="button"
             (click)="toggleSize(size)"
-            class="border border-gray-400 leading-none font-family font-medium cursor-pointer flex items-center justify-center rounded-lg h-[32px] text-sm transition-all duration-200 hover:border-purple-500"
+            class="border border-gray-400 leading-none font-coresans font-bold cursor-pointer flex items-center justify-center rounded-lg h-[32px] text-sm transition-all duration-200 hover:border-purple-500"
             [class.bg-purple-600]="selectedSizes().includes(size)"
             [class.text-white]="selectedSizes().includes(size)"
             [class.text-gray-600]="!selectedSizes().includes(size)"
@@ -153,7 +152,7 @@
       @for (itemStyle of itemsStyle; track $index) {
         <button
           type="button"
-          class="w-full text-left mt-2 px-2 py-1 rounded-lg font-causten text-lg font-semibold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
+          class="w-full text-left mt-2 px-2 py-1 rounded-lg text-lg font-causten font-bold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
           (click)="styleMenu.toggle($event)"
         >
           <span>{{ itemStyle.label }}</span>
