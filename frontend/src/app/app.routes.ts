@@ -1,7 +1,7 @@
-import { Routes } from '@angular/router';
-import {authForwardGuard} from './core/auth/guard/auth-forward.guard';
-import {LayoutComponent} from './shared/layout/layout';
-import {MainComponent} from './views/main/main';
+import { Routes } from '@angular/router'
+import { authForwardGuard } from './core/auth/guard/auth-forward.guard'
+import { LayoutComponent } from './shared/layout/layout'
+import { MainComponent } from './views/main/main'
 
 export const routes: Routes = [
   {
@@ -15,6 +15,10 @@ export const routes: Routes = [
         canActivate: [authForwardGuard],
         data: { hideFooter: true },
       },
+      {
+        path: '',
+        loadChildren: () => import('./views/views.routes'),
+      },
     ],
   },
-];
+]

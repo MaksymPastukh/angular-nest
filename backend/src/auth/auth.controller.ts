@@ -1,15 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -100,6 +93,39 @@ export class AuthController {
   }
 
   /**
+   * Обновление access токена с помощью refresh токена
+   * POST /auth/refresh
+   *
+   * Принимает refresh токен и выдаёт новую пару токенов
+   *
+   * @param refreshTokenDto - Refresh токен
+   * @returns Новая пара access_token и refresh_token
+   *
+   * Пример запроса:
+   * POST /auth/refresh
+   * {
+   *   "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   * }
+   *
+   * Пример ответа:
+   * {
+   *   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+   *   "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+   *   "user": {
+   *     "id": "507f1f77bcf86cd799439011",
+   *     "email": "user@example.com",
+   *     "firstName": "Иван",
+   *     "role": "user"
+   *   }
+   * }
+   */
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshTokens(refreshTokenDto.refresh_token);
+  }
+
+  /**
    * Получение профиля текущего пользователя
    * GET /auth/profile
    *
@@ -128,8 +154,8 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@CurrentUser() user: any) {
-    return this.authService.getProfile(user.id);
+  async getProfile(@CurrentUser('id') userId: string) {
+    return this.authService.getProfile(userId);
   }
 
   /**
@@ -144,7 +170,7 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getMe(@CurrentUser() user: any) {
+  getMe(@CurrentUser() user: any) {
     return {
       message: 'JWT токен валиден',
       user,

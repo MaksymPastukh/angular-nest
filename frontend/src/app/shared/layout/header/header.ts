@@ -1,21 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { FloatLabel } from 'primeng/floatlabel';
-import { FormsModule } from '@angular/forms';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
-import { AuthService } from '../../../core/auth/services/auth.service';
-import { Subscription } from 'rxjs';
-import { ProfileInterface } from '../../../core/auth/types/profile.interface';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { RouterLink, RouterLinkActive } from '@angular/router'
+import { IconField } from 'primeng/iconfield'
+import { InputIcon } from 'primeng/inputicon'
+import { FloatLabel } from 'primeng/floatlabel'
+import { FormsModule } from '@angular/forms'
+import { InputText } from 'primeng/inputtext'
+import { Select } from 'primeng/select'
+import { AuthStore } from '../../../core/auth/store/auth.store'
 
 @Component({
   selector: 'app-header',
@@ -34,40 +26,38 @@ import { ProfileInterface } from '../../../core/auth/types/profile.interface';
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  private authService: AuthService = inject(AuthService);
-  private subscription: Subscription | null = null;
-  user: any = {};
-  searchQuery: string = '';
+export class HeaderComponent {
+  /**
+   * ИНЖЕКТИМ AuthStore
+   *
+   * Теперь вместо сервиса используем store для получения данных пользователя
+   * Все данные доступны через signals - они автоматически обновляются
+   */
+  readonly authStore = inject(AuthStore)
 
-  isLogged: boolean = this.authService.getLoggedIn();
+  searchQuery: string = ''
+
+  /**
+   * ИСПОЛЬЗОВАНИЕ ДАННЫХ ИЗ STORE
+   *
+   * В template мы можем напрямую использовать:
+   * - authStore.isAuthenticated() - авторизован ли пользователь
+   * - authStore.user() - данные пользователя
+   * - authStore.userName() - имя пользователя (computed signal)
+   * - authStore.isLoading() - идет ли загрузка
+   *
+   * Нет необходимости:
+   * - Создавать подписки (subscribe)
+   * - Управлять lifecycle (ngOnInit, ngOnDestroy)
+   * - Хранить локальные копии данных
+   *
+   * Все автоматически обновляется благодаря signals!
+   */
 
   languages = [
     { label: 'English (United States)', value: 'en-US' },
     { label: 'Russian (Russia)', value: 'ru-RU' },
-  ];
+  ]
 
-  ngOnInit(): void {
-    this.subscription = this.authService.isLogged$.subscribe(
-      (isLogged: boolean): void => {
-        this.isLogged = isLogged;
-      },
-    );
-
-    this.authService.getUser().subscribe({
-      next: (data: ProfileInterface): void => {
-        this.user = data;
-        console.log('User data:', this.user);
-      },
-      error: (error: Error): void => {
-        console.log('Error:', error);
-      },
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
-  }
-
-  selectedLanguage = 'en-US';
+  selectedLanguage = 'en-US'
 }

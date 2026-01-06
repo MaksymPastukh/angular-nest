@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { CommonModule, NgOptimizedImage } from '@angular/common'
+import { RouterLink } from '@angular/router'
 
 @Component({
   selector: 'app-reset',
@@ -10,12 +10,12 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetComponent {
-  isResetPassword = false;
-  isCreateNewPassword = true;
+  isResetPassword = false
+  isCreateNewPassword = true
 
-  isPasswordVisible = false;
+  isPasswordVisible = false
 
   togglePasswordVisibility() {
-    this.isPasswordVisible = !this.isPasswordVisible;
+    this.isPasswordVisible = !this.isPasswordVisible
   }
 }

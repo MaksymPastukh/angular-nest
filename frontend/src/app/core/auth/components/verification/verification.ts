@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { CommonModule, NgOptimizedImage } from '@angular/common'
 
 @Component({
   selector: 'app-verification',

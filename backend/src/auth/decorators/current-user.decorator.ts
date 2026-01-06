@@ -29,7 +29,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  * }
  */
 export const CurrentUser = createParamDecorator(
-  (data: string, ctx: ExecutionContext) => {
+  (data: string | undefined, ctx: ExecutionContext) => {
     // Получаем объект запроса
     const request = ctx.switchToHttp().getRequest();
 

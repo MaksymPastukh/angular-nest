@@ -1,6 +1,9 @@
 @if (category) {
   <div class="w-[270px] h-auto xs:w-full xs:h-auto overflow-hidden">
-    <div class="h-[393px] bg-cover bg-center" style="background-image: url('{{ category.image }}');"></div>
+    <div
+      class="h-[393px] bg-cover bg-center"
+      style="background-image: url('{{ category.image }}');"
+    ></div>
     <div class="flex justify-between items-center mt-4 group">
       <div class="cursor-pointer">
         <h2 class="font-bold color-categories text-lg">{{ category.category }}</h2>
@@ -23,4 +26,3 @@
     </div>
   </div>
 }
-

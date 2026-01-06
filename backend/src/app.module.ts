@@ -21,9 +21,7 @@ import { UsersModule } from './users/users.module';
 
     // Подключение к MongoDB через Mongoose
     // Используем ConfigModule для получения строки подключения из .env
-    MongooseModule.forRoot(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/online-shop',
-    ),
+    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/online-shop'),
 
     // Подключаем модули приложения
     UsersModule, // Модуль управления пользователями

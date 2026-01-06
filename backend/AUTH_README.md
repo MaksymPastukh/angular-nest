@@ -116,6 +116,7 @@ Content-Type: application/json
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
     "id": "507f1f77bcf86cd799439011",
     "email": "user@example.com",
@@ -125,6 +126,8 @@ Content-Type: application/json
   }
 }
 ```
+
+> **Примечание:** `access_token` действителен 15 минут, `refresh_token` - 7 дней.
 
 #### Вход
 
@@ -143,6 +146,34 @@ Content-Type: application/json
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "507f1f77bcf86cd799439011",
+    "email": "user@example.com",
+    "firstName": "Иван",
+    "lastName": "Иванов",
+    "role": "user"
+  }
+}
+```
+
+#### Обновление токена
+
+```http
+POST /api/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Ответ:**
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
     "id": "507f1f77bcf86cd799439011",
     "email": "user@example.com",
@@ -192,6 +223,7 @@ src/
 │   │   └── roles.decorator.ts         # Декоратор ролей
 │   ├── dto/                  # Data Transfer Objects
 │   │   ├── login.dto.ts     # DTO для входа
+│   │   ├── refresh-token.dto.ts  # DTO для обновления токена
 │   │   └── register.dto.ts  # DTO для регистрации
 │   ├── guards/              # Guards для защиты роутов
 │   │   ├── jwt-auth.guard.ts    # JWT Guard
@@ -220,10 +252,19 @@ src/
 
 - Пароли хешируются с помощью **bcrypt** (10 раундов)
 - JWT токены подписываются секретным ключом
+- **Access токен:** короткий срок действия (15 минут) для повышенной безопасности
+- **Refresh токен:** длительный срок действия (7 дней) для обновления access токена
 - Валидация всех входящих данных
 - CORS настроен для фронтенда
 - Защита роутов с помощью Guards
 - Проверка ролей пользователей
+
+### Как работают токены
+
+1. **Регистрация/Вход:** Пользователь получает оба токена (access и refresh)
+2. **Запросы к API:** Используется access токен в заголовке `Authorization: Bearer <token>`
+3. **Истечение access токена:** Когда access токен истекает (через 15 минут), используйте refresh токен для получения новой пары токенов через `/api/auth/refresh`
+4. **Безопасность:** Храните refresh токен в безопасном месте (httpOnly cookie или secure storage)
 
 ## 📚 Следующие этапы
 

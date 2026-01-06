@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AccordionModule } from 'primeng/accordion';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { AccordionModule } from 'primeng/accordion'
 
 @Component({
   selector: 'app-footer',

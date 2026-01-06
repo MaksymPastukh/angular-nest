@@ -1,50 +1,70 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { AuthService } from './auth.service';
-import { catchError, switchMap, tap, throwError } from 'rxjs';
-import { LoginInterface } from '../types/login.interface';
-import { Router } from '@angular/router';
+import {HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http'
+import {inject} from '@angular/core'
+import {AuthService} from './auth.service'
+import {catchError, Observable, switchMap, throwError} from 'rxjs'
+import {GetTokensInterface} from '../types/get-tokens.interface';
+import {CurrentUserResponseInterface} from '../types/current-user.interface';
+import {AuthStore} from '../store/auth.store';
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const token = authService.getTokens();
+  const authService = inject(AuthService)
+  const authStore = inject(AuthStore)
 
-  if (token && token.accessToken) {
-    const modifiedReq = req.clone({
+  const tokens: GetTokensInterface = authService.getTokens()
+
+  const isAuthUrl: boolean =
+    req.url.includes('/login') ||
+    req.url.includes('/register') ||
+    req.url.includes('/refresh');
+
+  if (tokens?.accessToken && !isAuthUrl) {
+    req = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${token.accessToken}`,
+        Authorization: `Bearer ${tokens.accessToken}`,
       },
-    });
-
-    return next(modifiedReq).pipe(
-      catchError((error) => {
-        if (
-          error.status === 401 &&
-          !modifiedReq.url.includes('/login') &&
-          !modifiedReq.url.includes('/refresh')
-        ) {
-          return authService.refresh().pipe(
-            switchMap((result) => {
-              const resultResponse = result as LoginInterface;
-              authService.setToken(resultResponse.access_token, resultResponse.refresh_token);
-              const refreshReq = req.clone({
-                setHeaders: {
-                  Authorization: `Bearer ${resultResponse.access_token}`,
-                },
-              });
-              return next(refreshReq);
-            }),
-            catchError((err) => {
-              authService.removeToken();
-              router.navigate(['/']);
-              return throwError(() => err);
-            })
-          );
-        }
-        return throwError(() => error);
-      })
-    );
+    })
   }
-  return next(req);
-};
+
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      // Обрабатываем 401 ошибку только для защищенных маршрутов
+      // НЕ обрабатываем для login/register/refresh
+      const shouldRefreshToken =
+        error.status === 401 &&
+        !req.url.includes('/login') &&
+        !req.url.includes('/register') &&
+        !req.url.includes('/refresh');
+
+      if (shouldRefreshToken) {
+        return handle401Error(req, next, authService, authStore);
+      }
+
+      // Для всех остальных ошибок (включая 401 при login/register) просто пробрасываем дальше
+      return throwError(() => error);
+    })
+  );
+}
+
+function handle401Error(
+  req: HttpRequest<any>,
+  next: HttpHandlerFn,
+  authService: AuthService,
+  authStore: InstanceType<typeof AuthStore>): Observable<HttpEvent<any>> {
+  return authService.refreshToken().pipe(
+    switchMap((result: CurrentUserResponseInterface) => {
+      authStore.updateAfterRefresh(result)
+
+      const clonedReq = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${result.access_token}`,
+        },
+      })
+
+      return next(clonedReq);
+    }),
+    catchError((err) => {
+      authStore.logout();
+      return throwError(() => err);
+    })
+  )
+}
