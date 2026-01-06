@@ -26,18 +26,21 @@
 
       <!-- Меню категорий -->
       @if (!filterStore.isLoading() && !filterStore.error()) {
+        <!-- TieredMenu с брендами (общий для всех категорий) -->
         <p-tieredMenu
           #mainMenu
-          [model]="filterStore.categoryMenu()"
+          [model]="filterStore.subCategoryMenu()"
           [popup]="true"
         ></p-tieredMenu>
-        @for (itemMainMenu of filterStore.categoryMenu(); track $index) {
+
+        <!-- Кнопки категорий -->
+        @for (categoryName of filterStore.categoryNames(); track $index) {
           <button
             type="button"
             class="w-full text-left mt-2 px-2 py-1 rounded-lg font-causten text-lg font-semibold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
-            (click)="mainMenu.toggle($event)"
+            (click)="onCategoryClick(categoryName, $event, mainMenu)"
           >
-            <span>{{ itemMainMenu.label }}</span>
+            <span>{{ categoryName }}</span>
             <svg
               class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
               fill="none"
@@ -164,18 +167,21 @@
   <p-accordion-panel value="4">
     <p-accordion-header>Dress Style</p-accordion-header>
     <p-accordion-content>
+      <!-- TieredMenu с брендами (общий для всех стилей) -->
       <p-tieredMenu
         #styleMenu
-        [model]="filterStore.styleMenu()"
+        [model]="filterStore.subStyleMenu()"
         [popup]="true"
       ></p-tieredMenu>
-      @for (itemStyle of filterStore.styleMenu(); track $index) {
+
+      <!-- Кнопки стилей -->
+      @for (styleName of filterStore.styleNames(); track $index) {
         <button
           type="button"
           class="w-full text-left mt-2 px-2 py-1 rounded-lg text-lg font-causten font-bold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
-          (click)="styleMenu.toggle($event)"
+          (click)="onStyleClick(styleName, $event, styleMenu)"
         >
-          <span>{{ itemStyle.label }}</span>
+          <span>{{ styleName }}</span>
           <svg
             class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
             fill="none"

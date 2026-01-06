@@ -10,7 +10,7 @@ import {
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, of } from 'rxjs';
 import { forkJoin } from 'rxjs';
-import { ProductService } from './product.service';
+import { ProductService } from '../services/product.service';
 import type { ColorOption, FilterData, SelectedFilters } from '../types/filter.types';
 import type { MenuItem } from 'primeng/api';
 
@@ -26,12 +26,20 @@ interface FilterState {
 
   /** Меню для категорий (для PrimeNG TieredMenu) */
   categoryMenu: MenuItem[];
+  subCategoryMenu: MenuItem[];
 
   /** Меню для стилей (для PrimeNG TieredMenu) */
   styleMenu: MenuItem[];
+  subStyleMenu: MenuItem[];
 
   /** Выбранные фильтры */
   selectedFilters: SelectedFilters;
+
+  /** Текущая выбранная категория (для связи с брендом) */
+  currentCategory: string | null;
+
+  /** Текущий выбранный стиль (для связи с брендом) */
+  currentStyle: string | null;
 
   /** Флаг загрузки данных */
   isLoading: boolean;
@@ -50,7 +58,9 @@ const initialState: FilterState = {
   filterData: null,
   colors: [],
   categoryMenu: [],
+  subCategoryMenu: [],
   styleMenu: [],
+  subStyleMenu: [],
   selectedFilters: {
     priceRange: [70, 270],
     selectedSizes: [],
@@ -58,6 +68,8 @@ const initialState: FilterState = {
     selectedCategories: [],
     selectedStyles: [],
   },
+  currentCategory: null,
+  currentStyle: null,
   isLoading: false,
   error: null,
   isInitialized: false,
@@ -170,9 +182,7 @@ export const ProductFilterStore = signalStore(
               // Преобразуем цвета в ColorOption
               const colors = mapColorsToOptions(data.colors);
 
-              // Строим меню для категорий (Men, Women и т.д.)
-              // НО! Мы должны показывать productTypes с категориями
-              // Поэтому используем productTypes для меню
+              // Строим меню для категорий (productTypes)
               const categoryMenu = buildMenuItems(
                 data.productTypes,
                 data.brands,
@@ -196,6 +206,34 @@ export const ProductFilterStore = signalStore(
                   });
                 }
               );
+
+              // Строим меню брендов (для TieredMenu)
+              const subCategoryMenu = data.brands.map(brand => ({
+                label: brand,
+                command: () => {
+                  console.log('Brand selected:', brand);
+                  const currentCat = store.currentCategory();
+                  if (currentCat) {
+                    // Если есть текущая категория, создаем ключ "Category:Brand"
+                    const key = `${currentCat}:${brand}`;
+                    const current = store.selectedFilters();
+                    const categories = new Set(current.selectedCategories);
+
+                    if (categories.has(key)) {
+                      categories.delete(key);
+                    } else {
+                      categories.add(key);
+                    }
+
+                    patchState(store, {
+                      selectedFilters: {
+                        ...current,
+                        selectedCategories: Array.from(categories),
+                      },
+                    });
+                  }
+                }
+              }));
 
               // Строим меню для стилей
               const styleMenu = buildMenuItems(
@@ -222,11 +260,41 @@ export const ProductFilterStore = signalStore(
                 }
               );
 
+              // Строим меню брендов для стилей (для TieredMenu)
+              const subStyleMenu = data.brands.map(brand => ({
+                label: brand,
+                command: () => {
+                  console.log('Style Brand selected:', brand);
+                  const currentSt = store.currentStyle();
+                  if (currentSt) {
+                    // Если есть текущий стиль, создаем ключ "Style:Brand"
+                    const key = `${currentSt}:${brand}`;
+                    const current = store.selectedFilters();
+                    const styles = new Set(current.selectedStyles);
+
+                    if (styles.has(key)) {
+                      styles.delete(key);
+                    } else {
+                      styles.add(key);
+                    }
+
+                    patchState(store, {
+                      selectedFilters: {
+                        ...current,
+                        selectedStyles: Array.from(styles),
+                      },
+                    });
+                  }
+                }
+              }));
+
               patchState(store, {
                 filterData: data,
                 colors,
                 categoryMenu,
+                subCategoryMenu,
                 styleMenu,
+                subStyleMenu,
                 isLoading: false,
                 isInitialized: true,
               });
@@ -335,9 +403,14 @@ export const ProductFilterStore = signalStore(
      * Сбрасывает все фильтры к начальным значениям
      */
     resetFilters() {
+      console.log('🔄 ProductFilterStore: Resetting filters to initial state');
+      console.log('   Before:', store.selectedFilters());
+
       patchState(store, {
-        selectedFilters: initialState.selectedFilters,
+        selectedFilters: { ...initialState.selectedFilters }, // Создаем новый объект
       });
+
+      console.log('   After:', store.selectedFilters());
     },
 
     /**
@@ -345,6 +418,44 @@ export const ProductFilterStore = signalStore(
      */
     clearStore() {
       patchState(store, initialState);
+    },
+
+    /**
+     * Устанавливает текущую категорию (для связи с брендом)
+     * @param category - название категории
+     */
+    setCurrentCategory(category: string | null) {
+      patchState(store, { currentCategory: category });
+    },
+
+    /**
+     * Устанавливает текущий стиль (для связи с брендом)
+     * @param style - название стиля
+     */
+    setCurrentStyle(style: string | null) {
+      patchState(store, { currentStyle: style });
+    },
+
+    /**
+     * Возвращает меню с брендами для конкретной категории
+     * @param categoryName - название категории (например "Printed T-shirts")
+     * @returns MenuItem[] с брендами для этой категории
+     */
+    getBrandsForCategory(categoryName: string): MenuItem[] {
+      const menu = store.categoryMenu();
+      const category = menu.find(item => item.label === categoryName);
+      return category?.items || [];
+    },
+
+    /**
+     * Возвращает меню с брендами для конкретного стиля
+     * @param styleName - название стиля (например "Casual")
+     * @returns MenuItem[] с брендами для этого стиля
+     */
+    getBrandsForStyle(styleName: string): MenuItem[] {
+      const menu = store.styleMenu();
+      const style = menu.find(item => item.label === styleName);
+      return style?.items || [];
     },
   })),
 

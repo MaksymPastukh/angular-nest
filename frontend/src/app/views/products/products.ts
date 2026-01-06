@@ -5,7 +5,8 @@ import { ProductFilterComponent } from '../../shared/components/products-filter/
 import { FilterState } from '../../shared/types/products-filter.types';
 import { TableBestPrice } from '../../shared/components/table-best-price/table-best-price';
 import { TableBestPriceInterface } from '../types/table-best-price.interface';
-import { ProductStore } from '../../shared/services/product.store';
+import { ProductStore } from '../../shared/store/product.store';
+import { ProductFilterStore } from '../../shared/store/product-filter.store';
 import { ProductFilterParams } from '../../shared/product.type';
 
 /**
@@ -27,6 +28,9 @@ import { ProductFilterParams } from '../../shared/product.type';
 export class Products implements OnInit {
   /** Инжектируем стор продуктов */
   readonly productStore = inject(ProductStore);
+
+  /** Инжектируем стор фильтров */
+  private readonly filterStore = inject(ProductFilterStore);
 
   /** Инжектируем Router для обновления URL */
   private readonly router = inject(Router);
@@ -84,8 +88,10 @@ export class Products implements OnInit {
         console.log('🔍 Loading products with filters from URL:', apiFilters);
         this.productStore.loadFilteredProducts(apiFilters);
       } else {
-        // Иначе загружаем все продукты
+        // Нет параметров в URL - сбрасываем фильтры и загружаем все продукты
         console.log('📦 Loading all products (no filters in URL)');
+        console.log('🔄 Resetting filters in ProductFilterStore');
+        this.filterStore.resetFilters(); // ✅ Сбрасываем старые фильтры
         this.productStore.loadProducts();
       }
     });
@@ -132,10 +138,21 @@ export class Products implements OnInit {
 
     // Конвертируем FilterState в ProductFilterParams для API
     const apiFilters: ProductFilterParams = {
-      minPrice: filters.priceRange[0],
-      maxPrice: filters.priceRange[1],
       page: 1, // Сбрасываем на первую страницу при изменении фильтров
     };
+
+    // Добавляем цену ТОЛЬКО если она отличается от дефолтных значений (70, 270)
+    const DEFAULT_MIN_PRICE = 70;
+    const DEFAULT_MAX_PRICE = 270;
+
+    if (filters.priceRange[0] !== DEFAULT_MIN_PRICE) {
+      apiFilters.minPrice = filters.priceRange[0];
+    }
+
+    if (filters.priceRange[1] !== DEFAULT_MAX_PRICE) {
+      apiFilters.maxPrice = filters.priceRange[1];
+    }
+
 
     // Добавляем типы продуктов (из selectedCategories)
     // Формат: "ProductType:Brand" например "Printed T-shirts:Nike"

@@ -9,7 +9,7 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap, catchError, of, debounceTime } from 'rxjs';
-import { ProductService } from './product.service';
+import { ProductService } from '../services/product.service';
 import { ProductType, ProductFilterParams } from '../product.type';
 
 /**
