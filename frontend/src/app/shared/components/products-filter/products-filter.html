@@ -26,10 +26,10 @@
 
       <!-- Меню категорий -->
       @if (!filterStore.isLoading() && !filterStore.error()) {
-        <!-- TieredMenu с брендами (общий для всех категорий) -->
+        <!-- TieredMenu с брендами (только бренды, без категорий) -->
         <p-tieredMenu
           #mainMenu
-          [model]="filterStore.subCategoryMenu()"
+          [model]="filterStore.brandsMenuForCurrentCategory()"
           [popup]="true"
         ></p-tieredMenu>
 
@@ -167,10 +167,10 @@
   <p-accordion-panel value="4">
     <p-accordion-header>Dress Style</p-accordion-header>
     <p-accordion-content>
-      <!-- TieredMenu с брендами (общий для всех стилей) -->
+      <!-- TieredMenu с брендами (только бренды, без стилей) -->
       <p-tieredMenu
         #styleMenu
-        [model]="filterStore.subStyleMenu()"
+        [model]="filterStore.brandsMenuForCurrentStyle()"
         [popup]="true"
       ></p-tieredMenu>
 

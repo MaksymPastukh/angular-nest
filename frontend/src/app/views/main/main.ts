@@ -7,7 +7,7 @@ import { CategoriesService } from '../../shared/services/categories.service'
 import { Categories } from '../../shared/types/categories'
 import { ProductCardComponent } from '../../shared/components/product-card/product-card'
 import { ProductService } from '../../shared/services/product.service'
-import { ProductType } from '../../shared/product.type'
+import { ProductType } from '../types/product.type'
 import { RatingComponent } from '../../shared/components/rating/rating'
 import {RouterLink} from '@angular/router';
 

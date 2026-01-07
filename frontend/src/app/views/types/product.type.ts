@@ -76,11 +76,11 @@ export interface ProductFilterParams {
   /** Минимальный рейтинг */
   minRating?: number;
 
-  /** Цвет */
-  color?: string;
+  /** Цвет (может быть массив для множественного выбора) */
+  color?: string | string[];
 
-  /** Размер */
-  size?: string;
+  /** Размер (может быть массив для множественного выбора) */
+  size?: string | string[];
 
   /** Поисковый запрос по названию и описанию */
   search?: string;

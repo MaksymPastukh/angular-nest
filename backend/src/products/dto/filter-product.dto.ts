@@ -70,20 +70,20 @@ export class FilterProductDto {
   minRating?: number;
 
   /**
-   * Фильтр по цвету
-   * @example "Черный"
+   * Фильтр по цвету (может быть несколько)
+   * @example ["Черный", "Белый"]
    */
   @IsOptional()
-  @IsString()
-  color?: string;
+  @IsString({ each: true })
+  color?: string | string[];
 
   /**
-   * Фильтр по размеру
-   * @example "M"
+   * Фильтр по размеру (может быть несколько)
+   * @example ["M", "L", "XL"]
    */
   @IsOptional()
-  @IsString()
-  size?: string;
+  @IsString({ each: true })
+  size?: string | string[];
 
   /**
    * Поиск по названию и описанию

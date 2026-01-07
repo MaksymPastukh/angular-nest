@@ -1,13 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card';
 import { ProductFilterComponent } from '../../shared/components/products-filter/products-filter';
-import { FilterState } from '../../shared/types/products-filter.types';
 import { TableBestPrice } from '../../shared/components/table-best-price/table-best-price';
 import { TableBestPriceInterface } from '../types/table-best-price.interface';
-import { ProductStore } from '../../shared/store/product.store';
-import { ProductFilterStore } from '../../shared/store/product-filter.store';
-import { ProductFilterParams } from '../../shared/product.type';
+import { ProductsPageFacade } from '../../shared/services/products-page-facade';
 
 /**
  * Компонент страницы со списком продуктов
@@ -17,29 +14,23 @@ import { ProductFilterParams } from '../../shared/product.type';
  */
 @Component({
   selector: 'app-products',
-  imports: [
-    ProductCardComponent,
-    ProductFilterComponent,
-    TableBestPrice,
-  ],
+  imports: [ProductCardComponent, ProductFilterComponent, TableBestPrice],
   templateUrl: './products.html',
   styleUrl: './products.scss',
 })
-export class Products implements OnInit {
-  /** Инжектируем стор продуктов */
-  readonly productStore = inject(ProductStore);
+export class Products implements OnInit, OnDestroy {
+  /** Фасад страницы продуктов (продукты + фильтры + пагинация) */
+  readonly facade = inject(ProductsPageFacade);
 
-  /** Инжектируем стор фильтров */
-  private readonly filterStore = inject(ProductFilterStore);
-
-  /** Инжектируем Router для обновления URL */
+  /** Router для синхронизации query params */
   private readonly router = inject(Router);
-
-  /** Инжектируем ActivatedRoute для чтения query параметров */
   private readonly route = inject(ActivatedRoute);
 
-  /** Название текущей категории для отображения в заголовке */
+  /** Название текущей категории для заголовка */
   categoryName: string = 'All';
+
+  /** Сохранённая позиция скролла */
+  private savedScrollPosition = 0;
 
   /** Данные для таблицы лучших цен */
   readonly itemsTableBestPrice: TableBestPriceInterface[] = [
@@ -70,213 +61,103 @@ export class Products implements OnInit {
     },
   ];
 
+  constructor() {
+    /**
+     * Effect для сохранения и восстановления позиции скролла
+     * Сохраняем позицию перед загрузкой, восстанавливаем после
+     */
+    effect(() => {
+      const isLoading = this.facade.isLoading();
+
+      if (isLoading) {
+        // Начинается загрузка - сохраняем текущую позицию
+        this.savedScrollPosition = window.scrollY;
+      } else {
+        // Загрузка завершена - восстанавливаем позицию
+        if (this.savedScrollPosition > 0) {
+          // Используем setTimeout чтобы дождаться рендеринга
+          setTimeout(() => {
+            window.scrollTo({
+              top: this.savedScrollPosition,
+              behavior: 'instant' // Мгновенный скролл без анимации
+            });
+          }, 0);
+        }
+      }
+    });
+  }
 
   /**
    * Инициализация компонента
-   * Читает фильтры из URL query параметров и загружает продукты
+   * Восстанавливает фильтры из query params URL или сбрасывает к дефолтным
    */
-  ngOnInit() {
-    console.log('📦 Products Component: Initializing...');
+  ngOnInit(): void {
+    // Читаем query params ОДИН РАЗ при инициализации (не подписываемся!)
+    // Используем snapshot вместо subscribe чтобы избежать реактивных обновлений
+    const params = this.route.snapshot.queryParams;
 
-    // Читаем query параметры из URL
-    this.route.queryParams.subscribe(params => {
-      console.log('📍 URL Query Params:', params);
+    const hasParams = Object.keys(params).length > 0;
 
-      // Если есть параметры фильтрации в URL - применяем их
-      if (Object.keys(params).length > 0) {
-        const apiFilters = this.parseQueryParamsToFilters(params);
-        console.log('🔍 Loading products with filters from URL:', apiFilters);
-        this.productStore.loadFilteredProducts(apiFilters);
-      } else {
-        // Нет параметров в URL - сбрасываем фильтры и загружаем все продукты
-        console.log('📦 Loading all products (no filters in URL)');
-        console.log('🔄 Resetting filters in ProductFilterStore');
-        this.filterStore.resetFilters(); // ✅ Сбрасываем старые фильтры
-        this.productStore.loadProducts();
-      }
-    });
-  }
-
-  /**
-   * Преобразует query параметры из URL в ProductFilterParams
-   * @param params - query параметры из ActivatedRoute
-   * @returns объект фильтров для API
-   */
-  private parseQueryParamsToFilters(params: any): ProductFilterParams {
-    const filters: ProductFilterParams = {
-      page: params['page'] ? parseInt(params['page']) : 1,
-    };
-
-    if (params['productType']) filters.productType = params['productType'];
-    if (params['category']) filters.category = params['category'];
-    if (params['dressStyle']) filters.dressStyle = params['dressStyle'];
-    if (params['brand']) filters.brand = params['brand'];
-    if (params['color']) filters.color = params['color'];
-    if (params['size']) filters.size = params['size'];
-    if (params['minPrice']) filters.minPrice = parseInt(params['minPrice']);
-    if (params['maxPrice']) filters.maxPrice = parseInt(params['maxPrice']);
-    if (params['minRating']) filters.minRating = parseInt(params['minRating']);
-    if (params['sortBy']) filters.sortBy = params['sortBy'];
-    if (params['order']) filters.order = params['order'] as 'asc' | 'desc';
-    if (params['limit']) filters.limit = parseInt(params['limit']);
-
-    // Обновляем название категории для заголовка
-    this.categoryName = params['productType'] || params['category'] || 'All';
-
-    return filters;
-  }
-
-  /**
-   * Обработчик изменения фильтров из компонента фильтрации
-   * Обновляет URL с query параметрами и загружает отфильтрованные продукты
-   *
-   * @param filters - состояние фильтров из компонента
-   */
-  onFilterChange(filters: FilterState) {
-    console.log('=== Filter Change Event ===');
-    console.log('Received filters:', filters);
-
-    // Конвертируем FilterState в ProductFilterParams для API
-    const apiFilters: ProductFilterParams = {
-      page: 1, // Сбрасываем на первую страницу при изменении фильтров
-    };
-
-    // Добавляем цену ТОЛЬКО если она отличается от дефолтных значений (70, 270)
-    const DEFAULT_MIN_PRICE = 70;
-    const DEFAULT_MAX_PRICE = 270;
-
-    if (filters.priceRange[0] !== DEFAULT_MIN_PRICE) {
-      apiFilters.minPrice = filters.priceRange[0];
-    }
-
-    if (filters.priceRange[1] !== DEFAULT_MAX_PRICE) {
-      apiFilters.maxPrice = filters.priceRange[1];
-    }
-
-
-    // Добавляем типы продуктов (из selectedCategories)
-    // Формат: "ProductType:Brand" например "Printed T-shirts:Nike"
-    if (filters.selectedCategories.length > 0) {
-      const parts = filters.selectedCategories[0].split(':');
-      apiFilters.productType = parts[0];
-
-      if (parts.length > 1 && parts[1]) {
-        apiFilters.brand = parts[1];
-      }
-
-      this.categoryName = parts[0];
+    if (hasParams) {
+      // Есть параметры в URL - восстанавливаем фильтры
+      this.facade.restoreFiltersFromUrl(params);
     } else {
-      this.categoryName = 'All';
+      // Нет параметров - сбрасываем фильтры к дефолтным
+      this.facade.resetFilters();
     }
-
-    // Добавляем стили одежды
-    if (filters.selectedStyles.length > 0) {
-      const styleParts = filters.selectedStyles[0].split(':');
-      apiFilters.dressStyle = styleParts[0];
-
-      if (styleParts.length > 1 && styleParts[1]) {
-        apiFilters.brand = styleParts[1];
-      }
-    }
-
-    // Добавляем размеры
-    if (filters.selectedSizes.length > 0) {
-      apiFilters.size = filters.selectedSizes[0];
-    }
-
-    // Добавляем цвета
-    if (filters.selectedColors.length > 0) {
-      apiFilters.color = filters.selectedColors[0];
-    }
-
-    console.log('API filters to send:', apiFilters);
-
-    // Обновляем URL с query параметрами
-    this.updateUrlWithFilters(apiFilters);
-
-    // Загружаем продукты с новыми фильтрами
-    this.productStore.loadFilteredProducts(apiFilters);
   }
 
   /**
-   * Обновляет URL с query параметрами фильтрации
-   * Позволяет делиться ссылкой с фильтрами и сохранять состояние при обновлении страницы
-   *
-   * @param filters - параметры фильтрации
+   * Очистка при уходе со страницы
+   * Сбрасываем фильтры чтобы при следующем входе начать с чистого листа
    */
-  private updateUrlWithFilters(filters: ProductFilterParams): void {
-    // Создаем объект query параметров
-    const queryParams: any = {};
-
-    // Добавляем только заполненные фильтры
-    if (filters.productType) queryParams.productType = filters.productType;
-    if (filters.category) queryParams.category = filters.category;
-    if (filters.dressStyle) queryParams.dressStyle = filters.dressStyle;
-    if (filters.brand) queryParams.brand = filters.brand;
-    if (filters.color) queryParams.color = filters.color;
-    if (filters.size) queryParams.size = filters.size;
-    if (filters.minPrice !== undefined) queryParams.minPrice = filters.minPrice;
-    if (filters.maxPrice !== undefined) queryParams.maxPrice = filters.maxPrice;
-    if (filters.minRating) queryParams.minRating = filters.minRating;
-    if (filters.sortBy) queryParams.sortBy = filters.sortBy;
-    if (filters.order) queryParams.order = filters.order;
-    if (filters.page && filters.page !== 1) queryParams.page = filters.page;
-    if (filters.limit && filters.limit !== 20) queryParams.limit = filters.limit;
-
-    console.log('📍 Updating URL with query params:', queryParams);
-
-    // Обновляем URL без перезагрузки страницы
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: queryParams,
-      queryParamsHandling: 'merge', // Сохраняем существующие параметры
-      replaceUrl: true, // Заменяем текущую запись в истории
-    });
+  ngOnDestroy(): void {
+    this.facade.resetFilters();
   }
 
-  /**
-   * Получает список отфильтрованных продуктов для отображения
-   * @returns массив продуктов после применения фильтров
-   */
-  get filteredProducts() {
-    return this.productStore.filteredProducts();
+  /** Удобный геттер для шаблона, если нужно будет вычислять заголовок по фильтрам */
+  get titleCategory(): string {
+    const selected = this.facade.filters();
+
+    if (selected.selectedCategories.length > 0) {
+      const [raw] = selected.selectedCategories;
+      const [productType] = raw.split(':');
+      return productType || 'All';
+    }
+
+    if (selected.selectedStyles.length > 0) {
+      const [raw] = selected.selectedStyles;
+      const [style] = raw.split(':');
+      return style || 'All';
+    }
+
+    return 'All';
   }
 
-  /**
-   * Переходит на следующую страницу
-   */
+  /** Публичный геттер для продуктов (чтобы не обращаться к фасаду в шаблоне по цепочке) */
+  get products() {
+    return this.facade.products();
+  }
+
+  /** Хелперы пагинации */
   nextPage() {
-    this.productStore.nextPage();
+    this.facade.nextPage();
   }
 
-  /**
-   * Переходит на предыдущую страницу
-   */
   prevPage() {
-    this.productStore.prevPage();
+    this.facade.prevPage();
   }
 
-  /**
-   * Переходит на указанную страницу
-   * @param page - номер страницы
-   */
   goToPage(page: number) {
-    this.productStore.setPage(page);
+    this.facade.setPage(page);
   }
 
-  /**
-   * Изменяет размер страницы (количество элементов)
-   * @param size - новый размер страницы
-   */
   changePageSize(size: number) {
-    this.productStore.setPageSize(size);
+    this.facade.setPageSize(size);
   }
 
-  /**
-   * Сбрасывает все фильтры
-   */
   resetFilters() {
-    this.productStore.resetFilters();
+    this.facade.resetFilters();
     this.categoryName = 'All';
   }
 }

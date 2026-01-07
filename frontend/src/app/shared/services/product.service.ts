@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProductType, ProductFilterParams, ProductsResponse } from '../product.type';
+import { ProductType, ProductFilterParams, ProductsResponse } from '../../views/types/product.type';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -43,14 +43,16 @@ export class ProductService {
     // Добавляем параметры только если они определены
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        params = params.append(key, value.toString());
+        // Если значение это массив - добавляем каждый элемент отдельно
+        if (Array.isArray(value)) {
+          value.forEach(item => {
+            params = params.append(key, item.toString());
+          });
+        } else {
+          params = params.append(key, value.toString());
+        }
       }
     });
-
-    const url = `${this.apiUrl}?${params.toString()}`;
-    console.log('🌐 ProductService: Making HTTP request to:', url);
-    console.log('   Filters object:', filters);
-    console.log('   Query params:', params.toString());
 
     return this.http.get<ProductsResponse>(this.apiUrl, { params });
   }

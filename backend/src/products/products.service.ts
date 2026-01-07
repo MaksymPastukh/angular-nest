@@ -71,7 +71,8 @@ export class ProductsService {
     }
 
     if (brand) {
-      filter.brand = brand;
+      // Используем регистронезависимый поиск для более мягкого совпадения
+      filter.brand = { $regex: new RegExp(brand, 'i') };
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
@@ -89,16 +90,47 @@ export class ProductsService {
     }
 
     if (color) {
-      filter.color = color;
+      // color может прийти как строка "Black", массив ["Black", "Red"] или строка с запятыми "Black,Red"
+      let colors: string[];
+      if (Array.isArray(color)) {
+        colors = color;
+      } else if (typeof color === 'string' && color.includes(',')) {
+        // Если пришла строка с запятыми - разбиваем её
+        colors = color.split(',').map(c => c.trim());
+      } else {
+        colors = [color];
+      }
+
+      // Используем $or с регулярными выражениями для регистронезависимого поиска
+      if (colors.length === 1) {
+        filter.color = { $regex: new RegExp(`^${colors[0]}$`, 'i') };
+      } else {
+        filter.$or = colors.map(c => ({
+          color: { $regex: new RegExp(`^${c}$`, 'i') }
+        }));
+      }
     }
 
     if (size) {
-      filter.size = { $in: [size] };
+      // size может прийти как строка "M", массив ["M", "L"] или строка с запятыми "M,L"
+      let sizes: string[];
+      if (Array.isArray(size)) {
+        sizes = size;
+      } else if (typeof size === 'string' && size.includes(',')) {
+        // Если пришла строка с запятыми - разбиваем её
+        sizes = size.split(',').map(s => s.trim());
+      } else {
+        sizes = [size];
+      }
+      // size в схеме это массив строк ["S", "M", "L", "XL"]
+      // $in найдёт продукты где хотя бы один элемент массива size совпадает с запрошенными
+      filter.size = { $in: sizes };
     }
 
     if (search) {
       filter.$text = { $search: search };
     }
+
 
     // Вычисление пагинации
     const skip = (page - 1) * limit;
@@ -112,6 +144,7 @@ export class ProductsService {
       this.productModel.find(filter).sort(sort).skip(skip).limit(limit).exec(),
       this.productModel.countDocuments(filter).exec(),
     ]);
+
 
     // Вычисление общего количества страниц
     const totalPages = Math.ceil(total / limit);

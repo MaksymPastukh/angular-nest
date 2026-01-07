@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { ProductType } from '../../product.type'
+import { ProductType } from '../../../views/types/product.type'
 
 @Component({
   selector: 'product-card',
