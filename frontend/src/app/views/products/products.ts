@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, OnDestroy, effect } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card';
 import { ProductFilterComponent } from '../../shared/components/products-filter/products-filter';
 import { TableBestPrice } from '../../shared/components/table-best-price/table-best-price';
@@ -22,15 +22,9 @@ export class Products implements OnInit, OnDestroy {
   /** Фасад страницы продуктов (продукты + фильтры + пагинация) */
   readonly facade = inject(ProductsPageFacade);
 
-  /** Router для синхронизации query params */
-  private readonly router = inject(Router);
+  /** Route для получения query params при инициализации */
   private readonly route = inject(ActivatedRoute);
 
-  /** Название текущей категории для заголовка */
-  categoryName: string = 'All';
-
-  /** Сохранённая позиция скролла */
-  private savedScrollPosition = 0;
 
   /** Данные для таблицы лучших цен */
   readonly itemsTableBestPrice: TableBestPriceInterface[] = [
@@ -61,61 +55,29 @@ export class Products implements OnInit, OnDestroy {
     },
   ];
 
-  constructor() {
-    /**
-     * Effect для сохранения и восстановления позиции скролла
-     * Сохраняем позицию перед загрузкой, восстанавливаем после
-     */
-    effect(() => {
-      const isLoading = this.facade.isLoading();
-
-      if (isLoading) {
-        // Начинается загрузка - сохраняем текущую позицию
-        this.savedScrollPosition = window.scrollY;
-      } else {
-        // Загрузка завершена - восстанавливаем позицию
-        if (this.savedScrollPosition > 0) {
-          // Используем setTimeout чтобы дождаться рендеринга
-          setTimeout(() => {
-            window.scrollTo({
-              top: this.savedScrollPosition,
-              behavior: 'instant' // Мгновенный скролл без анимации
-            });
-          }, 0);
-        }
-      }
-    });
-  }
-
   /**
    * Инициализация компонента
-   * Восстанавливает фильтры из query params URL или сбрасывает к дефолтным
+   * Восстанавливает фильтры из query params URL
    */
   ngOnInit(): void {
-    // Читаем query params ОДИН РАЗ при инициализации (не подписываемся!)
-    // Используем snapshot вместо subscribe чтобы избежать реактивных обновлений
     const params = this.route.snapshot.queryParams;
 
-    const hasParams = Object.keys(params).length > 0;
-
-    if (hasParams) {
-      // Есть параметры в URL - восстанавливаем фильтры
+    if (Object.keys(params).length > 0) {
+      // Есть параметры в URL → восстанавливаем фильтры
       this.facade.restoreFiltersFromUrl(params);
-    } else {
-      // Нет параметров - сбрасываем фильтры к дефолтным
-      this.facade.resetFilters();
     }
+
+    // После восстановления (или если параметров нет) - загружаем продукты
+    // ProductStore имеет защиту от первого вызова effect,
+    // поэтому нужно явно триггернуть загрузку
+    // Фасад автоматически вызовет loadProducts через effect после этого
   }
 
-  /**
-   * Очистка при уходе со страницы
-   * Сбрасываем фильтры чтобы при следующем входе начать с чистого листа
-   */
   ngOnDestroy(): void {
-    this.facade.resetFilters();
+    this.facade.resetFilters()
   }
 
-  /** Удобный геттер для шаблона, если нужно будет вычислять заголовок по фильтрам */
+  /** Геттер для заголовка категории на основе активных фильтров */
   get titleCategory(): string {
     const selected = this.facade.filters();
 
@@ -134,30 +96,8 @@ export class Products implements OnInit, OnDestroy {
     return 'All';
   }
 
-  /** Публичный геттер для продуктов (чтобы не обращаться к фасаду в шаблоне по цепочке) */
+  /** Публичный геттер для продуктов */
   get products() {
     return this.facade.products();
-  }
-
-  /** Хелперы пагинации */
-  nextPage() {
-    this.facade.nextPage();
-  }
-
-  prevPage() {
-    this.facade.prevPage();
-  }
-
-  goToPage(page: number) {
-    this.facade.setPage(page);
-  }
-
-  changePageSize(size: number) {
-    this.facade.setPageSize(size);
-  }
-
-  resetFilters() {
-    this.facade.resetFilters();
-    this.categoryName = 'All';
   }
 }

@@ -1,6 +1,47 @@
 import { SelectedFilters } from '../types/filter.types';
 import { ProductFilterParams } from '../../views/types/product.type';
 
+/* ==========================================
+   CONSTANTS (вынесены наружу)
+========================================== */
+
+const DEFAULT_MIN_PRICE = 70;
+const DEFAULT_MAX_PRICE = 270;
+
+/* ==========================================
+   HELPERS
+========================================== */
+
+/**
+ * Конвертирует массив в строку или массив в зависимости от длины
+ * Используется для size и color (одно значение = строка, несколько = массив)
+ */
+function arrayToStringOrArray(items: string[]): string | string[] | undefined {
+  if (items.length === 0) return undefined;
+  return items.length === 1 ? items[0] : items;
+}
+
+/**
+ * Парсит строку формата "value:brand" и возвращает кортеж
+ */
+function parseCategoryBrand(value: string): [string, string] {
+  const [category, brand = ''] = value.split(':');
+  return [category, brand];
+}
+
+/* ==========================================
+   MAIN FUNCTION
+========================================== */
+
+/**
+ * Конвертирует UI фильтры в API параметры
+ *
+ * Приоритет фильтрации:
+ * 1. Category (productType) - высший приоритет
+ * 2. Style (dressStyle) - применяется только если НЕТ категории
+ *
+ * Brand может быть у категории ИЛИ стиля, но не у обоих одновременно
+ */
 export function mapToApiFilters(
   filters: SelectedFilters
 ): ProductFilterParams {
@@ -10,9 +51,6 @@ export function mapToApiFilters(
   };
 
   /* ---------- PRICE ---------- */
-  // Дефолтные значения цены
-  const DEFAULT_MIN_PRICE = 70;
-  const DEFAULT_MAX_PRICE = 270;
 
   if (filters.priceRange) {
     // Добавляем только если отличается от дефолта
@@ -24,72 +62,32 @@ export function mapToApiFilters(
     }
   }
 
-  /* ---------- SIZE ---------- */
+  /* ---------- SIZE & COLOR ---------- */
 
-  if (filters.selectedSizes.length > 0) {
-    // Передаём все выбранные размеры как массив
-    params.size = filters.selectedSizes.length === 1
-      ? filters.selectedSizes[0]  // Если один - строка
-      : filters.selectedSizes;     // Если несколько - массив
-  } else {
-    // Явно указываем undefined если размеры не выбраны
-    params.size = undefined;
-  }
+  // Всегда добавляем size и color в params
+  // Если пусто → undefined явно удалит фильтр в setFilters
+  params.size = arrayToStringOrArray(filters.selectedSizes);
+  params.color = arrayToStringOrArray(filters.selectedColors);
 
-  /* ---------- COLOR ---------- */
+  /* ---------- CATEGORY + BRAND (приоритет 1) ---------- */
 
-  if (filters.selectedColors.length > 0) {
-    // Передаём все выбранные цвета как массив
-    params.color = filters.selectedColors.length === 1
-      ? filters.selectedColors[0]  // Если один - строка
-      : filters.selectedColors;     // Если несколько - массив
-  } else {
-    // Явно указываем undefined если цвета не выбраны
-    params.color = undefined;
-  }
-
-  /* ---------- CATEGORY + BRAND ---------- */
-  /**
-   * selectedCategories: ["Printed T-shirts:Nike"]
-   * Формат: "productType:brand"
-   */
   if (filters.selectedCategories.length > 0) {
-    const [category, brand] = filters.selectedCategories[0].split(':');
+    const [category, brand] = parseCategoryBrand(filters.selectedCategories[0]);
 
     params.productType = category;
-    if (brand) {
-      params.brand = brand;
-    } else {
-      params.brand = undefined;
-    }
-  } else {
-    params.productType = undefined;
-    params.brand = undefined;
+    if (brand) params.brand = brand;
+
+    // Ранний выход - категория имеет приоритет над стилем
+    return params;
   }
 
-  /* ---------- STYLE + BRAND ---------- */
-  /**
-   * selectedStyles: ["Casual:Adidas"]
-   * Формат: "dressStyle:brand"
-   *
-   * ВАЖНО: Применяем только если НЕ выбрана категория
-   * Иначе получится слишком узкая фильтрация (productType AND dressStyle AND brand)
-   */
-  if (filters.selectedStyles.length > 0 && filters.selectedCategories.length === 0) {
-    const [style, brand] = filters.selectedStyles[0].split(':');
+  /* ---------- STYLE + BRAND (приоритет 2) ---------- */
+
+  if (filters.selectedStyles.length > 0) {
+    const [style, brand] = parseCategoryBrand(filters.selectedStyles[0]);
 
     params.dressStyle = style;
-    if (brand) {
-      params.brand = brand;
-    } else {
-      params.brand = undefined;
-    }
-  } else if (filters.selectedCategories.length === 0) {
-    // Если нет ни категории, ни стиля - очищаем
-    params.dressStyle = undefined;
-    if (!params.brand) {
-      params.brand = undefined;
-    }
+    if (brand) params.brand = brand;
   }
 
   return params;

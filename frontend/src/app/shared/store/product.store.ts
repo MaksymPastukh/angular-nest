@@ -8,7 +8,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { switchMap, tap, catchError, of, debounceTime } from 'rxjs';
+import { switchMap, tap, catchError, of } from 'rxjs';
 import { ProductService } from '../services/product.service';
 import type { ProductType, ProductFilterParams } from '../../views/types/product.type';
 
@@ -82,14 +82,27 @@ export const ProductStore = signalStore(
   ======================= */
 
   withMethods((store, productService = inject(ProductService)) => {
+    /* ---------- HELPERS ---------- */
+
+    /**
+     * Устанавливает состояние загрузки
+     */
+    function setLoading(isLoading: boolean) {
+      patchState(store, { isLoading, error: isLoading ? null : store.error() });
+    }
+
+    /**
+     * Устанавливает ошибку
+     */
+    function setError(error: string) {
+      patchState(store, { isLoading: false, error });
+    }
+
     /* ---------- API ---------- */
 
     const loadProducts = rxMethod<ProductFilterParams>((source$) =>
       source$.pipe(
-        debounceTime(200),
-        tap(() => {
-          patchState(store, { isLoading: true, error: null });
-        }),
+        tap(() => setLoading(true)),
         switchMap((filters) => {
           return productService.getFilteredProducts(filters).pipe(
             tap((response) => {
@@ -101,11 +114,13 @@ export const ProductStore = signalStore(
               });
             }),
             catchError((error) => {
+              console.error('[ProductStore] Failed to load products:', error);
+
               patchState(store, {
                 products: [],
-                isLoading: false,
-                error: error?.message ?? 'Failed to load products',
               });
+
+              setError(error?.message ?? 'Failed to load products');
               return of(null);
             })
           );
@@ -117,37 +132,59 @@ export const ProductStore = signalStore(
 
     /**
      * Устанавливает новые фильтры
-     * ВАЖНО: Полностью заменяет фильтры новыми значениями
-     * undefined значения означают отсутствие фильтра и не будут добавлены
+     *
+     * Семантика:
+     * - Если ключ передан и значение !== undefined → устанавливаем
+     * - Если ключ передан и значение === undefined → удаляем (не копируем в next)
+     * - Если ключ НЕ передан → сохраняем текущее значение
+     *
+     * Это делает API явным и предсказуемым
      */
     function setFilters(filters: Partial<ProductFilterParams>) {
-      const currentFilters = store.filters();
+      const current = store.filters();
 
-      // Создаем новый объект фильтров только с базовыми полями
-      const newFilters: ProductFilterParams = {
-        page: filters.page ?? 1,
-        limit: filters.limit ?? currentFilters.limit ?? 20,
-        sortBy: filters.sortBy ?? currentFilters.sortBy ?? 'createdAt',
-        order: filters.order ?? currentFilters.order ?? 'desc',
+      // Базовые поля с дефолтами
+      const base: ProductFilterParams = {
+        page: filters.page ?? current.page ?? 1,
+        limit: filters.limit ?? current.limit ?? 20,
+        sortBy: filters.sortBy ?? current.sortBy ?? 'createdAt',
+        order: filters.order ?? current.order ?? 'desc',
       };
 
-      // Добавляем остальные фильтры только если они определены
-      // undefined означает что фильтр НЕ применяется
-      if (filters.productType !== undefined) newFilters.productType = filters.productType;
-      if (filters.category !== undefined) newFilters.category = filters.category;
-      if (filters.dressStyle !== undefined) newFilters.dressStyle = filters.dressStyle;
-      if (filters.brand !== undefined) newFilters.brand = filters.brand;
-      if (filters.color !== undefined) newFilters.color = filters.color;
-      if (filters.size !== undefined) newFilters.size = filters.size;
-      if (filters.minPrice !== undefined) newFilters.minPrice = filters.minPrice;
-      if (filters.maxPrice !== undefined) newFilters.maxPrice = filters.maxPrice;
-      if (filters.minRating !== undefined) newFilters.minRating = filters.minRating;
-      if (filters.search !== undefined) newFilters.search = filters.search;
+      const next: ProductFilterParams = { ...base };
 
-      console.log('📦 ProductStore.setFilters - New state:', newFilters);
+      /**
+       * Helper для явного присваивания:
+       * - key in filters && value !== undefined → записываем
+       * - key in filters && value === undefined → не записываем (удаляем)
+       * - key not in filters → копируем из current (сохраняем)
+       */
+      const assign = <K extends keyof ProductFilterParams>(key: K) => {
+        if (key in filters) {
+          const value = filters[key];
+          if (value !== undefined) {
+            (next as any)[key] = value;
+          }
+          // Если undefined — не копируем, тем самым удаляем
+        } else if (current[key] !== undefined) {
+          // Ключ не передан — оставляем текущее значение
+          (next as any)[key] = current[key];
+        }
+      };
+
+      assign('productType');
+      assign('category');
+      assign('dressStyle');
+      assign('brand');
+      assign('color');
+      assign('size');
+      assign('minPrice');
+      assign('maxPrice');
+      assign('minRating');
+      assign('search');
 
       patchState(store, {
-        filters: newFilters,
+        filters: next,
       });
     }
 
@@ -227,9 +264,24 @@ export const ProductStore = signalStore(
       /**
        * 🔥 ГЛАВНАЯ ФИШКА
        * Любое изменение filters → автоматический API запрос
+       *
+       * Защита от первого вызова: не стреляем запросом сразу при инициализации,
+       * ждем пока фильтры будут восстановлены из URL/Facade
        */
+      let isFirstRun = true;
+
       effect(() => {
         const filters = store.filters();
+
+        if (isFirstRun) {
+          isFirstRun = false;
+          // Пропускаем первый запрос с дефолтными фильтрами
+          // Фасад сам вызовет setFilters после восстановления из URL
+          // После этого effect сработает снова и сделает запрос
+          return;
+        }
+
+        // Все последующие изменения фильтров → запрос на сервер
         store.loadProducts(filters);
       });
     },

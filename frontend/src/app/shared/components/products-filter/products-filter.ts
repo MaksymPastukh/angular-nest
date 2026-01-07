@@ -45,19 +45,23 @@ export class ProductFilterComponent {
   openedPanels: string[] = ['0', '1', '2', '3', '4'];
 
   constructor() {
-    // Синхронизация локального состояния priceRangeValues со стором
-    // когда фильтры сбрасываются или восстанавливаются извне
-    const store = this.filterStore;
-
-
-
-    // Нормальный Angular effect
+    /**
+     * Синхронизация локального состояния priceRangeValues со стором
+     * Signals уже защищают от лишних перерисовок
+     */
     effect(() => {
-      const storePriceRange = store.selectedFilters().priceRange;
-      if (JSON.stringify(this.priceRangeValues) !== JSON.stringify(storePriceRange)) {
-        this.priceRangeValues = [...storePriceRange];
-      }
+      const [min, max] = this.filterStore.selectedFilters().priceRange;
+      this.priceRangeValues = [min, max];
     });
+  }
+
+  /* ---------- Helpers ---------- */
+
+  /**
+   * Ограничивает значение в заданных пределах
+   */
+  private clampPrice(value: number, min: number, max: number): number {
+    return Math.max(min, Math.min(value, max));
   }
 
   /* ---------- Аккордеон ---------- */
@@ -123,8 +127,8 @@ export class ProductFilterComponent {
       this.priceRangeValues[1] = temp;
     }
 
-    this.priceRangeValues[0] = Math.max(this.MIN_PRICE, Math.min(this.priceRangeValues[0], this.MAX_PRICE));
-    this.priceRangeValues[1] = Math.max(this.MIN_PRICE, Math.min(this.priceRangeValues[1], this.MAX_PRICE));
+    this.priceRangeValues[0] = this.clampPrice(this.priceRangeValues[0], this.MIN_PRICE, this.MAX_PRICE);
+    this.priceRangeValues[1] = this.clampPrice(this.priceRangeValues[1], this.MIN_PRICE, this.MAX_PRICE);
 
     this.filterStore.setPriceRange([...this.priceRangeValues]);
   }
@@ -143,24 +147,22 @@ export class ProductFilterComponent {
 
   /* ---------- Категории и стили через TieredMenu ---------- */
 
+  /**
+   * Открывает popup меню брендов для выбранной категории
+   * Устанавливает временное UI состояние чтобы Store знал какие бренды показать
+   */
   onCategoryClick(categoryName: string, event: Event, menu: any): void {
     this.filterStore.setCurrentCategory(categoryName);
     menu.toggle(event);
   }
 
+  /**
+   * Открывает popup меню брендов для выбранного стиля
+   * Устанавливает временное UI состояние чтобы Store знал какие бренды показать
+   */
   onStyleClick(styleName: string, event: Event, menu: any): void {
     this.filterStore.setCurrentStyle(styleName);
     menu.toggle(event);
-  }
-
-  /** Выбор пары Category + Brand из TieredMenu */
-  onCategoryBrandSelect(category: string, brand: string): void {
-    this.filterStore.toggleCategory(category, brand);
-  }
-
-  /** Выбор пары Style + Brand из TieredMenu */
-  onStyleBrandSelect(style: string, brand: string): void {
-    this.filterStore.toggleStyle(style, brand);
   }
 
   /* ---------- Сброс ---------- */

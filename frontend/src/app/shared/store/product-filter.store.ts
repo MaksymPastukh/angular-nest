@@ -3,9 +3,22 @@ import {patchState, signalStore, withComputed, withHooks, withMethods, withState
 import {catchError, forkJoin, of, switchMap, tap} from 'rxjs';
 import {computed, inject} from '@angular/core';
 import {ProductService} from '../services/product.service';
-
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {MenuItem} from 'primeng/api';
+import {parseUrlParams} from '../services/parseUrlParams';
+import type {Params} from '@angular/router';
+
+/* ==========================================
+   CONSTANTS
+========================================== */
+
+const PRICE_DEFAULT = { min: 70, max: 270 } as const;
+
+/* ==========================================
+   TYPES
+========================================== */
+
+type CompositeFilterKey = 'selectedCategories' | 'selectedStyles';
 
 interface FilterState {
   filterData: FilterData | null;
@@ -26,7 +39,7 @@ const initialState: FilterState = {
   filterData: null,
 
   selected: {
-    priceRange: [70, 270],
+    priceRange: [PRICE_DEFAULT.min, PRICE_DEFAULT.max],
     selectedSizes: [],
     selectedColors: [],
     selectedCategories: [],
@@ -42,6 +55,19 @@ const initialState: FilterState = {
   error: null,
   initialized: false,
 };
+
+/**
+ * NOTE: Если в будущем initialState нужно вычислять динамически
+ * (например, из конфигурации), можно использовать:
+ *
+ * withState(() => initialStateFactory())
+ *
+ * См. https://ngrx.io/guide/signals/signal-store#creating-a-store
+ */
+
+/* ==========================================
+   HELPERS
+========================================== */
 
 function toggle(list: string[], value: string): string[] {
   return list.includes(value)
@@ -61,6 +87,36 @@ function buildMenu(
       command: () => onSelect(item, brand),
     })),
   }));
+}
+
+/**
+ * Универсальная функция для toggle category/style
+ * Избегаем дублирования логики
+ */
+function createCompositeToggle(
+  key: CompositeFilterKey,
+  value: string,
+  resetKey: CompositeFilterKey,
+  currentState: SelectedFilters
+): SelectedFilters {
+  const prefix = value.split(':')[0];
+  const existing = currentState[key].find(item => item.startsWith(`${prefix}:`));
+
+  // Если кликнули на уже выбранный → снимаем выбор
+  if (existing === value) {
+    return {
+      ...currentState,
+      [key]: [],
+      [resetKey]: [],
+    };
+  }
+
+  // Иначе → выбираем (заменяя старый, если был)
+  return {
+    ...currentState,
+    [key]: [value],
+    [resetKey]: [],
+  };
 }
 
 
@@ -99,10 +155,15 @@ export const ProductFilterStore = signalStore(
               })
             ),
             catchError((error) => {
+              // Логируем ошибку для отладки/мониторинга
+              console.error('[ProductFilterStore] Failed to load filter data:', error);
+
               patchState(store, {
                 isLoading: false,
                 error: 'Не удалось загрузить фильтры',
               });
+
+              // Возвращаем null чтобы не прерывать stream
               return of(null);
             })
           )
@@ -126,102 +187,102 @@ export const ProductFilterStore = signalStore(
       updateSelected(f => ({ ...f, priceRange }));
     }
 
-    function toggleSize(size: string) {
+    /**
+     * Универсальная функция для toggle полей-массивов
+     */
+    function toggleArrayField<K extends keyof SelectedFilters>(
+      key: K,
+      value: string
+    ) {
       updateSelected(f => ({
         ...f,
-        selectedSizes: toggle(f.selectedSizes, size),
+        [key]: toggle(f[key] as string[], value),
       }));
+    }
+
+    function toggleSize(size: string) {
+      toggleArrayField('selectedSizes', size);
     }
 
     function toggleColor(color: string) {
-      updateSelected(f => ({
-        ...f,
-        selectedColors: toggle(f.selectedColors, color),
-      }));
+      toggleArrayField('selectedColors', color);
     }
 
+    /**
+     * Toggle категории (убрана дублированная логика)
+     */
     function toggleCategory(category: string, brand: string) {
       const key = `${category}:${brand}`;
-
-      updateSelected(f => {
-        // Проверяем есть ли уже выбранная категория с этим же типом (но может быть другой бренд)
-        const existingWithSameType = f.selectedCategories.find(item => item.startsWith(`${category}:`));
-
-        if (existingWithSameType === key) {
-          // Кликнули на уже выбранную категорию+бренд → снимаем выбор
-          return {
-            ...f,
-            selectedCategories: [],
-            selectedStyles: [],
-          };
-        } else if (existingWithSameType) {
-          // Кликнули на тот же тип категории, но другой бренд → заменяем
-          return {
-            ...f,
-            selectedCategories: [key],
-            selectedStyles: [],
-          };
-        } else {
-          // Кликнули на новую категорию → выбираем
-          return {
-            ...f,
-            selectedCategories: [key],
-            selectedStyles: [],
-          };
-        }
-      });
+      updateSelected(f =>
+        createCompositeToggle('selectedCategories', key, 'selectedStyles', f)
+      );
     }
 
+    /**
+     * Toggle стиля (убрана дублированная логика)
+     */
     function toggleStyle(style: string, brand: string) {
       const key = `${style}:${brand}`;
-
-      updateSelected(f => {
-        // Проверяем есть ли уже выбранный стиль с этим же типом (но может быть другой бренд)
-        const existingWithSameType = f.selectedStyles.find(item => item.startsWith(`${style}:`));
-
-        if (existingWithSameType === key) {
-          // Кликнули на уже выбранный стиль+бренд → снимаем выбор
-          return {
-            ...f,
-            selectedStyles: [],
-            selectedCategories: [],
-          };
-        } else if (existingWithSameType) {
-          // Кликнули на тот же тип стиля, но другой бренд → заменяем
-          return {
-            ...f,
-            selectedStyles: [key],
-            selectedCategories: [],
-          };
-        } else {
-          // Кликнули на новый стиль → выбираем
-          return {
-            ...f,
-            selectedStyles: [key],
-            selectedCategories: [],
-          };
-        }
-      });
+      updateSelected(f =>
+        createCompositeToggle('selectedStyles', key, 'selectedCategories', f)
+      );
     }
 
     function resetFilters() {
       patchState(store, {
         selected: initialState.selected,
-        ui: initialState.ui, // Также сбрасываем UI состояние
+        ui: initialState.ui,
       });
     }
 
-    /* ---------- UI ---------- */
-
+    /**
+     * Устанавливает текущую категорию для UI (показ меню брендов)
+     * Это временное состояние для popup меню, не влияет на фильтрацию
+     */
     function setCurrentCategory(category: string | null) {
       patchState(store, {
         ui: { ...store.ui(), currentCategory: category },
       });
     }
 
+    /**
+     * Устанавливает текущий стиль для UI (показ меню брендов)
+     * Это временное состояние для popup меню, не влияет на фильтрацию
+     */
     function setCurrentStyle(style: string | null) {
       patchState(store, {
         ui: { ...store.ui(), currentStyle: style },
+      });
+    }
+
+    /**
+     * Восстанавливает фильтры из URL параметров
+     * Детерминированно, без side-effects - один patchState
+     */
+    function restoreFromQueryParams(params: Params) {
+      const parsed = parseUrlParams(params);
+
+      // Формируем полное состояние фильтров
+      const selectedCategories: string[] = parsed.productType
+        ? [`${parsed.productType}:${parsed.brand || ''}`]
+        : [];
+
+      const selectedStyles: string[] = !parsed.productType && parsed.dressStyle
+        ? [`${parsed.dressStyle}:${parsed.brand || ''}`]
+        : [];
+
+      // Один детерминированный update
+      patchState(store, {
+        selected: {
+          priceRange: [
+            parsed.minPrice ?? PRICE_DEFAULT.min,
+            parsed.maxPrice ?? PRICE_DEFAULT.max,
+          ],
+          selectedSizes: parsed.sizes,
+          selectedColors: parsed.colors,
+          selectedCategories,
+          selectedStyles,
+        },
       });
     }
 
@@ -234,6 +295,7 @@ export const ProductFilterStore = signalStore(
       toggleCategory,
       toggleStyle,
       resetFilters,
+      restoreFromQueryParams,
 
       setCurrentCategory,
       setCurrentStyle,
@@ -244,66 +306,80 @@ export const ProductFilterStore = signalStore(
      COMPUTED (после методов, чтобы использовать их)
   ======================= */
 
-  withComputed((store) => ({
-    sizes: computed(() => store.filterData()?.sizes ?? []),
+  withComputed((store) => {
+    // Выносим методы в переменные - чище чем (store as any)
+    const toggleCategory = store.toggleCategory;
+    const toggleStyle = store.toggleStyle;
 
-    colors: computed(() =>
-      (store.filterData()?.colors ?? []).map(name => ({
-        name,
-        value: COLOR_MAP[name] ?? generateColorHex(name),
-      }))
-    ),
+    return {
+      sizes: computed(() => store.filterData()?.sizes ?? []),
 
-    // Имена категорий для кнопок в фильтре
-    categoryNames: computed(() => store.filterData()?.productTypes ?? []),
+      colors: computed(() =>
+        (store.filterData()?.colors ?? []).map(name => ({
+          name,
+          value: COLOR_MAP[name] ?? generateColorHex(name),
+        }))
+      ),
 
-    // Имена стилей для кнопок в фильтре (просто массив строк)
-    styleNames: computed(() => store.filterData()?.dressStyles ?? []),
+      // Имена категорий для кнопок в фильтре
+      categoryNames: computed(() => store.filterData()?.productTypes ?? []),
 
-    // Меню брендов для текущего выбранного стиля (для TieredMenu popup)
-    brandsMenuForCurrentStyle: computed<MenuItem[]>(() => {
-      const data = store.filterData();
-      const currentStyle = store.ui().currentStyle;
+      // Имена стилей для кнопок в фильтре
+      styleNames: computed(() => store.filterData()?.dressStyles ?? []),
 
-      if (!data || !currentStyle) return [];
+      // Меню брендов для текущей категории (выбранной для показа popup)
+      // Использует ui.currentCategory - временное состояние при клике на кнопку
+      brandsMenuForCurrentCategory: computed<MenuItem[]>(() => {
+        const data = store.filterData();
+        const currentCategory = store.ui().currentCategory;
 
-      // Возвращаем только список брендов для выбранного стиля
-      return data.brands.map(brand => ({
-        label: brand,
-        command: () => {
-          (store as any).toggleStyle(currentStyle, brand);
-        }
-      }));
-    }),
+        if (!data || !currentCategory) return [];
 
-    // Модель для TieredMenu по категориям: productType -> brands
-    subCategoryMenu: computed<MenuItem[]>(() => {
-      const data = store.filterData();
-      if (!data) return [];
-      return buildMenu(data.productTypes, data.brands, (category, brand) => {
-        (store as any).toggleCategory(category, brand);
-      });
-    }),
+        return data.brands.map(brand => ({
+          label: brand,
+          command: () => toggleCategory(currentCategory, brand)
+        }));
+      }),
 
-    // Меню брендов для текущей выбранной категории (для TieredMenu popup)
-    brandsMenuForCurrentCategory: computed<MenuItem[]>(() => {
-      const data = store.filterData();
-      const currentCategory = store.ui().currentCategory;
+      // Меню брендов для текущего стиля (выбранного для показа popup)
+      // Использует ui.currentStyle - временное состояние при клике на кнопку
+      brandsMenuForCurrentStyle: computed<MenuItem[]>(() => {
+        const data = store.filterData();
+        const currentStyle = store.ui().currentStyle;
 
-      if (!data || !currentCategory) return [];
+        if (!data || !currentStyle) return [];
 
-      // Возвращаем только список брендов для выбранной категории
-      return data.brands.map(brand => ({
-        label: brand,
-        command: () => {
-          (store as any).toggleCategory(currentCategory, brand);
-        }
-      }));
-    }),
+        return data.brands.map(brand => ({
+          label: brand,
+          command: () => toggleStyle(currentStyle, brand)
+        }));
+      }),
 
-    // Удобный доступ к selected-фильтрам в шаблоне
-    selectedFilters: computed(() => store.selected()),
-  })),
+      // Вычисляемые значения - что сейчас выбрано в фильтрах
+      currentCategory: computed(() =>
+        store.selected().selectedCategories[0]?.split(':')[0] ?? null
+      ),
+
+      currentStyle: computed(() =>
+        store.selected().selectedStyles[0]?.split(':')[0] ?? null
+      ),
+
+      // Модель для TieredMenu по категориям: productType -> brands
+      subCategoryMenu: computed<MenuItem[]>(() => {
+        const data = store.filterData();
+        if (!data) return [];
+        return buildMenu(
+          data.productTypes,
+          data.brands,
+          toggleCategory
+        );
+      }),
+
+
+      // Удобный доступ к selected-фильтрам в шаблоне
+      selectedFilters: computed(() => store.selected()),
+    };
+  }),
 
   withHooks({
     onInit(store) {
