@@ -17,6 +17,7 @@ import {AUTHORIZATION_STATE} from '../types/authorization.constants';
 import {LoginDataInterface} from '../types/loginData.interface';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthEventInterface} from '../types/auth-event.interface';
+import {UserRole} from '../types/user-role.enum';
 
 const initialState: AuthState = {
   user: null,
@@ -63,8 +64,14 @@ export const AuthStore = signalStore(
       return currentUser?.user?.firstName ?? 'Guest'
     }),
 
-    roles: computed(() => store.user()?.user?.roles ?? []),
+    // Получаем роль пользователя
+    userRole: computed(() => store.user()?.user?.role ?? UserRole.GUEST),
 
+    // Проверка является ли пользователь администратором
+    isAdmin: computed(() => store.user()?.user?.role === UserRole.ADMIN),
+
+    // Проверка является ли пользователь обычным пользователем
+    isUser: computed(() => store.user()?.user?.role === UserRole.USER),
   })),
 
   /**
@@ -140,8 +147,12 @@ export const AuthStore = signalStore(
       },
 
 
-      hasRole: (role: string): boolean => {
-        return store.roles().includes(role)
+      /**
+       * Проверка наличия конкретной роли у пользователя
+       * @param role - роль для проверки (UserRole enum или string)
+       */
+      hasRole: (role: UserRole | string): boolean => {
+        return store.userRole() === role
       },
 
 

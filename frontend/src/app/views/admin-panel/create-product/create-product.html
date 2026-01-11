@@ -1,0 +1,315 @@
+<div class="create-product-container">
+  <!-- Toast для уведомлений -->
+  <p-toast />
+
+  <!-- Заголовок страницы -->
+  <div class="page-header">
+    <h1 class="page-title">Создать новый продукт</h1>
+    <p class="page-subtitle">Заполните форму для добавления нового товара в каталог</p>
+  </div>
+
+  <!-- Основная форма -->
+  <p-card class="form-card">
+    <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="product-form">
+
+      <!-- Базовая информация -->
+      <div class="form-section">
+        <h2 class="section-title">Базовая информация</h2>
+        <p-divider />
+
+        <div class="form-grid">
+          <!-- Название продукта -->
+          <div class="form-field full-width">
+            <label for="title" class="field-label required">Название продукта</label>
+            <input
+              pInputText
+              id="title"
+              type="text"
+              placeholder="Например: Футболка Nike Air"
+              [ngModel]="store.formData().title"
+              (ngModelChange)="onFieldChange('title', $event)"
+              name="title"
+              required
+              minlength="3"
+              class="form-input"
+            />
+            <small class="field-hint">Минимум 3 символа</small>
+          </div>
+
+          <!-- Бренд -->
+          <div class="form-field">
+            <label for="brand" class="field-label required">Бренд</label>
+            <input
+              pInputText
+              id="brand"
+              type="text"
+              placeholder="Например: Nike"
+              [ngModel]="store.formData().brand"
+              (ngModelChange)="onFieldChange('brand', $event)"
+              name="brand"
+              required
+              class="form-input"
+            />
+          </div>
+
+          <!-- Цена -->
+          <div class="form-field">
+            <label for="price" class="field-label required">Цена (₽)</label>
+            <p-inputNumber
+              inputId="price"
+              [ngModel]="store.formData().price"
+              (ngModelChange)="onFieldChange('price', $event)"
+              mode="currency"
+              currency="RUB"
+              locale="ru-RU"
+              [min]="0"
+              name="price"
+              placeholder="0.00"
+              class="form-input"
+            />
+          </div>
+
+          <!-- Рейтинг -->
+          <div class="form-field">
+            <label for="rating" class="field-label">Рейтинг</label>
+            <p-rating
+              [ngModel]="store.formData().rating"
+              (ngModelChange)="onFieldChange('rating', $event)"
+              [stars]="5"
+              name="rating"
+            />
+            <small class="field-hint">От 0 до 5 звезд</small>
+          </div>
+        </div>
+      </div>
+
+      <p-divider />
+
+      <!-- Категории и классификация -->
+      <div class="form-section">
+        <h2 class="section-title">Категории и классификация</h2>
+        <p-divider />
+
+        <div class="form-grid">
+          <!-- Категория -->
+          <div class="form-field">
+            <label for="category" class="field-label required">Категория</label>
+            <p-select
+              inputId="category"
+              [options]="store.options().categories"
+              [ngModel]="store.formData().category"
+              (ngModelChange)="onFieldChange('category', $event)"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Выберите категорию"
+              name="category"
+              class="form-input"
+              [showClear]="true"
+            />
+          </div>
+
+          <!-- Тип продукта -->
+          <div class="form-field">
+            <label for="productType" class="field-label required">Тип продукта</label>
+            <p-select
+              inputId="productType"
+              [options]="store.options().productTypes"
+              [ngModel]="store.formData().productType"
+              (ngModelChange)="onFieldChange('productType', $event)"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Выберите тип"
+              name="productType"
+              class="form-input"
+              [showClear]="true"
+            />
+          </div>
+
+          <!-- Стиль -->
+          <div class="form-field">
+            <label for="dressStyle" class="field-label required">Стиль</label>
+            <p-select
+              inputId="dressStyle"
+              [options]="store.options().dressStyles"
+              [ngModel]="store.formData().dressStyle"
+              (ngModelChange)="onFieldChange('dressStyle', $event)"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Выберите стиль"
+              name="dressStyle"
+              class="form-input"
+              [showClear]="true"
+            />
+          </div>
+
+          <!-- Цвет -->
+          <div class="form-field">
+            <label for="color" class="field-label required">Цвет</label>
+            <p-select
+              inputId="color"
+              [options]="store.options().colors"
+              [ngModel]="store.formData().color"
+              (ngModelChange)="onFieldChange('color', $event)"
+              optionLabel="name"
+              optionValue="name"
+              placeholder="Выберите цвет"
+              name="color"
+              class="form-input"
+              [showClear]="true"
+            >
+              <ng-template pTemplate="selectedItem" let-option>
+                @if (option) {
+                  <div class="color-option">
+                    <div class="color-preview" [style.background-color]="option.value"></div>
+                    <span>{{ option.name }}</span>
+                  </div>
+                }
+              </ng-template>
+              <ng-template pTemplate="item" let-option>
+                <div class="color-option">
+                  <div class="color-preview" [style.background-color]="option.value"></div>
+                  <span>{{ option.name }}</span>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+
+          <!-- Размеры (множественный выбор) -->
+          <div class="form-field full-width">
+            <label for="size" class="field-label required">Доступные размеры</label>
+            <p-multiselect
+              inputId="size"
+              [options]="store.options().sizes"
+              [ngModel]="store.formData().size"
+              (ngModelChange)="onFieldChange('size', $event)"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Выберите размеры"
+              name="size"
+              class="form-input"
+              display="chip"
+            />
+            <small class="field-hint">Можно выбрать несколько размеров</small>
+          </div>
+        </div>
+      </div>
+
+      <p-divider />
+
+      <!-- Описание и изображение -->
+      <div class="form-section">
+        <h2 class="section-title">Описание и медиа</h2>
+        <p-divider />
+
+        <div class="form-grid">
+          <!-- Краткое описание -->
+          <div class="form-field full-width">
+            <label for="comment" class="field-label required">Краткое описание</label>
+            <input
+              pInputText
+              id="comment"
+              type="text"
+              placeholder="Например: Удобная спортивная футболка"
+              [ngModel]="store.formData().comment"
+              (ngModelChange)="onFieldChange('comment', $event)"
+              name="comment"
+              required
+              class="form-input"
+            />
+          </div>
+
+          <!-- Полное описание -->
+          <div class="form-field full-width">
+            <label for="description" class="field-label required">Полное описание</label>
+            <textarea
+              pInputTextarea
+              id="description"
+              rows="6"
+              placeholder="Подробное описание продукта..."
+              [ngModel]="store.formData().description"
+              (ngModelChange)="onFieldChange('description', $event)"
+              name="description"
+              required
+              minlength="10"
+              class="form-input"
+            ></textarea>
+            <small class="field-hint">Минимум 10 символов</small>
+          </div>
+
+          <!-- Загрузка изображения -->
+          <div class="form-field full-width">
+            <label for="image" class="field-label required">Изображение продукта</label>
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Выбрать изображение"
+              accept="image/*"
+              [maxFileSize]="5000000"
+              (onSelect)="onImageUpload($event)"
+              [auto]="true"
+              chooseIcon="pi pi-upload"
+              class="form-input"
+            />
+            <small class="field-hint">Форматы: JPG, PNG, WEBP. Максимум 5 МБ</small>
+
+            @if (store.formData().image) {
+              <div class="image-preview">
+                <p class="image-path">
+                  <i class="pi pi-check-circle" style="color: green;"></i>
+                  Изображение: {{ store.formData().image }}
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <p-divider />
+
+      <!-- Кнопки действий -->
+      <div class="form-actions">
+        <p-button
+          label="Сбросить"
+          icon="pi pi-times"
+          severity="secondary"
+          [outlined]="true"
+          type="button"
+          (onClick)="onReset()"
+          [disabled]="store.isLoading()"
+        />
+
+        <p-button
+          label="Создать продукт"
+          icon="pi pi-check"
+          severity="success"
+          type="submit"
+          [disabled]="!store.canSubmit()"
+          [loading]="store.isLoading()"
+          loadingIcon="pi pi-spinner"
+        />
+      </div>
+
+      <!-- Статус формы (для отладки) -->
+      @if (!store.isFormValid() && productForm.submitted) {
+        <div class="validation-message error">
+          <i class="pi pi-exclamation-triangle"></i>
+          Пожалуйста, заполните все обязательные поля корректно
+        </div>
+      }
+
+      @if (store.success()) {
+        <div class="validation-message success">
+          <i class="pi pi-check-circle"></i>
+          Продукт успешно создан!
+        </div>
+      }
+
+      @if (store.error()) {
+        <div class="validation-message error">
+          <i class="pi pi-times-circle"></i>
+          {{ store.error() }}
+        </div>
+      }
+    </form>
+  </p-card>
+</div>
+

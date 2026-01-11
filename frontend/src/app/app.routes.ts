@@ -19,6 +19,10 @@ export const routes: Routes = [
         path: '',
         loadChildren: () => import('./views/views.routes'),
       },
+      {
+        path: '',
+        loadChildren: () => import('./views/admin-panel/admin.routes'),
+      },
     ],
   },
 ]
