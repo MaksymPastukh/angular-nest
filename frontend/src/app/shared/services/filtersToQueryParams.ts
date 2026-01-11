@@ -24,7 +24,7 @@ export function filtersToQueryParams(filters: ProductFilterParams): QueryParams 
     params.maxPrice = filters['maxPrice'];
   }
 
-  // Рейтинг
+  // Рейтинг на будущее
   if (filters['minRating']) params.minRating = filters['minRating'];
 
   // Сортировка - только если отличается от дефолта
