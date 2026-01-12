@@ -10,7 +10,6 @@ import { ProductService } from '../../shared/services/product.service'
 import { ProductType } from '../types/product.type'
 import { RatingComponent } from '../../shared/components/rating/rating'
 import { RouterLink } from '@angular/router'
-import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe'
 
 @Component({
   selector: 'app-main',
@@ -22,7 +21,6 @@ import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe'
     ProductCardComponent,
     RatingComponent,
     RouterLink,
-    ImageUrlPipe,
   ],
   templateUrl: './main.html',
   styleUrl: './main.scss',
@@ -30,7 +28,6 @@ import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe'
 })
 export class MainComponent implements OnInit {
   categoryService: CategoriesService = inject(CategoriesService)
-  productService: ProductService = inject(ProductService)
   categoriesMen: Categories[] = []
   categoriesWoman: Categories[] = []
   productsInTheLimelight: ProductType[] = []

@@ -1,244 +1,293 @@
-<div class="create-product-container">
+<div class="container mx-auto mb-24 px-4">
   <!-- Toast для уведомлений -->
   <p-toast />
 
-  <!-- Заголовок страницы -->
-  <div class="page-header">
-    <h1 class="page-title">Создать новый продукт</h1>
-    <p class="page-subtitle">Заполните форму для добавления нового товара в каталог</p>
-  </div>
-
   <!-- Основная форма -->
-  <p-card class="form-card">
-    <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="product-form">
-
+  <div class="mt-12 bg-white rounded-xl shadow-md border border-gray-100 p-6 sm:p-8 lg:p-10">
+    <form (submit)="onSubmit($event)" novalidate class="space-y-10">
       <!-- Базовая информация -->
-      <div class="form-section">
-        <h2 class="section-title">Базовая информация</h2>
-        <p-divider />
+      <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Создать новый продукт</h2>
+          <p class="text-sm text-gray-500">Заполните основную информацию о товаре</p>
+        </div>
+        <div class="h-px bg-gray-200"></div>
 
-        <div class="form-grid">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           <!-- Название продукта -->
-          <div class="form-field full-width">
-            <label for="title" class="field-label required">Название продукта</label>
+          <div class="md:col-span-2">
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Название продукта <span class="text-red-500">*</span>
+            </label>
             <input
               pInputText
               id="title"
               type="text"
               placeholder="Например: Футболка Nike Air"
-              [ngModel]="store.formData().title"
-              (ngModelChange)="onFieldChange('title', $event)"
-              name="title"
-              required
-              minlength="3"
-              class="form-input"
+              [field]="productForm.title"
+              [class]="{
+                'w-full rounded-lg border px-3.5 py-2.5 text-sm sm:text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-shadow': true,
+                'border-red-500': productForm.title().touched() && productForm.title().invalid(),
+                'border-gray-300': !productForm.title().touched() || productForm.title().valid()
+              }"
             />
-            <small class="field-hint">Минимум 3 символа</small>
+            @if (productForm.title().touched() && productForm.title().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.title().errors()[0].message }}</p>
+            } @else {
+              <p class="mt-1 text-xs text-gray-500">Минимум 3 символа</p>
+            }
           </div>
 
           <!-- Бренд -->
-          <div class="form-field">
-            <label for="brand" class="field-label required">Бренд</label>
+          <div>
+            <label for="brand" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Бренд <span class="text-red-500">*</span>
+            </label>
             <input
               pInputText
               id="brand"
               type="text"
               placeholder="Например: Nike"
-              [ngModel]="store.formData().brand"
-              (ngModelChange)="onFieldChange('brand', $event)"
-              name="brand"
-              required
-              class="form-input"
+              [field]="productForm.brand"
+              [class]="{
+                'w-full rounded-lg border px-3.5 py-2.5 text-sm sm:text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-shadow': true,
+                'border-red-500': productForm.brand().touched() && productForm.brand().invalid(),
+                'border-gray-300': !productForm.brand().touched() || productForm.brand().valid()
+              }"
             />
+            @if (productForm.brand().touched() && productForm.brand().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.brand().errors()[0].message }}</p>
+            }
           </div>
 
           <!-- Цена -->
-          <div class="form-field">
-            <label for="price" class="field-label required">Цена (₽)</label>
+          <div>
+            <label for="price" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Цена <span class="text-red-500">*</span>
+            </label>
             <p-inputNumber
               inputId="price"
-              [ngModel]="store.formData().price"
-              (ngModelChange)="onFieldChange('price', $event)"
+              [field]="productForm.price"
               mode="currency"
-              currency="RUB"
-              locale="ru-RU"
+              currency="USD"
+              locale="USD"
               [min]="0"
-              name="price"
               placeholder="0.00"
-              class="form-input"
+              styleClass="w-full"
             />
+            @if (productForm.price().touched() && productForm.price().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.price().errors()[0].message }}</p>
+            }
           </div>
 
           <!-- Рейтинг -->
-          <div class="form-field">
-            <label for="rating" class="field-label">Рейтинг</label>
-            <p-rating
-              [ngModel]="store.formData().rating"
-              (ngModelChange)="onFieldChange('rating', $event)"
-              [stars]="5"
-              name="rating"
-            />
-            <small class="field-hint">От 0 до 5 звезд</small>
+          <div class="md:col-span-2 lg:col-span-1">
+            <label for="rating" class="block text-sm font-medium text-gray-700 mb-1.5">Рейтинг</label>
+            <div class="flex items-center gap-3">
+              <p-rating
+                [field]="productForm.rating"
+                [stars]="5"
+              />
+              <span class="text-xs text-gray-500">От 0 до 5 звезд</span>
+            </div>
           </div>
         </div>
-      </div>
-
-      <p-divider />
+      </section>
 
       <!-- Категории и классификация -->
-      <div class="form-section">
-        <h2 class="section-title">Категории и классификация</h2>
-        <p-divider />
+      <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">Категории и классификация</h2>
+          <p class="text-sm text-gray-500">Определите, где будет отображаться товар</p>
+        </div>
+        <div class="h-px bg-gray-200"></div>
 
-        <div class="form-grid">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           <!-- Категория -->
-          <div class="form-field">
-            <label for="category" class="field-label required">Категория</label>
+          <div>
+            <label for="category" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Категория <span class="text-red-500">*</span>
+            </label>
             <p-select
               inputId="category"
               [options]="store.options().categories"
-              [ngModel]="store.formData().category"
-              (ngModelChange)="onFieldChange('category', $event)"
+              [field]="productForm.category"
               optionLabel="label"
               optionValue="value"
               placeholder="Выберите категорию"
-              name="category"
-              class="form-input"
+              styleClass="w-full"
               [showClear]="true"
             />
+            @if (productForm.category().touched() && productForm.category().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.category().errors()[0].message }}</p>
+            }
           </div>
 
           <!-- Тип продукта -->
-          <div class="form-field">
-            <label for="productType" class="field-label required">Тип продукта</label>
+          <div>
+            <label for="productType" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Тип продукта <span class="text-red-500">*</span>
+            </label>
             <p-select
               inputId="productType"
               [options]="store.options().productTypes"
-              [ngModel]="store.formData().productType"
-              (ngModelChange)="onFieldChange('productType', $event)"
+              [field]="productForm.productType"
               optionLabel="label"
               optionValue="value"
               placeholder="Выберите тип"
-              name="productType"
-              class="form-input"
+              styleClass="w-full"
               [showClear]="true"
             />
+            @if (productForm.productType().touched() && productForm.productType().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.productType().errors()[0].message }}</p>
+            }
           </div>
 
           <!-- Стиль -->
-          <div class="form-field">
-            <label for="dressStyle" class="field-label required">Стиль</label>
+          <div>
+            <label for="dressStyle" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Стиль <span class="text-red-500">*</span>
+            </label>
             <p-select
               inputId="dressStyle"
               [options]="store.options().dressStyles"
-              [ngModel]="store.formData().dressStyle"
-              (ngModelChange)="onFieldChange('dressStyle', $event)"
+              [field]="productForm.dressStyle"
               optionLabel="label"
               optionValue="value"
               placeholder="Выберите стиль"
-              name="dressStyle"
-              class="form-input"
+              styleClass="w-full"
               [showClear]="true"
             />
+            @if (productForm.dressStyle().touched() && productForm.dressStyle().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.dressStyle().errors()[0].message }}</p>
+            }
           </div>
 
           <!-- Цвет -->
-          <div class="form-field">
-            <label for="color" class="field-label required">Цвет</label>
+          <div>
+            <label for="color" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Цвет <span class="text-red-500">*</span>
+            </label>
             <p-select
               inputId="color"
               [options]="store.options().colors"
-              [ngModel]="store.formData().color"
-              (ngModelChange)="onFieldChange('color', $event)"
+              [field]="productForm.color"
               optionLabel="name"
               optionValue="name"
               placeholder="Выберите цвет"
-              name="color"
-              class="form-input"
+              styleClass="w-full"
               [showClear]="true"
             >
               <ng-template pTemplate="selectedItem" let-option>
                 @if (option) {
-                  <div class="color-option">
-                    <div class="color-preview" [style.background-color]="option.value"></div>
-                    <span>{{ option.name }}</span>
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="inline-block h-5 w-5 rounded-full border border-gray-300"
+                      [style.background-color]="option.value"
+                    ></span>
+                    <span class="text-sm text-gray-900">{{ option.name }}</span>
                   </div>
                 }
               </ng-template>
               <ng-template pTemplate="item" let-option>
-                <div class="color-option">
-                  <div class="color-preview" [style.background-color]="option.value"></div>
-                  <span>{{ option.name }}</span>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-block h-5 w-5 rounded-full border border-gray-300"
+                    [style.background-color]="option.value"
+                  ></span>
+                  <span class="text-sm text-gray-900">{{ option.name }}</span>
                 </div>
               </ng-template>
             </p-select>
+            @if (productForm.color().touched() && productForm.color().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.color().errors()[0].message }}</p>
+            }
           </div>
 
           <!-- Размеры (множественный выбор) -->
-          <div class="form-field full-width">
-            <label for="size" class="field-label required">Доступные размеры</label>
+          <div class="md:col-span-2">
+            <label for="size" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Доступные размеры <span class="text-red-500">*</span>
+            </label>
             <p-multiselect
               inputId="size"
               [options]="store.options().sizes"
-              [ngModel]="store.formData().size"
-              (ngModelChange)="onFieldChange('size', $event)"
+              [field]="productForm.size"
               optionLabel="label"
               optionValue="value"
               placeholder="Выберите размеры"
-              name="size"
-              class="form-input"
+              styleClass="w-full"
               display="chip"
             />
-            <small class="field-hint">Можно выбрать несколько размеров</small>
+            @if (productForm.size().touched() && productForm.size().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.size().errors()[0].message }}</p>
+            } @else {
+              <p class="mt-1 text-xs text-gray-500">Можно выбрать несколько размеров</p>
+            }
           </div>
         </div>
-      </div>
-
-      <p-divider />
+      </section>
 
       <!-- Описание и изображение -->
-      <div class="form-section">
-        <h2 class="section-title">Описание и медиа</h2>
-        <p-divider />
+      <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">Описание и медиа</h2>
+          <p class="text-sm text-gray-500">Добавьте описание и изображение товара</p>
+        </div>
+        <div class="h-px bg-gray-200"></div>
 
-        <div class="form-grid">
+        <div class="space-y-6">
           <!-- Краткое описание -->
-          <div class="form-field full-width">
-            <label for="comment" class="field-label required">Краткое описание</label>
+          <div>
+            <label for="comment" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Краткое описание <span class="text-red-500">*</span>
+            </label>
             <input
               pInputText
               id="comment"
               type="text"
               placeholder="Например: Удобная спортивная футболка"
-              [ngModel]="store.formData().comment"
-              (ngModelChange)="onFieldChange('comment', $event)"
-              name="comment"
-              required
-              class="form-input"
+              [field]="productForm.comment"
+              [class]="{
+                'w-full rounded-lg border px-3.5 py-2.5 text-sm sm:text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-shadow': true,
+                'border-red-500': productForm.comment().touched() && productForm.comment().invalid(),
+                'border-gray-300': !productForm.comment().touched() || productForm.comment().valid()
+              }"
             />
+            @if (productForm.comment().touched() && productForm.comment().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.comment().errors()[0].message }}</p>
+            }
           </div>
 
           <!-- Полное описание -->
-          <div class="form-field full-width">
-            <label for="description" class="field-label required">Полное описание</label>
+          <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Полное описание <span class="text-red-500">*</span>
+            </label>
             <textarea
               pInputTextarea
               id="description"
               rows="6"
               placeholder="Подробное описание продукта..."
-              [ngModel]="store.formData().description"
-              (ngModelChange)="onFieldChange('description', $event)"
-              name="description"
-              required
-              minlength="10"
-              class="form-input"
+              [field]="productForm.description"
+              [class]="{
+                'w-full rounded-lg border px-3.5 py-2.5 text-sm sm:text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-shadow': true,
+                'border-red-500': productForm.description().touched() && productForm.description().invalid(),
+                'border-gray-300': !productForm.description().touched() || productForm.description().valid()
+              }"
             ></textarea>
-            <small class="field-hint">Минимум 10 символов</small>
+            @if (productForm.description().touched() && productForm.description().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.description().errors()[0].message }}</p>
+            } @else {
+              <p class="mt-1 text-xs text-gray-500">Минимум 10 символов</p>
+            }
           </div>
 
           <!-- Загрузка изображения -->
-          <div class="form-field full-width">
-            <label for="image" class="field-label required">Изображение продукта</label>
+          <div>
+            <label for="image" class="block text-sm font-medium text-gray-700 mb-1.5">
+              Изображение продукта <span class="text-red-500">*</span>
+            </label>
             <p-fileUpload
               mode="basic"
               chooseLabel="Выбрать изображение"
@@ -247,26 +296,33 @@
               (onSelect)="onImageUpload($event)"
               [auto]="true"
               chooseIcon="pi pi-upload"
-              class="form-input"
+              [disabled]="store.isUploadingImage()"
             />
-            <small class="field-hint">Форматы: JPG, PNG, WEBP. Максимум 5 МБ</small>
+            <p class="mt-1 text-xs text-gray-500">Форматы: JPG, PNG, WEBP. Максимум 5 МБ</p>
 
-            @if (store.formData().image) {
-              <div class="image-preview">
-                <p class="image-path">
-                  <i class="pi pi-check-circle" style="color: green;"></i>
-                  Изображение: {{ store.formData().image }}
-                </p>
+            @if (store.isUploadingImage()) {
+              <div class="mt-3 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2.5 flex items-center gap-2 text-sm text-blue-800">
+                <i class="pi pi-spin pi-spinner"></i>
+                <span>Загрузка изображения...</span>
               </div>
+            }
+
+            @if (model().image && !store.isUploadingImage()) {
+              <div class="mt-3 rounded-lg border border-green-200 bg-green-50 px-3.5 py-2.5 flex items-center gap-2 text-sm text-green-800">
+                <i class="pi pi-check-circle"></i>
+                <span>Изображение загружено: {{ model().image }}</span>
+              </div>
+            }
+
+            @if (productForm.image().touched() && productForm.image().invalid()) {
+              <p class="mt-1 text-xs text-red-600">{{ productForm.image().errors()[0].message }}</p>
             }
           </div>
         </div>
-      </div>
-
-      <p-divider />
+      </section>
 
       <!-- Кнопки действий -->
-      <div class="form-actions">
+      <div class="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 pt-4 border-t border-gray-200">
         <p-button
           label="Сбросить"
           icon="pi pi-times"
@@ -275,6 +331,7 @@
           type="button"
           (onClick)="onReset()"
           [disabled]="store.isLoading()"
+          styleClass="w-full sm:w-auto"
         />
 
         <p-button
@@ -282,34 +339,29 @@
           icon="pi pi-check"
           severity="success"
           type="submit"
-          [disabled]="!store.canSubmit()"
+          [disabled]="store.isLoading() || store.isUploadingImage()"
           [loading]="store.isLoading()"
           loadingIcon="pi pi-spinner"
+          styleClass="w-full sm:w-auto"
         />
       </div>
 
-      <!-- Статус формы (для отладки) -->
-      @if (!store.isFormValid() && productForm.submitted) {
-        <div class="validation-message error">
-          <i class="pi pi-exclamation-triangle"></i>
-          Пожалуйста, заполните все обязательные поля корректно
-        </div>
-      }
+      <!-- Статус формы -->
 
       @if (store.success()) {
-        <div class="validation-message success">
+        <div class="mt-4 rounded-lg border border-green-200 bg-green-50 px-3.5 py-2.5 flex items-center gap-2 text-sm text-green-800">
           <i class="pi pi-check-circle"></i>
-          Продукт успешно создан!
+          <span>Продукт успешно создан!</span>
         </div>
       }
 
       @if (store.error()) {
-        <div class="validation-message error">
+        <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 flex items-center gap-2 text-sm text-red-800">
           <i class="pi pi-times-circle"></i>
-          {{ store.error() }}
+          <span>{{ store.error() }}</span>
         </div>
       }
     </form>
-  </p-card>
+  </div>
 </div>
 

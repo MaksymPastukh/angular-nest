@@ -1,6 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import {
+  Field,
+  form,
+  minLength,
+  required,
+  submit,
+} from '@angular/forms/signals';
 
 // PrimeNG Imports
 import { InputText } from 'primeng/inputtext';
@@ -9,137 +16,149 @@ import { Textarea } from 'primeng/textarea';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { Button } from 'primeng/button';
-import { Card } from 'primeng/card';
 import { FileUpload } from 'primeng/fileupload';
 import { Toast } from 'primeng/toast';
 import { MessageService, PrimeTemplate } from 'primeng/api';
-import { Divider } from 'primeng/divider';
 import { Rating } from 'primeng/rating';
 
 // Store
-import { CreateProductStore } from './store/create-product.store';
-
-// Services
-import { ProductService } from '../../../shared/services/product.service';
+import { CreateProductStore } from '../store/create-product.store';
+import { CreateProductFormData } from '../types/create-product.interface';
 
 /**
  * Компонент создания нового продукта
  *
- * Использует:
- * - Angular 21 Signal Forms
- * - NgRx Signal Store для управления состоянием
- * - PrimeNG для UI компонентов
- *
- * Функционал:
- * - Создание продукта с валидацией
- * - Загрузка изображений
- * - Выбор категорий, размеров, цветов
- * - Автоматическая синхронизация с store
+ * Архитектура:
+ * - Signal Forms (@angular/forms/signals) для управления формой
+ * - Store только для API-операций (загрузка изображения, создание продукта)
+ * - Нет дублирования данных между формой и store
  */
 @Component({
   selector: 'app-create-product',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
-
-    // PrimeNG Components
+    Field,
     InputText,
     InputNumber,
     Textarea,
     Select,
     MultiSelect,
     Button,
-    Card,
     FileUpload,
     Toast,
-    Divider,
     Rating,
     PrimeTemplate,
   ],
   templateUrl: './create-product.html',
   styleUrl: './create-product.scss',
   providers: [MessageService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateProduct {
-  /** Инжектируем store для управления состоянием формы */
-  readonly store = inject(CreateProductStore);
-
-  /** Инжектируем MessageService для уведомлений (уже в providers) */
+  protected readonly store = inject(CreateProductStore);
   private readonly messageService = inject(MessageService);
 
-  /** Инжектируем ProductService для загрузки изображений */
-  private readonly productService = inject(ProductService);
+  /** Модель формы (единственный источник правды для данных формы) */
+  protected readonly model = signal<CreateProductFormData>({
+    title: '',
+    rating: 0,
+    brand: '',
+    image: '',
+    price: 0,
+    comment: '',
+    category: '',
+    productType: '',
+    dressStyle: '',
+    color: '',
+    size: [],
+    description: '',
+  });
 
-  /**
-   * Обработчик изменения поля формы
-   * @param field - имя поля
-   * @param value - новое значение
-   */
-  onFieldChange(field: string, value: any) {
-    this.store.updateField(field as any, value);
+  /** Signal Form с валидацией */
+  protected readonly productForm = form(this.model, (schema) => {
+    required(schema.title, { message: 'Это поле обязательно' });
+    minLength(schema.title, 3, { message: 'Минимум 3 символа' });
+
+    required(schema.brand, { message: 'Это поле обязательно' });
+    required(schema.image, { message: 'Это поле обязательно' });
+    required(schema.price, { message: 'Это поле обязательно' });
+    required(schema.comment, { message: 'Это поле обязательно' });
+    required(schema.category, { message: 'Это поле обязательно' });
+    required(schema.productType, { message: 'Это поле обязательно' });
+    required(schema.dressStyle, { message: 'Это поле обязательно' });
+    required(schema.color, { message: 'Это поле обязательно' });
+    required(schema.size, { message: 'Это поле обязательно' });
+
+    required(schema.description, { message: 'Это поле обязательно' });
+    minLength(schema.description, 10, { message: 'Минимум 10 символов' });
+  });
+
+  constructor() {
+    // Effect: Синхронизация загруженного изображения → модель формы
+    effect(() => {
+      const uploadedPath = this.store.uploadedImagePath();
+
+      if (uploadedPath && this.model().image !== uploadedPath) {
+        this.model.update(m => ({ ...m, image: uploadedPath }));
+      }
+    });
   }
 
   /**
    * Обработчик загрузки изображения
-   * @param event - событие загрузки файла
    */
-  onImageUpload(event: any) {
+  protected onImageUpload(event: any): void {
     const file = event.files[0];
-
     if (!file) return;
 
-    // Показываем индикатор загрузки
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Загрузка...',
-      detail: `Загрузка файла ${file.name} на сервер...`,
-      life: 3000,
-    });
-
-    // Загружаем файл на сервер
-    this.productService.uploadImage(file).subscribe({
-      next: (response) => {
-        // Сохраняем путь к изображению в store
-        this.store.updateField('image', response.imagePath);
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Изображение загружено',
-          detail: `Файл ${file.name} успешно загружен на сервер`,
-          life: 3000,
-        });
-      },
-      error: (error) => {
-        console.error('Ошибка загрузки изображения:', error);
-
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Ошибка загрузки',
-          detail: error?.error?.message || 'Не удалось загрузить изображение',
-          life: 5000,
-        });
-      },
-    });
+    this.store.uploadImage(file);
   }
 
   /**
    * Обработчик отправки формы
    */
-  onSubmit() {
-    this.store.submitForm();
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+
+    submit(this.productForm, async () => {
+      // Получаем данные из модели формы
+      const formData = this.model();
+
+      // Отправляем через store
+      this.store.createProduct(formData);
+    }).catch((error) => {
+      console.error('❌ Form submission error:', error);
+    });
   }
 
   /**
    * Обработчик сброса формы
    */
-  onReset() {
-    this.store.resetForm();
+  protected onReset(): void {
+    // Сбрасываем модель формы
+    this.model.set({
+      title: '',
+      rating: 0,
+      brand: '',
+      image: '',
+      price: 0,
+      comment: '',
+      category: '',
+      productType: '',
+      dressStyle: '',
+      color: '',
+      size: [],
+      description: '',
+    });
+
+    // Сбрасываем состояние store
+    this.store.resetState();
+
     this.messageService.add({
       severity: 'info',
       summary: 'Форма очищена',
-      detail: 'Все поля формы сброшены',
       life: 2000,
     });
   }
