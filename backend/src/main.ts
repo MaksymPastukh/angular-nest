@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { join } from 'path';
 import { existsSync } from 'fs';
+import { join } from 'path';
 import { AppModule } from './app.module';
 
 /**
@@ -46,9 +46,10 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // Логирование пути к статическим файлам для отладки
-  const publicPath = join(__dirname, '..', '..', 'public');
+  const publicPath = join(process.cwd(), 'public');
   console.log('📁 Static files directory:', publicPath);
   console.log('📁 __dirname:', __dirname);
+  console.log('📁 process.cwd():', process.cwd());
   console.log('✅ Public directory exists:', existsSync(publicPath));
 
   const imagesPath = join(publicPath, 'images', 'products');

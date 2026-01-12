@@ -28,11 +28,31 @@ import { UsersModule } from './users/users.module';
 
     // Раздача статических файлов из папки public
     // Файлы будут доступны напрямую, например: http://localhost:3000/images/products/image.jpg
-    // __dirname в compiled коде = dist/src, поэтому поднимаемся на 2 уровня вверх и идем в public
+    // Используем process.cwd() для получения корневой директории проекта
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'public'),
+      rootPath: join(process.cwd(), 'public'),
       serveRoot: '/',
       exclude: ['/api*'], // Исключаем API роуты из статической раздачи
+      serveStaticOptions: {
+        index: false, // Отключаем автоматический index.html
+        setHeaders: (res, path) => {
+          // Устанавливаем правильные MIME-типы для изображений
+          if (path.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+          } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+            res.setHeader('Content-Type', 'image/jpeg');
+          } else if (path.endsWith('.gif')) {
+            res.setHeader('Content-Type', 'image/gif');
+          } else if (path.endsWith('.webp')) {
+            res.setHeader('Content-Type', 'image/webp');
+          } else if (path.endsWith('.svg')) {
+            res.setHeader('Content-Type', 'image/svg+xml');
+          }
+          // CORS заголовки для статических файлов
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        },
+      },
     }),
 
     // Подключаем модули приложения
