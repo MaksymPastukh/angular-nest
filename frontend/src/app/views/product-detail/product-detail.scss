@@ -1,0 +1,71 @@
+::ng-deep {
+  .p-breadcrumb {
+
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+
+    .p-breadcrumb-list {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .p-breadcrumb-item {
+      .p-breadcrumb-item-link {
+        font-family: "Causten", sans-serif !important;
+        font-size: 1rem;
+        color: #9ca3af;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover {
+          color: #8a33fd;
+        }
+
+        .p-breadcrumb-item-icon {
+          font-size: 0.75rem;
+          color: #9ca3af;
+        }
+
+        .p-breadcrumb-item-label {
+          font-weight: 400;
+        }
+      }
+
+      &:last-child {
+        .p-breadcrumb-item-link {
+          color: #374151;
+          font-weight: 500;
+          pointer-events: none;
+        }
+      }
+    }
+
+    .p-breadcrumb-separator {
+      color: #9ca3af;
+      margin: 0 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .p-breadcrumb-home {
+      .p-breadcrumb-item-link {
+        .p-breadcrumb-item-icon {
+          color: #8a33fd;
+          font-size: 1rem;
+        }
+
+        &:hover {
+          .p-breadcrumb-item-icon {
+            color: #7c2ed9;
+          }
+        }
+      }
+    }
+  }
+}
+

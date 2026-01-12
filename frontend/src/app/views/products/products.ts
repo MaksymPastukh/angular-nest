@@ -1,5 +1,6 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card';
 import { ProductFilterComponent } from '../../shared/components/products-filter/products-filter';
 import { TableBestPrice } from '../../shared/components/table-best-price/table-best-price';
@@ -24,6 +25,9 @@ export class Products implements OnInit, OnDestroy {
 
   /** Route для получения query params при инициализации */
   private readonly route = inject(ActivatedRoute);
+
+  /** Subscription на query params для корректной отписки */
+  private queryParamsSubscription?: Subscription;
 
 
   /** Данные для таблицы лучших цен */
@@ -57,36 +61,47 @@ export class Products implements OnInit, OnDestroy {
 
   /**
    * Инициализация компонента
-   * Восстанавливает фильтры из query params URL
+   * Подписывается на изменения query params для обработки навигации между категориями
    */
   ngOnInit(): void {
-    const params = this.route.snapshot.queryParams;
-
-    if (Object.keys(params).length > 0) {
-      // Есть параметры в URL → восстанавливаем фильтры
-      this.facade.restoreFiltersFromUrl(params);
-    }
-
-    // После восстановления (или если параметров нет) - загружаем продукты
-    // ProductStore имеет защиту от первого вызова effect,
-    // поэтому нужно явно триггернуть загрузку
-    // Фасад автоматически вызовет loadProducts через effect после этого
+    // Подписываемся на изменения query params
+    // Это необходимо для обновления продуктов при переходе Men → Women и т.д.
+    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
+      if (Object.keys(params).length > 0) {
+        // Есть параметры в URL → восстанавливаем фильтры
+        this.facade.restoreFiltersFromUrl(params);
+      } else {
+        // Нет параметров → сбрасываем фильтры (показываем все продукты)
+        this.facade.resetFilters();
+      }
+    });
   }
 
   ngOnDestroy(): void {
-    this.facade.resetFilters()
+    // Отписываемся от queryParams
+    this.queryParamsSubscription?.unsubscribe();
+
+    // Сбрасываем фильтры при уходе со страницы
+    this.facade.resetFilters();
   }
 
   /** Геттер для заголовка категории на основе активных фильтров */
   get titleCategory(): string {
     const selected = this.facade.filters();
 
+    // Приоритет 1: Основная категория (Men, Women, Combos, Joggers)
+    if (selected.selectedCategory) {
+      return selected.selectedCategory;
+    }
+
+    // Приоритет 2: Подкатегория (Product Type)
     if (selected.selectedCategories.length > 0) {
       const [raw] = selected.selectedCategories;
       const [productType] = raw.split(':');
       return productType || 'All';
     }
 
+    // Приоритет 3: Стиль
     if (selected.selectedStyles.length > 0) {
       const [raw] = selected.selectedStyles;
       const [style] = raw.split(':');
