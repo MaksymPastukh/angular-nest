@@ -1,6 +1,6 @@
 @use 'tailwindcss';
 @use 'fonts';
-@import 'variables'; // Импорт глобальных переменных
+@use 'variables';
 // PrimeNG 21 - иконки
 @import 'primeicons/primeicons.css';
 
@@ -138,6 +138,37 @@ p-accordion-header {
 
 // Компоненты
 @layer components {
+
+  .label {
+    @apply block text-sm font-medium text-gray-700;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-gray-300 bg-white
+    px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400
+    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+
+  .error-text {
+    @apply text-xs text-red-600;
+  }
+
+  .hint-text {
+    @apply text-xs text-gray-500;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-gray-500 mt-1;
+  }
+
   .footer-title {
     @apply font-family font-bold text-[28px] leading-[217%] text-[#f6f6f6];
   }
@@ -307,14 +338,5 @@ p-accordion-header {
 .p-sidebar {
   background: #ffffff !important;
   color: #3c4242 !important;
-}
-
-// Toast уведомления
-.p-toast {
-  .p-toast-message {
-    background: #ffffff !important;
-    color: #3c4242 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  }
 }
 

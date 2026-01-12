@@ -1,16 +1,17 @@
-@import '../../../../assets/styles/variables';
+@use '../../../../assets/styles/variables' as *;
 
 :host {
   display: block;
 }
 
-:host ::ng-deep .filter-accordion {
+:host ::ng-deep .p-accordion {
   background: $color-background-white;
   border-left: 1px solid $color-border;
   border-right: 1px solid $color-border;
   border-bottom: 1px solid $color-border;
   border-radius: 0 0 $border-radius-sm $border-radius-sm;
   font-family: $font-family-causten;
+  font-weight: bold;
   color: $color-text-gray;
 
   .p-accordionpanel {
@@ -18,6 +19,9 @@
 
     .p-accordionheader {
       background: $color-background-white;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      color: #807d7e;
       position: relative;
 
       a {
@@ -55,13 +59,13 @@
     }
 
     &:nth-child(5) .p-accordionheader {
-      margin-bottom: 22px;
       border-bottom: 0;
     }
 
     &:not(:first-child)[data-p-active='true'] {
       .p-accordionheader {
         border-bottom: 1px solid $color-border;
+        margin-bottom: 32px;
       }
     }
 
@@ -90,6 +94,32 @@
     .p-slider-handle {
       background-color: $color-primary;
       border: 2px solid $color-primary;
+      width: 20px;
+      height: 20px;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+
+      &:hover,
+      &:focus {
+        background-color: #7c3aed;
+        border-color: #7c3aed;
+        transform: scale(1.2);
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.2);
+      }
+
+      &::before {
+        content: '';
+        background-color: #7c3aed;
+        transition: all 0.3s ease-in-out;
+      }
+
+      &:hover::before {
+        background-color: #7c3aed;
+        border-color: #7c3aed;
+        transform: scale(1.2);
+        box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.2);
+      }
     }
   }
 }

@@ -1,0 +1,688 @@
+{
+  "info": {
+    "name": "Online Shop Backend API",
+    "description": "Полная коллекция API для backend онлайн-магазина на NestJS\n\nВключает:\n- Authentication (Регистрация, Вход, Refresh Token)\n- Products (CRUD, Фильтрация, Поиск)\n- Filters (Категории, Бренды, Цвета, Размеры)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Регистрация",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', jsonData.access_token);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.refresh_token);",
+                  "    console.log('Tokens saved successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"testuser\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Регистрация нового пользователя в системе.\n\nРоли:\n- user (по умолчанию)\n- admin\n\nТокены автоматически сохраняются в переменные коллекции."
+          },
+          "response": []
+        },
+        {
+          "name": "Вход (Login)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', jsonData.access_token);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.refresh_token);",
+                  "    console.log('Tokens saved successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Вход в систему. Возвращает access_token и refresh_token.\n\nТокены автоматически сохраняются в переменные коллекции."
+          },
+          "response": []
+        },
+        {
+          "name": "Обновить токен (Refresh)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', jsonData.access_token);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.refresh_token);",
+                  "    console.log('Tokens refreshed successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Обновление access_token с помощью refresh_token.\n\nИспользуется когда access_token истек."
+          },
+          "response": []
+        },
+        {
+          "name": "Получить профиль",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Получение профиля текущего пользователя.\n\nТребуется авторизация (Bearer Token)."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints для аутентификации и авторизации пользователей"
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "CRUD Operations",
+          "item": [
+            {
+              "name": "Создать продукт",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.collectionVariables.set('productId', jsonData._id);",
+                      "    console.log('Product ID saved:', jsonData._id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Футболка Nike Air\",\n  \"rating\": 4.5,\n  \"brand\": \"Nike\",\n  \"image\": \"/images/products/nike-air-shirt.jpg\",\n  \"price\": 1999.99,\n  \"comment\": \"Удобная спортивная футболка\",\n  \"category\": \"Men\",\n  \"productType\": \"Printed T-shirts\",\n  \"dressStyle\": \"Casual\",\n  \"color\": \"Черный\",\n  \"size\": [\"S\", \"M\", \"L\", \"XL\"],\n  \"description\": \"Спортивная футболка из высококачественного материала. Отлично подходит для тренировок и повседневной носки.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                },
+                "description": "Создание нового продукта в магазине.\n\nID продукта автоматически сохраняется в переменные."
+              },
+              "response": []
+            },
+            {
+              "name": "Получить все продукты",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"]
+                },
+                "description": "Получение списка всех продуктов без фильтрации."
+              },
+              "response": []
+            },
+            {
+              "name": "Получить продукт по ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{productId}}",
+                      "description": "ID продукта"
+                    }
+                  ]
+                },
+                "description": "Получение конкретного продукта по его ID."
+              },
+              "response": []
+            },
+            {
+              "name": "Обновить продукт",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"price\": 1799.99,\n  \"rating\": 4.7,\n  \"comment\": \"Обновленное описание продукта\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{productId}}",
+                      "description": "ID продукта"
+                    }
+                  ]
+                },
+                "description": "Обновление данных продукта (частичное обновление)."
+              },
+              "response": []
+            },
+            {
+              "name": "Удалить продукт",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{productId}}",
+                      "description": "ID продукта"
+                    }
+                  ]
+                },
+                "description": "Удаление продукта из базы данных."
+              },
+              "response": []
+            }
+          ],
+          "description": "Основные операции создания, чтения, обновления и удаления продуктов"
+        },
+        {
+          "name": "Filtering & Search",
+          "item": [
+            {
+              "name": "Фильтрация продуктов",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products?category=Men&productType=Printed T-shirts&dressStyle=Casual&minPrice=1000&maxPrice=5000&minRating=4&sortBy=price&order=asc&page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"],
+                  "query": [
+                    {
+                      "key": "category",
+                      "value": "Men",
+                      "description": "Фильтр по категории (Shop All, Men, Women, Combos, Joggers)"
+                    },
+                    {
+                      "key": "productType",
+                      "value": "Printed T-shirts",
+                      "description": "Фильтр по типу товара",
+                      "disabled": true
+                    },
+                    {
+                      "key": "dressStyle",
+                      "value": "Casual",
+                      "description": "Фильтр по стилю одежды",
+                      "disabled": true
+                    },
+                    {
+                      "key": "brand",
+                      "value": "Nike",
+                      "description": "Фильтр по бренду",
+                      "disabled": true
+                    },
+                    {
+                      "key": "minPrice",
+                      "value": "1000",
+                      "description": "Минимальная цена"
+                    },
+                    {
+                      "key": "maxPrice",
+                      "value": "5000",
+                      "description": "Максимальная цена"
+                    },
+                    {
+                      "key": "minRating",
+                      "value": "4",
+                      "description": "Минимальный рейтинг"
+                    },
+                    {
+                      "key": "color",
+                      "value": "Черный",
+                      "description": "Фильтр по цвету",
+                      "disabled": true
+                    },
+                    {
+                      "key": "size",
+                      "value": "M",
+                      "description": "Фильтр по размеру",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "price",
+                      "description": "Поле для сортировки (price, rating, title, createdAt)"
+                    },
+                    {
+                      "key": "order",
+                      "value": "asc",
+                      "description": "Направление сортировки (asc, desc)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Номер страницы"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20",
+                      "description": "Количество элементов на странице"
+                    }
+                  ]
+                },
+                "description": "Получение продуктов с применением фильтров, сортировки и пагинации.\n\nВсе параметры опциональны. Включайте/отключайте нужные фильтры."
+              },
+              "response": []
+            },
+            {
+              "name": "Поиск по тексту",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products?search=футболка&sortBy=rating&order=desc",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "футболка",
+                      "description": "Поиск по названию и описанию"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "rating",
+                      "description": "Сортировка по рейтингу"
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "description": "По убыванию"
+                    }
+                  ]
+                },
+                "description": "Текстовый поиск по названию и описанию продуктов."
+              },
+              "response": []
+            },
+            {
+              "name": "Дешевые товары",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products?maxPrice=2000&sortBy=price&order=asc&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"],
+                  "query": [
+                    {
+                      "key": "maxPrice",
+                      "value": "2000"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "price"
+                    },
+                    {
+                      "key": "order",
+                      "value": "asc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Пример: получить 10 самых дешевых товаров до 2000 руб."
+              },
+              "response": []
+            },
+            {
+              "name": "Топ рейтинговые товары",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products?minRating=4.5&sortBy=rating&order=desc&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"],
+                  "query": [
+                    {
+                      "key": "minRating",
+                      "value": "4.5"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "rating"
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                },
+                "description": "Пример: товары с рейтингом выше 4.5, отсортированные по рейтингу."
+              },
+              "response": []
+            },
+            {
+              "name": "Новинки",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products?sortBy=createdAt&order=desc&limit=15",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"],
+                  "query": [
+                    {
+                      "key": "sortBy",
+                      "value": "createdAt"
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "15"
+                    }
+                  ]
+                },
+                "description": "Пример: последние добавленные товары (новинки)."
+              },
+              "response": []
+            },
+            {
+              "name": "Товары в ценовом диапазоне",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products?minPrice=3000&maxPrice=10000&category=Одежда",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products"],
+                  "query": [
+                    {
+                      "key": "minPrice",
+                      "value": "3000"
+                    },
+                    {
+                      "key": "maxPrice",
+                      "value": "10000"
+                    },
+                    {
+                      "key": "category",
+                      "value": "Men"
+                    }
+                  ]
+                },
+                "description": "Пример: одежда в диапазоне от 3000 до 10000 руб."
+              },
+              "response": []
+            }
+          ],
+          "description": "Фильтрация, поиск и примеры запросов"
+        },
+        {
+          "name": "Filter Data",
+          "item": [
+            {
+              "name": "Получить все категории",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/filters/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "filters", "categories"]
+                },
+                "description": "Получение списка всех уникальных категорий (Shop All, Men, Women, Combos, Joggers)."
+              },
+              "response": []
+            },
+            {
+              "name": "Получить все типы товаров",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/filters/product-types",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "filters", "product-types"]
+                },
+                "description": "Получение списка всех уникальных типов товаров (Tops, Printed T-shirts, Plain T-shirts, Kurti, Boxers, Full sleeve T-shirts, Joggers, Payjamas, Jeans)."
+              },
+              "response": []
+            },
+            {
+              "name": "Получить все стили одежды",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/filters/dress-styles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "filters", "dress-styles"]
+                },
+                "description": "Получение списка всех уникальных стилей одежды (Classic, Casual, Business, Sport, Elegant, Formal)."
+              },
+              "response": []
+            },
+            {
+              "name": "Получить все бренды",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/filters/brands",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "filters", "brands"]
+                },
+                "description": "Получение списка всех уникальных брендов."
+              },
+              "response": []
+            },
+            {
+              "name": "Получить все цвета",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/filters/colors",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "filters", "colors"]
+                },
+                "description": "Получение списка всех уникальных цветов."
+              },
+              "response": []
+            },
+            {
+              "name": "Получить все размеры",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products/filters/sizes",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["products", "filters", "sizes"]
+                },
+                "description": "Получение списка всех уникальных размеров."
+              },
+              "response": []
+            }
+          ],
+          "description": "Endpoints для получения данных фильтров"
+        }
+      ],
+      "description": "API для управления продуктами магазина"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

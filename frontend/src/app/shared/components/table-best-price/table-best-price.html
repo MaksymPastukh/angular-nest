@@ -1,0 +1,50 @@
+<section class="container mx-auto mb-[100px]">
+  <!-- Title -->
+  <div class="flex items-center mb-[70px]">
+    <span class="rounded-xl w-[8px] h-[37px] bg-[#8a33fd]"></span>
+    <h2 class="ml-4 text-3xl font-semibold text-[#3c4242]">
+      Buy ... Clothing at Best Price
+    </h2>
+  </div>
+
+  <!-- ===== Desktop / Tablet ===== -->
+  <div class="hidden md:block font-coresans">
+    <!-- Header -->
+    <div class="grid grid-cols-[1fr_220px] border-b-2 border-gray-300">
+      <div class="relative px-6 py-4 text-2xl font-semibold text-[#3c4242]">
+        <span class="absolute right-0 top-4 bottom-4 w-px bg-gray-300"></span>
+        ... Clothing
+      </div>
+      <div class="px-6 py-4 text-right text-2xl font-semibold text-[#3c4242]">Best Price</div>
+    </div>
+
+    <!-- Rows -->
+    <div class="divide-y divide-gray-200 font-causten">
+      @for (item of itemsTableBestPrice(); track $index) {
+        <div class="grid grid-cols-[1fr_220px] hover:bg-[#fafafa] transition-colors text-2xl">
+          <!-- Name -->
+          <div class="relative px-6 py-4 text-gray-600">
+            <span class="absolute right-0 top-4 bottom-4 w-px bg-gray-200"></span>
+            <a [routerLink]="item.link" class="hover:text-[#8a33fd] transition-colors">
+              {{ item.title }}
+            </a>
+          </div>
+
+          <!-- Price -->
+          <div class="px-6 py-4 text-right font-medium text-gray-800">₹ {{ item.price }}</div>
+        </div>
+      }
+
+    </div>
+  </div>
+
+  <!-- ===== Mobile ===== -->
+  <div class="md:hidden space-y-4 font-causten">
+    @for (item of itemsTableBestPrice(); track $index) {
+      <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-start">
+        <p class="text-gray-700 text-sm leading-snug pr-4">{{ item.title }}</p>
+        <span class="font-semibold text-[#3c4242] whitespace-nowrap">₹ {{ item.price }}</span>
+      </div>
+    }
+  </div>
+</section>

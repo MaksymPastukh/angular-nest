@@ -2,7 +2,7 @@
   <div class="w-[270px] h-auto xs:w-full xs:h-auto overflow-hidden">
     <div
       class="h-[393px] bg-cover bg-center"
-      style="background-image: url('{{ category.image }}');"
+      [style.background-image]="'url(' + (category.image | imageUrl) + ')'"
     ></div>
     <div class="flex justify-between items-center mt-4 group">
       <div class="cursor-pointer">

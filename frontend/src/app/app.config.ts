@@ -13,9 +13,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes,
-      withViewTransitions(),
       withInMemoryScrolling({
-        scrollPositionRestoration: 'top',
+        scrollPositionRestoration: 'disabled', // Полностью отключаем автоматический скролл
+        anchorScrolling: 'enabled'
       })),
     provideHttpClient(withInterceptors([AuthInterceptor])),
     provideAnimationsAsync(),

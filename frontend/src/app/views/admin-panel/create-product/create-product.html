@@ -1,0 +1,262 @@
+<div class="container mx-auto px-4 py-8">
+  <p-toast />
+
+  <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 sm:p-8 lg:p-10">
+    <form (submit)="onSubmit($event)" novalidate class="space-y-10">
+      <section>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+          Создать новый продукт
+        </h2>
+        <p class="text-sm text-gray-500 mt-1">
+          Заполните основную информацию о товаре
+        </p>
+      </section>
+
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="md:col-span-2 space-y-1">
+          <label for="title" class="label">
+            Название продукта <span class="text-red-500">*</span>
+          </label>
+
+          <input
+            id="title"
+            type="text"
+            placeholder="Например: Футболка Nike Air"
+            [field]="productForm.title"
+            class="input"
+            [class.input-error]="productForm.title().touched() && productForm.title().invalid()"
+          />
+
+          @if (productForm.title().touched() && productForm.title().invalid()) {
+            <p class="error-text">
+              {{ productForm.title().errors()[0].message }}
+            </p>
+          } @else {
+            <p class="hint-text">Минимум 3 символа</p>
+          }
+        </div>
+
+        <div class="space-y-1">
+          <label for="brand" class="label">
+            Бренд <span class="text-red-500">*</span>
+          </label>
+
+          <input
+            id="brand"
+            type="text"
+            placeholder="Nike"
+            [field]="productForm.brand"
+            class="input"
+            [class.input-error]="productForm.brand().touched() && productForm.brand().invalid()"
+          />
+
+          @if (productForm.brand().touched() && productForm.brand().invalid()) {
+            <p class="error-text">
+              {{ productForm.brand().errors()[0].message }}
+            </p>
+          }
+        </div>
+
+        <div class="space-y-1">
+          <label for="price" class="label">
+            Цена <span class="text-red-500">*</span>
+          </label>
+
+          <p-inputNumber
+            inputId="price"
+            [field]="productForm.price"
+            mode="currency"
+            currency="USD"
+            locale="USD"
+            [min]="0"
+            placeholder="0.00"
+            class="w-full"
+          />
+
+          @if (productForm.price().touched() && productForm.price().invalid()) {
+            <p class="error-text">
+              {{ productForm.price().errors()[0].message }}
+            </p>
+          }
+        </div>
+
+        <div class="space-y-1">
+          <label class="label">Рейтинг</label>
+          <div class="flex items-center gap-3">
+            <p-rating [field]="productForm.rating" [stars]="5" />
+            <span class="hint-text">От 0 до 5</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <div>
+          <h3 class="section-title">Категории и классификация</h3>
+          <p class="section-subtitle">
+            Определите, где будет отображаться товар
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div class="space-y-1">
+            <label class="label">Категория *</label>
+            <p-select
+              [options]="store.options().categories"
+              [field]="productForm.category"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Выберите категорию"
+              class="w-full"
+              [showClear]="true"
+            />
+            @if (productForm.category().touched() && productForm.category().invalid()) {
+              <p class="error-text">{{ productForm.category().errors()[0].message }}</p>
+            }
+          </div>
+
+          <div class="space-y-1">
+            <label class="label">Тип продукта *</label>
+            <p-select
+              [options]="store.options().productTypes"
+              [field]="productForm.productType"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Выберите тип"
+              class="w-full"
+              [showClear]="true"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label class="label">Стиль *</label>
+            <p-select
+              [options]="store.options().dressStyles"
+              [field]="productForm.dressStyle"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Выберите стиль"
+              class="w-full"
+              [showClear]="true"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label class="label">Цвет *</label>
+            <p-select
+              [options]="store.options().colors"
+              [field]="productForm.color"
+              optionLabel="name"
+              optionValue="name"
+              placeholder="Выберите цвет"
+              class="w-full"
+              [showClear]="true"
+            />
+          </div>
+
+          <div class="md:col-span-2 space-y-1">
+            <label class="label">Размеры *</label>
+            <p-multiselect
+              [options]="store.options().sizes"
+              [field]="productForm.size"
+              optionLabel="label"
+              optionValue="value"
+              display="chip"
+              placeholder="Выберите размеры"
+              class="w-full"
+            ></p-multiselect>
+            <p class="hint-text">Можно выбрать несколько размеров</p>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <div>
+          <h3 class="section-title">Описание и медиа</h3>
+          <p class="section-subtitle">
+            Добавьте описание и изображение товара
+          </p>
+        </div>
+
+        <div class="space-y-1">
+          <label class="label">Краткое описание *</label>
+          <input
+            type="text"
+            placeholder="Короткое описание"
+            [field]="productForm.comment"
+            class="input"
+            [class.input-error]="productForm.comment().touched() && productForm.comment().invalid()"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <label class="label">Полное описание *</label>
+          <textarea
+            rows="6"
+            placeholder="Подробное описание продукта..."
+            [field]="productForm.description"
+            class="input resize-none"
+            [class.input-error]="productForm.description().touched() && productForm.description().invalid()"
+          ></textarea>
+          <p class="hint-text">Минимум 10 символов</p>
+        </div>
+
+        <div class="space-y-2">
+          <label class="label">Изображение *</label>
+
+          @if (!model().image) {
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Выбрать изображение"
+              accept="image/*"
+              [maxFileSize]="5000000"
+              (onSelect)="onImageSelect($event)"
+              [auto]="false"
+              [disabled]="store.isUploadingImage()"
+            ></p-fileUpload>
+            <p class="hint-text mt-2">JPG, PNG, WEBP — до 5 МБ</p>
+          } @else {
+            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-check-circle text-green-600"></i>
+                <span class="text-sm text-green-800 font-medium">Изображение выбрано</span>
+              </div>
+              <button
+                type="button"
+                (click)="removeImage()"
+                class="text-green-600 hover:text-green-800 transition-colors"
+                title="Удалить изображение"
+              >
+                <i class="pi pi-times"></i>
+              </button>
+            </div>
+            <p class="hint-text">Изображение будет загружено при создании продукта</p>
+          }
+
+          @if (productForm.image().touched() && productForm.image().invalid()) {
+            <p class="error-text">{{ productForm.image().errors()[0].message }}</p>
+          }
+        </div>
+      </section>
+
+      <!-- ===== ACTIONS ===== -->
+      <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200">
+        <p-button
+          label="Сбросить"
+          severity="secondary"
+          [outlined]="true"
+          type="button"
+          (onClick)="onReset()"
+        />
+        <p-button
+          label="Создать продукт"
+          severity="success"
+          type="submit"
+          [loading]="store.isLoading()"
+        />
+      </div>
+    </form>
+  </div>
+</div>

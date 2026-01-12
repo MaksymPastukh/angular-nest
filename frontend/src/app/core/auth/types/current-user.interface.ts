@@ -1,3 +1,5 @@
+import { UserRole } from './user-role.enum'
+
 export interface CurrentUserResponseInterface {
   access_token: string
   refresh_token: string
@@ -5,8 +7,8 @@ export interface CurrentUserResponseInterface {
 }
 
 export interface User {
-  id: number
+  id: string
   firstName: string
   email: string
-  roles: string[]
+  role: UserRole | string // поддерживаем как enum, так и string для совместимости
 }

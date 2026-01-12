@@ -7,9 +7,9 @@ import { CategoriesService } from '../../shared/services/categories.service'
 import { Categories } from '../../shared/types/categories'
 import { ProductCardComponent } from '../../shared/components/product-card/product-card'
 import { ProductService } from '../../shared/services/product.service'
-import { ProductType } from '../../shared/product.type'
+import { ProductType } from '../types/product.type'
 import { RatingComponent } from '../../shared/components/rating/rating'
-import {RouterLink} from '@angular/router';
+import { RouterLink } from '@angular/router'
 
 @Component({
   selector: 'app-main',
@@ -28,7 +28,6 @@ import {RouterLink} from '@angular/router';
 })
 export class MainComponent implements OnInit {
   categoryService: CategoriesService = inject(CategoriesService)
-  productService: ProductService = inject(ProductService)
   categoriesMen: Categories[] = []
   categoriesWoman: Categories[] = []
   productsInTheLimelight: ProductType[] = []
@@ -127,6 +126,5 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.categoriesMen = this.categoryService.getCategoriesMen()
     this.categoriesWoman = this.categoryService.getCategoriesWoman()
-    this.productsInTheLimelight = this.productService.getProductInTheLimelight()
   }
 }
