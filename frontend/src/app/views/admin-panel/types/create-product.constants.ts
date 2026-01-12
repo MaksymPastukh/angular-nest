@@ -1,11 +1,5 @@
 import { ColorOption, FormSelectOption } from './create-product.interface';
 
-/**
- * Константы для опций селектов
- * Используются в store и компоненте
- */
-
-/** Доступные категории */
 export const CATEGORIES: FormSelectOption[] = [
   { label: 'Men', value: 'Men' },
   { label: 'Women', value: 'Women' },
@@ -13,7 +7,6 @@ export const CATEGORIES: FormSelectOption[] = [
   { label: 'Joggers', value: 'Joggers' },
 ] as const;
 
-/** Типы продуктов */
 export const PRODUCT_TYPES: FormSelectOption[] = [
   { label: 'T-shirts', value: 'T-shirts' },
   { label: 'Printed T-shirts', value: 'Printed T-shirts' },
@@ -22,7 +15,6 @@ export const PRODUCT_TYPES: FormSelectOption[] = [
   { label: 'Jeans', value: 'Jeans' },
 ] as const;
 
-/** Стили одежды */
 export const DRESS_STYLES: FormSelectOption[] = [
   { label: 'Casual', value: 'Casual' },
   { label: 'Formal', value: 'Formal' },
@@ -30,7 +22,6 @@ export const DRESS_STYLES: FormSelectOption[] = [
   { label: 'Gym', value: 'Gym' },
 ] as const;
 
-/** Доступные цвета */
 export const COLORS: ColorOption[] = [
   { name: 'Red', value: '#FF0000' },
   { name: 'Blue', value: '#0000FF' },
@@ -44,7 +35,6 @@ export const COLORS: ColorOption[] = [
   { name: 'Gray', value: '#808080' },
 ] as const;
 
-/** Доступные размеры */
 export const SIZES: FormSelectOption[] = [
   { label: 'XS', value: 'XS' },
   { label: 'S', value: 'S' },

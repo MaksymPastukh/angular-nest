@@ -4,7 +4,6 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, of, switchMap, tap } from 'rxjs';
 import { ProductService } from '../../../shared/services/product.service';
 import { CreateProductFormData } from '../types/create-product.interface';
-import { MessageService } from 'primeng/api';
 import { ProductType } from '../../types/product.type';
 import {
   CATEGORIES,
@@ -28,6 +27,7 @@ const initialState: CreateProductStoreState = {
   isLoading: false,
   error: null,
   success: false,
+  event: null,
 };
 
 export const CreateProductStore = signalStore(
@@ -35,7 +35,7 @@ export const CreateProductStore = signalStore(
 
   withState(initialState),
 
-  withMethods((store, productService = inject(ProductService), messageService = inject(MessageService)) => {
+  withMethods((store, productService = inject(ProductService)) => {
     /**
      * Загрузка изображения на сервер
      */
@@ -46,6 +46,7 @@ export const CreateProductStore = signalStore(
             isUploadingImage: true,
             error: null,
             uploadedImagePath: null,
+            event: null,
           });
         }),
         switchMap((file: File) =>
@@ -54,13 +55,9 @@ export const CreateProductStore = signalStore(
               patchState(store, {
                 uploadedImagePath: response.imagePath,
                 isUploadingImage: false,
-              });
-
-              messageService.add({
-                severity: 'success',
-                summary: 'Успех',
-                detail: 'Изображение загружено',
-                life: 2000,
+                event: {
+                  type: 'imageUploaded',
+                },
               });
             }),
             catchError((error) => {
@@ -70,13 +67,10 @@ export const CreateProductStore = signalStore(
                 isUploadingImage: false,
                 error: errorMessage,
                 uploadedImagePath: null,
-              });
-
-              messageService.add({
-                severity: 'error',
-                summary: 'Ошибка',
-                detail: errorMessage,
-                life: 3000,
+                event: {
+                  type: 'imageUploadError',
+                  message: errorMessage,
+                },
               });
 
               return of(null);
@@ -95,7 +89,8 @@ export const CreateProductStore = signalStore(
           patchState(store, {
             isLoading: true,
             error: null,
-            success: false
+            success: false,
+            event: null,
           });
         }),
         switchMap((formData: CreateProductFormData) =>
@@ -105,13 +100,10 @@ export const CreateProductStore = signalStore(
                 isLoading: false,
                 success: true,
                 error: null,
-              });
-
-              messageService.add({
-                severity: 'success',
-                summary: 'Успех!',
-                detail: `Продукт "${response.title}" создан`,
-                life: 3000,
+                event: {
+                  type: 'productCreated',
+                  productTitle: response.title,
+                },
               });
             }),
             catchError((error) => {
@@ -121,13 +113,10 @@ export const CreateProductStore = signalStore(
                 isLoading: false,
                 error: errorMessage,
                 success: false,
-              });
-
-              messageService.add({
-                severity: 'error',
-                summary: 'Ошибка!',
-                detail: errorMessage,
-                life: 3000,
+                event: {
+                  type: 'productCreateError',
+                  message: errorMessage,
+                },
               });
 
               return of(null);
@@ -147,13 +136,22 @@ export const CreateProductStore = signalStore(
         success: false,
         isLoading: false,
         isUploadingImage: false,
+        event: null,
       });
+    }
+
+    /**
+     * Очистка события после обработки
+     */
+    function clearEvent() {
+      patchState(store, { event: null });
     }
 
     return {
       uploadImage,
       createProduct,
       resetState,
+      clearEvent,
     };
   })
 );

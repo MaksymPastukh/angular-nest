@@ -3,8 +3,6 @@
 
   <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 sm:p-8 lg:p-10">
     <form (submit)="onSubmit($event)" novalidate class="space-y-10">
-
-      <!-- ===== HEADER ===== -->
       <section>
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
           Создать новый продукт
@@ -14,10 +12,8 @@
         </p>
       </section>
 
-      <!-- ===== BASE INFO ===== -->
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <!-- TITLE -->
         <div class="md:col-span-2 space-y-1">
           <label for="title" class="label">
             Название продукта <span class="text-red-500">*</span>
@@ -41,7 +37,6 @@
           }
         </div>
 
-        <!-- BRAND -->
         <div class="space-y-1">
           <label for="brand" class="label">
             Бренд <span class="text-red-500">*</span>
@@ -63,7 +58,6 @@
           }
         </div>
 
-        <!-- PRICE -->
         <div class="space-y-1">
           <label for="price" class="label">
             Цена <span class="text-red-500">*</span>
@@ -87,7 +81,6 @@
           }
         </div>
 
-        <!-- RATING -->
         <div class="space-y-1">
           <label class="label">Рейтинг</label>
           <div class="flex items-center gap-3">
@@ -97,7 +90,6 @@
         </div>
       </section>
 
-      <!-- ===== CLASSIFICATION ===== -->
       <section class="space-y-6">
         <div>
           <h3 class="section-title">Категории и классификация</h3>
@@ -180,7 +172,6 @@
         </div>
       </section>
 
-      <!-- ===== DESCRIPTION ===== -->
       <section class="space-y-6">
         <div>
           <h3 class="section-title">Описание и медиа</h3>
@@ -214,16 +205,39 @@
 
         <div class="space-y-2">
           <label class="label">Изображение *</label>
-          <p-fileUpload
-            mode="basic"
-            chooseLabel="Выбрать изображение"
-            accept="image/*"
-            [maxFileSize]="5000000"
-            (onSelect)="onImageUpload($event)"
-            [auto]="true"
-            [disabled]="store.isUploadingImage()"
-          ></p-fileUpload>
-          <p class="hint-text">JPG, PNG, WEBP — до 5 МБ</p>
+
+          @if (!model().image) {
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Выбрать изображение"
+              accept="image/*"
+              [maxFileSize]="5000000"
+              (onSelect)="onImageSelect($event)"
+              [auto]="false"
+              [disabled]="store.isUploadingImage()"
+            ></p-fileUpload>
+            <p class="hint-text mt-2">JPG, PNG, WEBP — до 5 МБ</p>
+          } @else {
+            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-check-circle text-green-600"></i>
+                <span class="text-sm text-green-800 font-medium">Изображение выбрано</span>
+              </div>
+              <button
+                type="button"
+                (click)="removeImage()"
+                class="text-green-600 hover:text-green-800 transition-colors"
+                title="Удалить изображение"
+              >
+                <i class="pi pi-times"></i>
+              </button>
+            </div>
+            <p class="hint-text">Изображение будет загружено при создании продукта</p>
+          }
+
+          @if (productForm.image().touched() && productForm.image().invalid()) {
+            <p class="error-text">{{ productForm.image().errors()[0].message }}</p>
+          }
         </div>
       </section>
 

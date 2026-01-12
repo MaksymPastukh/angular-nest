@@ -14,7 +14,7 @@ import { MultiSelect } from 'primeng/multiselect';
 import { Button } from 'primeng/button';
 import { FileUpload } from 'primeng/fileupload';
 import { Toast } from 'primeng/toast';
-import { MessageService, PrimeTemplate } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { Rating } from 'primeng/rating';
 import { CreateProductStore } from '../store/create-product.store';
 import { CreateProductFormData } from '../types/create-product.interface';
@@ -42,6 +42,9 @@ import { CreateProductFormData } from '../types/create-product.interface';
 export class CreateProduct {
   protected readonly store = inject(CreateProductStore);
   private readonly messageService = inject(MessageService);
+
+  /** Выбранный файл изображения (до загрузки на сервер) */
+  protected readonly selectedFile = signal<File | null>(null);
 
   protected readonly model = signal<CreateProductFormData>({
     title: '',
@@ -83,18 +86,62 @@ export class CreateProduct {
     });
   }
 
-  protected onImageUpload(event: any): void {
+  /**
+   * Обработчик выбора изображения (не загружает на сервер сразу)
+   */
+  protected onImageSelect(event: any): void {
     const file = event.files[0];
     if (!file) return;
 
-    this.store.uploadImage(file);
+    // Сохраняем файл локально
+    this.selectedFile.set(file);
+
+    // Временно отмечаем поле как заполненное
+    this.model.update(m => ({ ...m, image: 'pending' }));
   }
 
-  protected onSubmit(event: Event): void {
+  /**
+   * Удаление выбранного изображения
+   */
+  protected removeImage(): void {
+    this.selectedFile.set(null);
+    this.model.update(m => ({ ...m, image: '' }));
+  }
+
+  protected async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
 
     submit(this.productForm, async () => {
+      // Если есть выбранный файл, сначала загружаем его
+      const file = this.selectedFile();
+
+      if (file) {
+        // Загружаем изображение на сервер
+        this.store.uploadImage(file);
+
+        // Ждем пока uploadedImagePath обновится
+        // Effect выше автоматически обновит model().image
+        await new Promise<void>((resolve) => {
+          const checkInterval = setInterval(() => {
+            const path = this.store.uploadedImagePath();
+            if (path && !this.store.isUploadingImage()) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+
+          // Таймаут на случай ошибки
+          setTimeout(() => {
+            clearInterval(checkInterval);
+            resolve();
+          }, 10000);
+        });
+      }
+
+      // Получаем данные из модели формы
       const formData: CreateProductFormData = this.model();
+
+      // Отправляем через store
       this.store.createProduct(formData);
     }).catch((error) => {
       console.error('❌ Form submission error:', error);
@@ -102,6 +149,10 @@ export class CreateProduct {
   }
 
   protected onReset(): void {
+    // Сбрасываем файл
+    this.selectedFile.set(null);
+
+    // Сбрасываем модель формы
     this.model.set({
       title: '',
       rating: 0,
@@ -117,7 +168,9 @@ export class CreateProduct {
       description: '',
     });
 
+    // Сбрасываем состояние store
     this.store.resetState();
+
     this.messageService.add({
       severity: 'info',
       summary: 'Форма очищена',

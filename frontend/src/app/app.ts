@@ -1,8 +1,9 @@
 import {Component, effect, inject, OnInit, signal} from '@angular/core'
-import {Router, RouterOutlet} from '@angular/router'
+import {RouterOutlet} from '@angular/router'
 import { Toast } from 'primeng/toast'
 import {AuthStore} from './core/auth/store/auth.store';
 import {MessageService} from 'primeng/api';
+import { CreateProductStore } from './views/admin-panel/store/create-product.store';
 
 @Component({
   selector: 'app-root',
@@ -12,10 +13,12 @@ import {MessageService} from 'primeng/api';
 })
 export class App implements OnInit {
   protected readonly authStore = inject(AuthStore);
+  protected readonly productStore = inject(CreateProductStore);
   protected readonly title = signal('Euphoria')
   private messageService = inject(MessageService)
 
   constructor() {
+    // Effect для обработки событий аутентификации
     effect(() => {
       const event = this.authStore.event();
       console.log('Auth Event:', event);
@@ -51,7 +54,55 @@ export class App implements OnInit {
 
       // Очищаем event после обработки
       this.authStore.clearEvent()
-    })
+    });
+
+    // Effect для обработки событий создания продукта
+    effect(() => {
+      const event = this.productStore.event();
+      console.log('Product Event:', event);
+      if (!event) return;
+
+      switch (event.type) {
+        case 'productCreated':
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Продукт создан!',
+            detail: `Продукт "${event.productTitle}" успешно создан`,
+            life: 3000,
+          });
+          break;
+
+        case 'productCreateError':
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Ошибка создания',
+            detail: event.message,
+            life: 3000,
+          });
+          break;
+
+        case 'imageUploaded':
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Изображение загружено',
+            detail: 'Изображение успешно загружено на сервер',
+            life: 2000,
+          });
+          break;
+
+        case 'imageUploadError':
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Ошибка загрузки',
+            detail: event.message,
+            life: 3000,
+          });
+          break;
+      }
+
+      // Очищаем event после обработки
+      this.productStore.clearEvent();
+    });
   }
 
   ngOnInit() {
