@@ -1,8 +1,11 @@
-import { Component, computed, HostListener, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, HostListener, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ProductDetailStore } from '../../shared/store/product-detail.store';
 import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
+import {RatingComponent} from '../../shared/components/rating/rating';
 
 /**
  * Компонент страницы детального просмотра продукта
@@ -16,18 +19,26 @@ import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
  * - Клик по миниатюре
  * - Кнопки навигации prev/next
  * - Клавиши стрелок ← → для переключения
+ * - Автоматическую перезагрузку при изменении ID в URL
  */
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, RouterLink, ImageUrlPipe],
+  imports: [CommonModule, RouterLink, RatingComponent],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   standalone: true,
 })
-export class ProductDetail implements OnInit {
+export class ProductDetail {
   private readonly route = inject(ActivatedRoute);
   readonly store = inject(ProductDetailStore);
   private readonly imageUrlPipe = new ImageUrlPipe();
+
+  /**
+   * Signal для отслеживания изменений ID продукта в URL
+   */
+  private readonly productId = toSignal(
+    this.route.params.pipe(map(params => params['id']))
+  );
 
   /**
    * Индекс выбранного изображения (для главного фото)
@@ -38,6 +49,22 @@ export class ProductDetail implements OnInit {
    * Флаг для предотвращения бесконечного цикла ошибок загрузки изображений
    */
   private imageErrorHandled = false;
+
+  /**
+   * Effect для автоматической загрузки продукта при изменении ID
+   */
+  constructor() {
+    effect(() => {
+      const id = this.productId();
+      if (id) {
+        console.log('🔄 Loading product with ID:', id);
+        this.store.loadProduct(id);
+        // Сбрасываем индекс изображения при загрузке нового продукта
+        this.selectedImageIndex = 0;
+        this.imageErrorHandled = false;
+      }
+    });
+  }
 
   /**
    * Создаем массив изображений для галереи
@@ -56,13 +83,6 @@ export class ProductDetail implements OnInit {
     });
   });
 
-  ngOnInit(): void {
-    // Получаем ID из route params
-    const productId = this.route.snapshot.params['id'];
-
-    // Загружаем продукт
-    this.store.loadProduct(productId);
-  }
 
   /**
    * Выбрать конкретное изображение

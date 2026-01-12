@@ -9,24 +9,21 @@ import { CommonModule } from '@angular/common'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RatingComponent {
-  private _rating = signal(0)
+  /**
+   * Рейтинг продукта (0–5)
+   */
+  @Input({ required: true }) rating!: number;
 
-  @Input() set rating(value: number) {
-    this._rating.set(value)
-  }
+  /**
+   * Максимальное количество звёзд
+   */
+  @Input() max = 5;
 
-  get rating(): number {
-    return this._rating()
-  }
-
-  stars = computed(() => Array(5).fill(null))
-
-  getFill(index: number): string {
-    const fullStarts: number = Math.floor(this.rating)
-    const hasHalfStart: boolean = this.rating % 1 >= 0.25 && this.rating % 1 < 0.75
-
-    if (index < fullStarts) return '#EDD146'
-    if (index === fullStarts && hasHalfStart) return `url(#halfGradient-${index})`
-    return '#E1E1E1'
-  }
+  /**
+   * Подготавливаем данные для шаблона
+   * true — закрашенная звезда
+   */
+  readonly stars = computed(() =>
+    Array.from({ length: this.max }, (_, i) => i < this.rating)
+  );
 }

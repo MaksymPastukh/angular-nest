@@ -28,13 +28,13 @@ import { UsersModule } from './users/users.module';
 
     // Раздача статических файлов из папки public
     // Файлы будут доступны напрямую, например: http://localhost:3000/images/products/image.jpg
-    // __dirname в compiled коде = dist/src, поэтому поднимаемся на 2 уровня вверх и идем в public
+    // Используем process.cwd() для получения корневой директории проекта
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'public'),
+      rootPath: join(process.cwd(), 'public'),
       serveRoot: '/',
       exclude: ['/api*'], // Исключаем API роуты из статической раздачи
       serveStaticOptions: {
-        // Устанавливаем правильные заголовки для статических файлов
+        index: false, // Отключаем автоматический index.html
         setHeaders: (res, path) => {
           // Определяем MIME-тип на основе расширения файла
           if (path.endsWith('.png')) {
