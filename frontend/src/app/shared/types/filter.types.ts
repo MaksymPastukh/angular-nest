@@ -40,6 +40,8 @@ export interface SelectedFilters {
   selectedCategories: string[];
   /** Выбранные стили (формат: "Style:Brand") */
   selectedStyles: string[];
+  /** Поисковый запрос */
+  searchQuery: string;
 }
 
 /**

@@ -57,6 +57,12 @@ export function mapToApiFilters(
     params.category = filters.selectedCategory;
   }
 
+  /* ---------- SEARCH ---------- */
+
+  if (filters.searchQuery && filters.searchQuery.trim()) {
+    params.search = filters.searchQuery.trim();
+  }
+
   /* ---------- PRICE ---------- */
 
   if (filters.priceRange) {

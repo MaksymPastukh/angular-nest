@@ -33,6 +33,9 @@ export function parseUrlParams(params: Params): ParsedUrlParams {
     dressStyle: params['dressStyle'] || undefined,
     brand: params['brand'] || undefined,
 
+    // Поиск
+    search: params['search'] || undefined,
+
     // Пагинация
     page: params['page'] ? parseInt(params['page']) : undefined,
     limit: params['limit'] ? parseInt(params['limit']) : undefined,

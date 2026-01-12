@@ -11,6 +11,7 @@ export interface ParsedUrlParams {
   productType?: string;
   dressStyle?: string;
   brand?: string;
+  search?: string;
   page?: number;
   limit?: number;
   sortBy?: 'price' | 'rating' | 'title' | 'createdAt';

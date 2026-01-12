@@ -1,0 +1,245 @@
+<div class="container mx-auto px-4 py-8">
+  @if (store.isLoading()) {
+    <!-- Loading state -->
+    <div class="flex items-center justify-center min-h-[400px]">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+        <p class="text-gray-600">Loading product...</p>
+      </div>
+    </div>
+  } @else if (store.error()) {
+    <!-- Error state -->
+    <div class="flex items-center justify-center min-h-[400px]">
+      <div class="text-center">
+        <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Error</h2>
+        <p class="text-gray-600">{{ store.error() }}</p>
+        <a
+          routerLink="/products"
+          class="mt-4 inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          Back to Products
+        </a>
+      </div>
+    </div>
+  } @else if (store.product(); as prod) {
+    <!-- Product detail view -->
+    <div class="container mx-auto px-4 py-10">
+
+      <!-- ================= TOP SECTION ================= -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+        <!-- ===== GALLERY ===== -->
+        <div class="flex flex-col sm:flex-row gap-4">
+          <!-- Main Image (на мобильных первое) -->
+          <div class="flex-1 order-1 sm:order-2">
+            <img
+              class="w-full rounded-2xl object-cover max-h-[600px] border border-gray-100"
+              [src]="galleryImages()[selectedImageIndex]?.url"
+              [alt]="galleryImages()[selectedImageIndex]?.alt"
+              (error)="onImageError($event)"
+            />
+          </div>
+
+          <!-- Thumbnails + Navigation Buttons -->
+          <div class="flex sm:flex-col gap-3 order-2 sm:order-1">
+            <!-- Thumbnails (миниатюры) -->
+            <div class="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
+              @for (img of galleryImages(); track $index) {
+                <img
+                  class="w-20 h-24 sm:w-20 sm:h-24 flex-shrink-0 object-cover rounded-lg border-2 cursor-pointer transition-all duration-200"
+                  [class.border-purple-600]="selectedImageIndex === $index"
+                  [class.border-gray-200]="selectedImageIndex !== $index"
+                  [class.opacity-60]="selectedImageIndex !== $index"
+                  [class.hover:opacity-100]="selectedImageIndex !== $index"
+                  [class.hover:border-purple-400]="selectedImageIndex !== $index"
+                  [src]="img.url"
+                  [alt]="img.alt"
+                  (click)="selectImage($index)"
+                  (error)="onImageError($event)"
+                />
+              }
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex flex-col gap-2 mt-2 items-center">
+              <!-- Previous Button -->
+              <button
+                type="button"
+                class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
+                (click)="previousImage()"
+                aria-label="Previous image"
+              >
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+
+              <!-- Next Button -->
+              <button
+                type="button"
+                class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
+                (click)="nextImage()"
+                aria-label="Next image"
+              >
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PRODUCT INFO ===== -->
+        <div class="space-y-6">
+
+          <!-- Breadcrumb -->
+          <p class="text-sm text-gray-400">
+            Shop <span class="mx-1">›</span> {{ prod.category }} <span class="mx-1">›</span> {{ prod.productType }}
+          </p>
+
+          <!-- Title -->
+          <h1 class="text-3xl font-bold text-gray-900">
+            {{ prod.title }}
+          </h1>
+
+          <!-- Rating & Brand -->
+          <div class="flex items-center gap-3 text-sm">
+            <div class="flex text-yellow-400">
+              @for (_ of [1, 2, 3, 4, 5]; track $index) {
+                @if ($index < prod.rating) {
+                  <span>★</span>
+                } @else {
+                  <span class="text-gray-300">★</span>
+                }
+              }
+            </div>
+            <span class="text-gray-500">{{ prod.rating }}.0</span>
+            <span class="text-gray-400">• {{ prod.brand }}</span>
+          </div>
+
+          <!-- Sizes -->
+          <div>
+            <p class="text-sm font-medium mb-2">Select Size</p>
+            <div class="flex gap-2 flex-wrap">
+              @for (size of prod.size; track $index) {
+                <button
+                  class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium hover:border-purple-600 hover:bg-purple-50 transition-colors"
+                  [class.border-purple-600]="$index === 0"
+                  [class.bg-purple-50]="$index === 0"
+                >
+                  {{ size }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Color -->
+          <div>
+            <p class="text-sm font-medium mb-2">Colour Available</p>
+            <div class="flex gap-3">
+              <span
+                class="w-8 h-8 rounded-full border-2 cursor-pointer ring-2 ring-purple-600"
+                [style.background-color]="prod.color"
+                [title]="prod.color"
+              ></span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-wrap gap-4">
+            <button class="flex items-center gap-2 px-6 py-3 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors">
+              🛒 Add to cart
+            </button>
+
+            <button class="px-6 py-3 rounded-lg border border-gray-300 font-semibold text-gray-900 hover:border-purple-600 transition-colors">
+              ${{ prod.price }}
+            </button>
+          </div>
+
+          <!-- Features -->
+          <div class="grid grid-cols-2 gap-4 text-sm pt-6 border-t">
+            <div class="flex gap-2 items-center text-gray-600">🔒 Secure payment</div>
+            <div class="flex gap-2 items-center text-gray-600">📏 Size & Fit</div>
+            <div class="flex gap-2 items-center text-gray-600">🚚 Free shipping</div>
+            <div class="flex gap-2 items-center text-gray-600">↩ Free Returns</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= DESCRIPTION ================= -->
+      <div class="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+        <!-- Tabs -->
+        <div class="lg:col-span-2 space-y-6">
+          <h2 class="text-xl font-semibold flex items-center gap-2">
+            <span class="w-1 h-5 bg-purple-600 rounded"></span>
+            Product Description
+          </h2>
+
+          <!-- Tabs -->
+          <div class="flex gap-6 text-sm border-b">
+            <button class="pb-2 border-b-2 border-black font-medium">Description</button>
+            <button class="pb-2 text-gray-400">User comments</button>
+            <button class="pb-2 text-gray-400">Q & A</button>
+          </div>
+
+          <!-- Description -->
+          <p class="text-gray-600 text-sm leading-relaxed">
+            {{ prod.description }}
+          </p>
+
+          @if (prod.comment) {
+            <div class="bg-purple-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-700 italic">"{{ prod.comment }}"</p>
+            </div>
+          }
+
+          <!-- Info grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Category</p>
+              <p class="font-semibold text-gray-900">{{ prod.category }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Product Type</p>
+              <p class="font-semibold text-gray-900">{{ prod.productType }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Style</p>
+              <p class="font-semibold text-gray-900">{{ prod.dressStyle }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Brand</p>
+              <p class="font-semibold text-gray-900">{{ prod.brand }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Color</p>
+              <p class="font-semibold text-gray-900">{{ prod.color }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Rating</p>
+              <p class="font-semibold text-gray-900">{{ prod.rating }}.0 / 5.0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Image Card (вместо видео) -->
+        <div class="relative rounded-2xl overflow-hidden bg-gray-100">
+          <img
+            [src]="prod.image | imageUrl"
+            [alt]="prod.title"
+            (error)="onImageError($event)"
+            class="w-full h-full object-cover min-h-[300px]"
+          />
+          <div class="absolute top-3 right-3 bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+            ${{ prod.price }}
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

@@ -45,6 +45,7 @@ const initialState: FilterState = {
     selectedCategory: null,
     selectedCategories: [],
     selectedStyles: [],
+    searchQuery: '',
   },
 
   ui: {
@@ -242,6 +243,13 @@ export const ProductFilterStore = signalStore(
       );
     }
 
+    /**
+     * Устанавливает поисковый запрос
+     */
+    function setSearchQuery(query: string) {
+      updateSelected(f => ({ ...f, searchQuery: query }));
+    }
+
     function resetFilters() {
       patchState(store, {
         selected: initialState.selected,
@@ -297,6 +305,7 @@ export const ProductFilterStore = signalStore(
           selectedCategory: parsed.category || null,
           selectedCategories,
           selectedStyles,
+          searchQuery: parsed.search || '',
         },
       });
     }
@@ -310,6 +319,7 @@ export const ProductFilterStore = signalStore(
       setCategory,
       toggleCategory,
       toggleStyle,
+      setSearchQuery,
       resetFilters,
       restoreFromQueryParams,
 

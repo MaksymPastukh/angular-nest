@@ -33,6 +33,26 @@ import { UsersModule } from './users/users.module';
       rootPath: join(__dirname, '..', '..', 'public'),
       serveRoot: '/',
       exclude: ['/api*'], // Исключаем API роуты из статической раздачи
+      serveStaticOptions: {
+        // Устанавливаем правильные заголовки для статических файлов
+        setHeaders: (res, path) => {
+          // Определяем MIME-тип на основе расширения файла
+          if (path.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+          } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+            res.setHeader('Content-Type', 'image/jpeg');
+          } else if (path.endsWith('.gif')) {
+            res.setHeader('Content-Type', 'image/gif');
+          } else if (path.endsWith('.webp')) {
+            res.setHeader('Content-Type', 'image/webp');
+          } else if (path.endsWith('.svg')) {
+            res.setHeader('Content-Type', 'image/svg+xml');
+          }
+          // CORS заголовки для изображений
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        },
+      },
     }),
 
     // Подключаем модули приложения

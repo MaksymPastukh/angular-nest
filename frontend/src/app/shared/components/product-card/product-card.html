@@ -1,12 +1,15 @@
 @if (productIn) {
   <div class="w-[282px] h-auto xs:w-full xs:h-auto overflow-hidden">
-    <div
-      class="relative h-[370px] bg-cover bg-center"
-      [style.background-image]="'url(' + (productIn.image | imageUrl) + ')'"
-    >
+    <div class="relative h-[370px] overflow-hidden rounded-lg">
+      <img
+        [src]="productIn.image | imageUrl"
+        [alt]="productIn.title"
+        (error)="onImageError($event)"
+        class="w-full h-full object-cover"
+      />
       <button
         (click)="toggleLike()"
-        class="absolute top-[26px] right-[20px] w-[34px] h-[34px] p-0 cursor-pointer"
+        class="absolute top-[26px] right-[20px] w-[34px] h-[34px] p-0 cursor-pointer z-10"
         aria-label="Add to favorites"
       >
         <svg
