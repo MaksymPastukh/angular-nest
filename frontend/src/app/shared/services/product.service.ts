@@ -76,6 +76,18 @@ export class ProductService {
   }
 
   /**
+   * Загружает изображение продукта на сервер
+   * @param file - файл изображения
+   * @returns Observable с путем к загруженному изображению
+   */
+  uploadImage(file: File): Observable<{ imagePath: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return this.http.post<{ imagePath: string }>(`${this.apiUrl}/upload-image`, formData);
+  }
+
+  /**
    * Обновляет существующий продукт (требуется авторизация)
    * @param id - идентификатор продукта
    * @param product - обновленные данные продукта (частичное обновление)

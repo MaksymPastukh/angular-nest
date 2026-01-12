@@ -9,7 +9,8 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 import { ProductService } from '../../shared/services/product.service'
 import { ProductType } from '../types/product.type'
 import { RatingComponent } from '../../shared/components/rating/rating'
-import {RouterLink} from '@angular/router';
+import { RouterLink } from '@angular/router'
+import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe'
 
 @Component({
   selector: 'app-main',
@@ -21,6 +22,7 @@ import {RouterLink} from '@angular/router';
     ProductCardComponent,
     RatingComponent,
     RouterLink,
+    ImageUrlPipe,
   ],
   templateUrl: './main.html',
   styleUrl: './main.scss',

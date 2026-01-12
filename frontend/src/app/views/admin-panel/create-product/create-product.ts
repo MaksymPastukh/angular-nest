@@ -19,6 +19,9 @@ import { Rating } from 'primeng/rating';
 // Store
 import { CreateProductStore } from './store/create-product.store';
 
+// Services
+import { ProductService } from '../../../shared/services/product.service';
+
 /**
  * Компонент создания нового продукта
  *
@@ -66,6 +69,9 @@ export class CreateProduct {
   /** Инжектируем MessageService для уведомлений (уже в providers) */
   private readonly messageService = inject(MessageService);
 
+  /** Инжектируем ProductService для загрузки изображений */
+  private readonly productService = inject(ProductService);
+
   /**
    * Обработчик изменения поля формы
    * @param field - имя поля
@@ -84,16 +90,37 @@ export class CreateProduct {
 
     if (!file) return;
 
-    // В реальном приложении здесь должна быть загрузка на сервер
-    // Сейчас просто сохраняем имя файла
-    const imagePath = `/images/products/${file.name}`;
-    this.store.updateField('image', imagePath);
-
+    // Показываем индикатор загрузки
     this.messageService.add({
       severity: 'info',
-      summary: 'Изображение загружено',
-      detail: `Файл ${file.name} готов к отправке`,
+      summary: 'Загрузка...',
+      detail: `Загрузка файла ${file.name} на сервер...`,
       life: 3000,
+    });
+
+    // Загружаем файл на сервер
+    this.productService.uploadImage(file).subscribe({
+      next: (response) => {
+        // Сохраняем путь к изображению в store
+        this.store.updateField('image', response.imagePath);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Изображение загружено',
+          detail: `Файл ${file.name} успешно загружен на сервер`,
+          life: 3000,
+        });
+      },
+      error: (error) => {
+        console.error('Ошибка загрузки изображения:', error);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Ошибка загрузки',
+          detail: error?.error?.message || 'Не удалось загрузить изображение',
+          life: 5000,
+        });
+      },
     });
   }
 

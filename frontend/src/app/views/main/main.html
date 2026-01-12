@@ -17,7 +17,7 @@
 
   <ng-template class="main-carousel" pTemplate="item" let-item>
     <div class="slide ">
-      <img [src]="item.image" alt="Slide Image" class="slide-img" />
+      <img [src]="item.image | imageUrl" alt="Slide Image" class="slide-img" />
       <div class="content w-md">
         <h4 class="font-coresans font-medium text-3xl mb-[40px]">{{ item.category }}</h4>
         <h2 class="font-coresans font-extrabold text-7xl leading-[<20%>] mb-[40px]">{{ item.title }}</h2>
@@ -35,7 +35,7 @@
 <section class="container flex justify-center gap-10 mx-auto mt-[130px]">
   @for (item of discounts; track item.title) {
     <div class="relative text-white w-[50rem] group">
-      <img [src]="item.image" alt="Discounts Image" class="object-cover rounded-xl w-[50rem]" />
+      <img [src]="item.image | imageUrl" alt="Discounts Image" class="object-cover rounded-xl w-[50rem]" />
       <div class="absolute top-0 w-xs pt-[97px] pl-[30px]">
         <h4 class="font-coresans font-extrabold text-lg mb-[14px]">{{ item.category }}</h4>
         <h2 class="font-coresans font-extrabold text-4xl leading-[<20%>] mb-[10px]">
@@ -85,7 +85,7 @@
 
     <ng-template pTemplate="item" let-item>
       <a href="#" class="arrival-slide pl-12 block w-[262px] h-[319px]">
-        <img [src]="item.image" alt="Slide Image" class="h-[262px] object-cover rounded-xl" />
+        <img [src]="item.image | imageUrl" alt="Slide Image" class="h-[262px] object-cover rounded-xl" />
         <h3 class="font-family font-bold text-xl mt-[33px]">{{ item.title }}</h3>
       </a>
     </ng-template>
@@ -402,7 +402,7 @@
         <div class="flex justify-between">
           <div
             class="w-[57px] h-[57px] bg-cover bg-center"
-            [style.background-image]="'url(' + item.image + ')'"
+            [style.background-image]="'url(' + (item.image | imageUrl) + ')'"
           ></div>
           <app-rating [rating]="item.rating"></app-rating>
         </div>

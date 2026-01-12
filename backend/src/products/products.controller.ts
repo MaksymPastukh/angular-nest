@@ -9,7 +9,12 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -39,6 +44,48 @@ export class ProductsController {
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createProductDto: CreateProductDto): Promise<ProductDocument> {
     return await this.productsService.create(createProductDto);
+  }
+
+  /**
+   * Загрузка изображения для продукта
+   * POST /products/upload-image
+   * @param file - Файл изображения
+   * @returns Путь к загруженному изображению
+   */
+  @Post('upload-image')
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './public/images/products',
+        filename: (_req, file, callback) => {
+          // Генерируем уникальное имя файла
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
+          callback(null, filename);
+        },
+      }),
+      fileFilter: (_req, file, callback) => {
+        // Разрешаем только изображения
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+          return callback(new Error('Только изображения разрешены!'), false);
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
+    }),
+  )
+  async uploadImage(@UploadedFile() file: any): Promise<{ imagePath: string }> {
+    if (!file) {
+      throw new Error('Файл не загружен');
+    }
+
+    // Возвращаем путь относительно public директории
+    const imagePath = `/images/products/${file.filename}`;
+    return { imagePath };
   }
 
   /**

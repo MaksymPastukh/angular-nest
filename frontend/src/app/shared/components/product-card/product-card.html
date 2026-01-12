@@ -2,7 +2,7 @@
   <div class="w-[282px] h-auto xs:w-full xs:h-auto overflow-hidden">
     <div
       class="relative h-[370px] bg-cover bg-center"
-      style="background-image: url('{{ productIn.image }}');"
+      [style.background-image]="'url(' + (productIn.image | imageUrl) + ')'"
     >
       <button
         (click)="toggleLike()"
