@@ -1,4 +1,3 @@
-import {FilterData, SelectedFilters} from '../types/filter.types';
 import {patchState, signalStore, withComputed, withHooks, withMethods, withState} from '@ngrx/signals';
 import {catchError, forkJoin, of, switchMap, tap} from 'rxjs';
 import {computed, inject} from '@angular/core';
@@ -7,67 +6,34 @@ import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {MenuItem} from 'primeng/api';
 import {parseUrlParams} from '../services/parseUrlParams';
 import type {Params} from '@angular/router';
+import {SelectedFilters} from './types/product-selected-filters.interface';
+import {FilterState} from './types/product-filter-state.interface';
 
-/* ==========================================
-   CONSTANTS
-========================================== */
 
 const PRICE_DEFAULT = { min: 70, max: 270 } as const;
-
-/* ==========================================
-   TYPES
-========================================== */
-
 type CompositeFilterKey = 'selectedCategories' | 'selectedStyles';
-
-interface FilterState {
-  filterData: FilterData | null;
-
-  selected: SelectedFilters;
-
-  ui: {
-    currentCategory: string | null;
-    currentStyle: string | null;
-  };
-
-  isLoading: boolean;
-  error: string | null;
-  initialized: boolean;
-}
 
 const initialState: FilterState = {
   filterData: null,
-
   selected: {
     priceRange: [PRICE_DEFAULT.min, PRICE_DEFAULT.max],
     selectedSizes: [],
     selectedColors: [],
+    selectedCategory: null,
     selectedCategories: [],
     selectedStyles: [],
+    searchQuery: '',
   },
-
   ui: {
     currentCategory: null,
     currentStyle: null,
   },
-
   isLoading: false,
   error: null,
   initialized: false,
 };
 
-/**
- * NOTE: Если в будущем initialState нужно вычислять динамически
- * (например, из конфигурации), можно использовать:
- *
- * withState(() => initialStateFactory())
- *
- * См. https://ngrx.io/guide/signals/signal-store#creating-a-store
- */
 
-/* ==========================================
-   HELPERS
-========================================== */
 
 function toggle(list: string[], value: string): string[] {
   return list.includes(value)
@@ -209,7 +175,20 @@ export const ProductFilterStore = signalStore(
     }
 
     /**
-     * Toggle категории (убрана дублированная логика)
+     * Устанавливает основную категорию (Men, Women, Combos, Joggers)
+     * Сбрасывает подкатегории и стили при изменении
+     */
+    function setCategory(category: string | null) {
+      updateSelected(f => ({
+        ...f,
+        selectedCategory: category,
+        selectedCategories: [], // Сбрасываем подкатегории
+        selectedStyles: [],      // Сбрасываем стили
+      }));
+    }
+
+    /**
+     * Toggle категории (подкатегория товара, убрана дублированная логика)
      */
     function toggleCategory(category: string, brand: string) {
       const key = `${category}:${brand}`;
@@ -226,6 +205,13 @@ export const ProductFilterStore = signalStore(
       updateSelected(f =>
         createCompositeToggle('selectedStyles', key, 'selectedCategories', f)
       );
+    }
+
+    /**
+     * Устанавливает поисковый запрос
+     */
+    function setSearchQuery(query: string) {
+      updateSelected(f => ({ ...f, searchQuery: query }));
     }
 
     function resetFilters() {
@@ -280,8 +266,10 @@ export const ProductFilterStore = signalStore(
           ],
           selectedSizes: parsed.sizes,
           selectedColors: parsed.colors,
+          selectedCategory: parsed.category || null,
           selectedCategories,
           selectedStyles,
+          searchQuery: parsed.search || '',
         },
       });
     }
@@ -292,8 +280,10 @@ export const ProductFilterStore = signalStore(
       setPriceRange,
       toggleSize,
       toggleColor,
+      setCategory,
       toggleCategory,
       toggleStyle,
+      setSearchQuery,
       resetFilters,
       restoreFromQueryParams,
 

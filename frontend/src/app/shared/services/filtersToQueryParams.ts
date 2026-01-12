@@ -16,6 +16,9 @@ export function filtersToQueryParams(filters: ProductFilterParams): QueryParams 
   if (filters['color']) params.color = filters['color'];
   if (filters['size']) params.size = filters['size'];
 
+  // Поиск
+  if (filters['search']) params.search = filters['search'];
+
   // Цена - только если отличается от дефолта
   if (filters['minPrice'] !== undefined && filters['minPrice'] !== 70) {
     params.minPrice = filters['minPrice'];

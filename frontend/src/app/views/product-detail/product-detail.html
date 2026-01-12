@@ -1,0 +1,272 @@
+<div class="container mx-auto px-4 py-8">
+  @if (store.isLoading()) {
+    <div class="flex items-center justify-center min-h-[400px]">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+        <p class="text-gray-600">Loading product...</p>
+      </div>
+    </div>
+  } @else if (store.error()) {
+    <div class="flex items-center justify-center min-h-[400px]">
+      <div class="text-center">
+        <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Error</h2>
+        <p class="text-gray-600">{{ store.error() }}</p>
+        <a
+          routerLink="/products"
+          class="mt-4 inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          Back to Products
+        </a>
+      </div>
+    </div>
+  } @else if (store.product(); as prod) {
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <!-- ===== GALLERY ===== -->
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1 order-1 sm:order-2">
+            <img
+              class="w-lg h-auto rounded-3xl object-cover max-h-full border border-gray-100"
+              [src]="galleryImages()[selectedImageIndex()]?.image | imageUrl"
+              [alt]="galleryImages()[selectedImageIndex()]?.alt"
+              (error)="onImageError($event)"
+            />
+          </div>
+
+          <div class="flex sm:flex-col gap-3 order-2 sm:order-1">
+            <div class="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
+              @for (img of galleryImages(); track $index) {
+                <img
+                  class="w-20 h-24 sm:w-20 sm:h-24 flex-shrink-0 object-cover rounded-lg border-2 cursor-pointer transition-all duration-200"
+                  [class.border-purple-600]="selectedImageIndex() === $index"
+                  [class.border-gray-200]="selectedImageIndex() !== $index"
+                  [class.opacity-60]="selectedImageIndex() !== $index"
+                  [class.hover:opacity-100]="selectedImageIndex() !== $index"
+                  [class.hover:border-purple-400]="selectedImageIndex() !== $index"
+                  [src]="img.image | imageUrl"
+                  [alt]="img.alt"
+                  (click)="selectImage($index)"
+                  (error)="onImageError($event)"
+                />
+              }
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex flex-col gap-2 mt-2 items-center">
+              <!-- Up -->
+              <button
+                type="button"
+                class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
+                (click)="previousImage()"
+                aria-label="Previous image"
+              >
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+
+              <!-- Down -->
+              <button
+                type="button"
+                class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
+                (click)="nextImage()"
+                aria-label="Next image"
+              >
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PRODUCT INFO ===== -->
+        <div class="space-y-6">
+          <!-- Breadcrumb -->
+          <p-breadcrumb
+            [model]="breadcrumbItems()"
+            styleClass="bg-transparent border-0 p-0"
+          >
+          </p-breadcrumb>
+
+          <!-- Title -->
+          <h1 class="text-4xl font-coresans font-bold text-gray-900 mt-8">
+            {{ prod.title }}
+          </h1>
+
+          <!-- Rating & Brand -->
+          <div class="flex items-end text-sm">
+            <app-rating [rating]="prod.rating"/>
+            <span class="text-gray-500 font-family font-medium text-xl">{{ prod.rating }}.0</span>
+          </div>
+
+          <!-- Sizes -->
+          <div>
+            <p class="font-causten font-bold text-lg mb-2">
+              Select Size
+            </p>
+            <div class="flex  gap-2 flex-wrap">
+              @for (size of prod.size; track $index) {
+                <button
+                  type="button"
+                  (click)="selectSize(size)"
+                  class="px-4 py-2 rounded-lg cursor-pointer border text-sm font-medium transition-all duration-200"
+                  [class.border-purple-600]="selectedSize() === size"
+                  [class.bg-purple-600]="selectedSize() === size"
+                  [class.text-white]="selectedSize() === size"
+                  [class.border-gray-300]="selectedSize() !== size"
+                  [class.text-gray-900]="selectedSize() !== size"
+                  [class.hover:border-purple-400]="selectedSize() !== size"
+                  [class.hover:bg-purple-50]="selectedSize() !== size"
+                >
+                  {{ size }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Color -->
+          <div>
+            <p class="font-causten font-bold text-lg mb-2">Colour Available</p>
+            <div class="flex gap-3 mt-3">
+              <button
+                type="button"
+                (click)="selectColor(prod.color)"
+                class="relative w-8 h-8 rounded-full ring-2 transition-all duration-200 cursor-pointer"
+                [class.ring-purple-600]="selectedColor() === prod.color"
+                [class.ring-offset-2]="selectedColor() === prod.color"
+                [class.ring-gray-300]="selectedColor() !== prod.color"
+                [class.ring-offset-0]="selectedColor() !== prod.color"
+                [style.background-color]="prod.color"
+                [title]="prod.color"
+                aria-label="Select color"
+              >
+              </button>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-wrap gap-8 mt-8">
+            <button
+              type="button"
+              (click)="addToCart()"
+              [disabled]="!canAddToCart()"
+              class="flex w-3xs items-center font-causten font-bold text-lg cursor-pointer gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200"
+              [class.bg-purple-600]="canAddToCart()"
+              [class.text-white]="canAddToCart()"
+              [class.hover:bg-purple-700]="canAddToCart()"
+              [class.bg-gray-300]="!canAddToCart()"
+              [class.text-gray-500]="!canAddToCart()"
+              [class.cursor-not-allowed]="!canAddToCart()"
+            >
+              <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.75 0.75H1.25526C2.10578 0.75 2.81986 1.39042 2.9121 2.23592L3.5879 8.43074C3.68014 9.27625 4.39422 9.91667 5.24474 9.91667H12.455C13.2169 9.91667 13.8817 9.40007 14.07 8.66185L15.2199 4.15259C15.4887 3.09878 14.6925 2.07407 13.605 2.07407H3.75M3.77063 12.9374H4.39563M3.77063 13.5624H4.39563M12.9373 12.9374H13.5623M12.9373 13.5624H13.5623M4.91667 13.25C4.91667 13.7102 4.54357 14.0833 4.08333 14.0833C3.6231 14.0833 3.25 13.7102 3.25 13.25C3.25 12.7898 3.6231 12.4167 4.08333 12.4167C4.54357 12.4167 4.91667 12.7898 4.91667 13.25ZM14.0833 13.25C14.0833 13.7102 13.7102 14.0833 13.25 14.0833C12.7898 14.0833 12.4167 13.7102 12.4167 13.25C12.4167 12.7898 12.7898 12.4167 13.25 12.4167C13.7102 12.4167 14.0833 12.7898 14.0833 13.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              @if (!selectedSize() && !selectedColor()) {
+                <span>Select size & color</span>
+              } @else if (!selectedSize()) {
+                <span>Select size</span>
+              } @else if (!selectedColor()) {
+                <span>Select color</span>
+              } @else {
+                <span>Add to cart</span>
+              }
+            </button>
+            <button
+              type="button"
+              class="px-12 py-3 font-causten font-bold text-lg rounded-lg border border-gray-300 text-gray-900 hover:border-purple-600 transition-colors"
+            >
+              ${{ prod.price }}
+            </button>
+          </div>
+
+          <!-- Features -->
+          <div class="grid grid-cols-2 gap-4 text-sm pt-6 border-t border-gray-400 font-causten font-medium text-lg">
+            <div class="flex gap-2 items-center text-gray-600"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="22" fill="#F6F6F6" />
+              <path d="M15 18.75H30M18 26.25H21M24 26.25H27M17.4 30H27.6C28.4401 30 28.8601 30 29.181 29.7956C29.4632 29.6159 29.6927 29.329 29.8365 28.9762C30 28.5751 30 28.0501 30 27V18C30 16.9499 30 16.4249 29.8365 16.0238C29.6927 15.671 29.4632 15.3841 29.181 15.2044C28.8601 15 28.4401 15 27.6 15H17.4C16.5599 15 16.1399 15 15.819 15.2044C15.5368 15.3841 15.3073 15.671 15.1635 16.0238C15 16.4249 15 16.9499 15 18V27C15 28.0501 15 28.5751 15.1635 28.9762C15.3073 29.329 15.5368 29.6159 15.819 29.7956C16.1399 30 16.5599 30 17.4 30Z" stroke="#3C4242" stroke-width="1.1" stroke-linecap="round" />
+            </svg> Secure payment</div>
+            <div class="flex gap-2 items-center text-gray-600"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="22" fill="#F6F6F6" />
+              <path d="M25.6349 30H18.3651C17.3613 30 16.5476 29.2007 16.5476 28.2147V21.5796C16.5476 21.0634 15.9122 20.8049 15.5406 21.1699C15.2014 21.5032 14.6205 21.3203 14.5417 20.8555L14.0248 17.8091C13.9021 17.0857 14.2422 16.3621 14.8825 15.9847L18.1965 14.0315C18.293 13.9746 18.4175 13.9966 18.4878 14.0829C20.2884 16.2938 23.7116 16.2938 25.5122 14.0829C25.5825 13.9966 25.707 13.9746 25.8035 14.0315L29.1175 15.9847C29.7578 16.3621 30.0979 17.0857 29.9752 17.8091L29.4583 20.8555C29.3795 21.3203 28.7986 21.5032 28.4594 21.1699C28.0878 20.8049 27.4524 21.0634 27.4524 21.5796V28.2147C27.4524 29.2007 26.6387 30 25.6349 30Z" stroke="#3C4242" stroke-width="1.1" />
+            </svg> Size & Fit</div>
+            <div class="flex gap-2 items-center text-gray-600"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="22" fill="#F6F6F6" />
+              <path d="M23.8 26.6667V15.4667C23.8 15.2089 23.5985 15 23.35 15H13.45C13.2015 15 13 15.2089 13 15.4667V26.6667C13 26.9244 13.2015 27.1333 13.45 27.1333H14.8M23.8 26.6667C23.8 26.9244 23.5985 27.1333 23.35 27.1333H18.4M23.8 26.6667V18.2667C23.8 18.0089 24.0015 17.8 24.25 17.8H27.2136C27.333 17.8 27.4474 17.8492 27.5318 17.9367L30.8682 21.3967C30.9526 21.4842 31 21.6029 31 21.7266V26.6667C31 26.9244 30.7985 27.1333 30.55 27.1333H29.2M23.8 26.6667C23.8 26.9244 24.0015 27.1333 24.25 27.1333H25.6M14.8 27.1333C14.8 28.1643 15.6059 29 16.6 29C17.5941 29 18.4 28.1643 18.4 27.1333M14.8 27.1333C14.8 26.1024 15.6059 25.2667 16.6 25.2667C17.5941 25.2667 18.4 26.1024 18.4 27.1333M25.6 27.1333C25.6 28.1643 26.4059 29 27.4 29C28.3941 29 29.2 28.1643 29.2 27.1333M25.6 27.1333C25.6 26.1024 26.4059 25.2667 27.4 25.2667C28.3941 25.2667 29.2 26.1024 29.2 27.1333" stroke="#3C4242" stroke-width="1.1" />
+            </svg> Free shipping</div>
+            <div class="flex gap-2 items-center text-gray-600"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="22" fill="#F6F6F6" />
+              <path d="M18.4444 28.2222C18.4444 29.2041 17.6485 30 16.6667 30C15.6848 30 14.8889 29.2041 14.8889 28.2222C14.8889 27.2404 15.6848 26.4444 16.6667 26.4444C17.6485 26.4444 18.4444 27.2404 18.4444 28.2222ZM18.4444 28.2222H25.5556C26.5374 28.2222 27.3333 27.4263 27.3333 26.4444V22.8889M25.5556 15.7778C25.5556 16.7596 26.3515 17.5556 27.3333 17.5556C28.3152 17.5556 29.1111 16.7596 29.1111 15.7778C29.1111 14.7959 28.3152 14 27.3333 14C26.3515 14 25.5556 14.7959 25.5556 15.7778ZM25.5556 15.7778H18.4444C17.4626 15.7778 16.6667 16.5737 16.6667 17.5556V21.1111M30 24.6667L27.6476 22.1398C27.474 21.9534 27.1926 21.9534 27.0191 22.1398L24.6667 24.6667M19.3333 19.3333L16.9809 21.8602C16.8074 22.0466 16.526 22.0466 16.3524 21.8602L14 19.3333" stroke="#3C4242" stroke-width="1.1" stroke-linecap="round" />
+            </svg> Free Returns</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= DESCRIPTION ================= -->
+      <div class="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+        <!-- Tabs -->
+        <div class="lg:col-span-2 space-y-6">
+          <h2 class="text-xl font-semibold flex items-center gap-2">
+            <span class="w-1 h-5 bg-purple-600 rounded"></span>
+            Product Description
+          </h2>
+
+          <!-- Tabs -->
+          <div class="flex gap-6 text-sm border-b">
+            <button class="pb-2 border-b-2 border-black font-medium">Description</button>
+            <button class="pb-2 text-gray-400">User comments</button>
+            <button class="pb-2 text-gray-400">Q & A</button>
+          </div>
+
+          <!-- Description -->
+          <p class="text-gray-600 text-sm leading-relaxed">
+            {{ prod.description }}
+          </p>
+
+          @if (prod.comment) {
+            <div class="bg-purple-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-700 italic">"{{ prod.comment }}"</p>
+            </div>
+          }
+
+          <!-- Info grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Category</p>
+              <p class="font-semibold text-gray-900">{{ prod.category }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Product Type</p>
+              <p class="font-semibold text-gray-900">{{ prod.productType }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Style</p>
+              <p class="font-semibold text-gray-900">{{ prod.dressStyle }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Brand</p>
+              <p class="font-semibold text-gray-900">{{ prod.brand }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Color</p>
+              <p class="font-semibold text-gray-900">{{ prod.color }}</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500 text-xs mb-1">Rating</p>
+              <p class="font-semibold text-gray-900">{{ prod.rating }}.0 / 5.0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
