@@ -1,5 +1,5 @@
 @if (productIn) {
-  <div class="w-[282px] h-auto xs:w-full xs:h-auto overflow-hidden">
+  <div class="w-[282px] h-auto xs:w-full xs:h-auto overflow-hidden" (click)="navigateToDetail()">
     <div class="relative h-[370px] overflow-hidden rounded-lg">
       <img
         [src]="productIn.image | imageUrl"

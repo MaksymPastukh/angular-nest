@@ -1,23 +1,12 @@
-import { computed, inject } from '@angular/core';
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap, catchError, of } from 'rxjs';
-import { ProductService } from '../services/product.service';
-import { ProductType } from '../../views/types/product.type';
-
-/* =======================
-   STATE
-======================= */
-
-interface ProductDetailState {
-  product: ProductType | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
-/* =======================
-   INITIAL STATE
-======================= */
+import {computed, inject} from '@angular/core';
+import {patchState, signalStore, withComputed, withMethods, withState} from '@ngrx/signals';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {pipe, switchMap, tap, catchError, of, Observable} from 'rxjs';
+import {ProductService} from '../services/product.service';
+import {ProductType} from '../../views/types/product.type';
+import {ProductDetailState} from './types/product-detail-state.interface';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ProductDetailGalleryInterface} from './types/product-detail-gallery.interface';
 
 const initialState: ProductDetailState = {
   product: null,
@@ -25,42 +14,24 @@ const initialState: ProductDetailState = {
   error: null,
 };
 
-/* =======================
-   STORE
-======================= */
-
 export const ProductDetailStore = signalStore(
-  { providedIn: 'root' },
-
+  {providedIn: 'root'},
   withState(initialState),
-
-  /* =======================
-     METHODS
-  ======================= */
-
   withMethods((store, productService = inject(ProductService)) => {
-    /**
-     * Реактивный метод загрузки продукта по ID
-     * Использует rxMethod для автоматического управления subscriptions
-     */
     const loadProduct = rxMethod<string>(
       pipe(
         tap(() => {
-          patchState(store, { isLoading: true, error: null });
+          patchState(store, {isLoading: true, error: null});
         }),
         switchMap((id) => {
-          console.log('🔍 ProductDetailStore: Loading product:', id);
-
           return productService.getProductById(id).pipe(
-            tap((product) => {
-              console.log('✅ ProductDetailStore: Product loaded:', product);
+            tap((product: ProductType) => {
               patchState(store, {
                 product,
                 isLoading: false,
               });
             }),
-            catchError((error) => {
-              console.error('❌ ProductDetailStore: Error:', error);
+            catchError((error:HttpErrorResponse): Observable<null> => {
               patchState(store, {
                 product: null,
                 isLoading: false,
@@ -73,10 +44,7 @@ export const ProductDetailStore = signalStore(
       )
     );
 
-    /**
-     * Сбрасывает состояние стора
-     */
-    function reset() {
+    const reset = (): void => {
       patchState(store, initialState);
     }
 
@@ -86,35 +54,33 @@ export const ProductDetailStore = signalStore(
     };
   }),
 
-  /* =======================
-     COMPUTED
-  ======================= */
+  withComputed((store) => {
+    const galleryImagesCache = new WeakMap<ProductType, { image: string; alt: string }[]>();
 
-  withComputed((store) => ({
-    /**
-     * Проверяет, есть ли продукт в сторе
-     */
-    hasProduct: computed(() => store.product() !== null),
+    return {
+      hasProduct: computed((): boolean => store.product() !== null),
+      productTitle: computed((): string => store.product()?.title || ''),
+      galleryImages: computed((): ProductDetailGalleryInterface[] => {
+        const product: ProductType | null = store.product();
+        if (!product) return [];
 
-    /**
-     * Возвращает название продукта (или пустую строку)
-     */
-    productTitle: computed(() => store.product()?.title || ''),
-    product: computed(() => store.product() || null),
-  })),
+        // Если массив уже есть для этого продукта — возвращаем его
+        if (galleryImagesCache.has(product)) {
+          return galleryImagesCache.get(product)!;
+        }
 
-  /* =======================
-     HOOKS
-  ======================= */
+        // Создаём массив изображений
+        const images: ProductDetailGalleryInterface[] = Array.from({ length: 3 }, () => ({
+          image: product.image,
+          alt: product.title,
+        }));
 
-  withHooks({
-    onDestroy(store) {
-      // Очищаем состояние при уничтожении стора
-      console.log('🧹 ProductDetailStore: Cleaning up...');
-      store.reset();
-    },
+        // Сохраняем в cache
+        galleryImagesCache.set(product, images);
+
+        return images;
+      }),
+    }
   })
-
-
 );
 

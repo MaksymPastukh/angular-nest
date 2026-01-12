@@ -1,4 +1,3 @@
-import {FilterData, SelectedFilters} from '../types/filter.types';
 import {patchState, signalStore, withComputed, withHooks, withMethods, withState} from '@ngrx/signals';
 import {catchError, forkJoin, of, switchMap, tap} from 'rxjs';
 import {computed, inject} from '@angular/core';
@@ -7,37 +6,15 @@ import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {MenuItem} from 'primeng/api';
 import {parseUrlParams} from '../services/parseUrlParams';
 import type {Params} from '@angular/router';
+import {SelectedFilters} from './types/product-selected-filters.interface';
+import {FilterState} from './types/product-filter-state.interface';
 
-/* ==========================================
-   CONSTANTS
-========================================== */
 
 const PRICE_DEFAULT = { min: 70, max: 270 } as const;
-
-/* ==========================================
-   TYPES
-========================================== */
-
 type CompositeFilterKey = 'selectedCategories' | 'selectedStyles';
-
-interface FilterState {
-  filterData: FilterData | null;
-
-  selected: SelectedFilters;
-
-  ui: {
-    currentCategory: string | null;
-    currentStyle: string | null;
-  };
-
-  isLoading: boolean;
-  error: string | null;
-  initialized: boolean;
-}
 
 const initialState: FilterState = {
   filterData: null,
-
   selected: {
     priceRange: [PRICE_DEFAULT.min, PRICE_DEFAULT.max],
     selectedSizes: [],
@@ -47,29 +24,16 @@ const initialState: FilterState = {
     selectedStyles: [],
     searchQuery: '',
   },
-
   ui: {
     currentCategory: null,
     currentStyle: null,
   },
-
   isLoading: false,
   error: null,
   initialized: false,
 };
 
-/**
- * NOTE: Если в будущем initialState нужно вычислять динамически
- * (например, из конфигурации), можно использовать:
- *
- * withState(() => initialStateFactory())
- *
- * См. https://ngrx.io/guide/signals/signal-store#creating-a-store
- */
 
-/* ==========================================
-   HELPERS
-========================================== */
 
 function toggle(list: string[], value: string): string[] {
   return list.includes(value)

@@ -1,6 +1,5 @@
 <div class="container mx-auto px-4 py-8">
   @if (store.isLoading()) {
-    <!-- Loading state -->
     <div class="flex items-center justify-center min-h-[400px]">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
@@ -8,7 +7,6 @@
       </div>
     </div>
   } @else if (store.error()) {
-    <!-- Error state -->
     <div class="flex items-center justify-center min-h-[400px]">
       <div class="text-center">
         <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,37 +24,30 @@
       </div>
     </div>
   } @else if (store.product(); as prod) {
-    <!-- Product detail view -->
     <div class="container mx-auto px-4 py-10">
-
-      <!-- ================= TOP SECTION ================= -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-
         <!-- ===== GALLERY ===== -->
         <div class="flex flex-col sm:flex-row gap-4">
-          <!-- Main Image (на мобильных первое) -->
           <div class="flex-1 order-1 sm:order-2">
             <img
               class="w-lg h-auto rounded-3xl object-cover max-h-full border border-gray-100"
-              [src]="galleryImages()[selectedImageIndex]?.url"
-              [alt]="galleryImages()[selectedImageIndex]?.alt"
+              [src]="galleryImages()[selectedImageIndex()]?.image | imageUrl"
+              [alt]="galleryImages()[selectedImageIndex()]?.alt"
               (error)="onImageError($event)"
             />
           </div>
 
-          <!-- Thumbnails + Navigation Buttons -->
           <div class="flex sm:flex-col gap-3 order-2 sm:order-1">
-            <!-- Thumbnails (миниатюры) -->
             <div class="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
               @for (img of galleryImages(); track $index) {
                 <img
                   class="w-20 h-24 sm:w-20 sm:h-24 flex-shrink-0 object-cover rounded-lg border-2 cursor-pointer transition-all duration-200"
-                  [class.border-purple-600]="selectedImageIndex === $index"
-                  [class.border-gray-200]="selectedImageIndex !== $index"
-                  [class.opacity-60]="selectedImageIndex !== $index"
-                  [class.hover:opacity-100]="selectedImageIndex !== $index"
-                  [class.hover:border-purple-400]="selectedImageIndex !== $index"
-                  [src]="img.url"
+                  [class.border-purple-600]="selectedImageIndex() === $index"
+                  [class.border-gray-200]="selectedImageIndex() !== $index"
+                  [class.opacity-60]="selectedImageIndex() !== $index"
+                  [class.hover:opacity-100]="selectedImageIndex() !== $index"
+                  [class.hover:border-purple-400]="selectedImageIndex() !== $index"
+                  [src]="img.image | imageUrl"
                   [alt]="img.alt"
                   (click)="selectImage($index)"
                   (error)="onImageError($event)"
@@ -98,11 +89,9 @@
 
         <!-- ===== PRODUCT INFO ===== -->
         <div class="space-y-6">
-
           <!-- Breadcrumb -->
           <p-breadcrumb
             [model]="breadcrumbItems()"
-            [home]="breadcrumbHome"
             styleClass="bg-transparent border-0 p-0"
           >
           </p-breadcrumb>
@@ -115,10 +104,8 @@
           <!-- Rating & Brand -->
           <div class="flex items-end text-sm">
             <app-rating [rating]="prod.rating"/>
-
             <span class="text-gray-500 font-family font-medium text-xl">{{ prod.rating }}.0</span>
           </div>
-
 
           <!-- Sizes -->
           <div>
@@ -161,11 +148,6 @@
                 [title]="prod.color"
                 aria-label="Select color"
               >
-                @if (selectedColor() === prod.color) {
-                  <svg class="absolute inset-0 w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                }
               </button>
             </div>
           </div>
@@ -176,7 +158,7 @@
               type="button"
               (click)="addToCart()"
               [disabled]="!canAddToCart()"
-              class="flex items-center font-causten font-bold text-lg cursor-pointer gap-2 px-12 py-3 rounded-lg font-medium transition-all duration-200"
+              class="flex w-3xs items-center font-causten font-bold text-lg cursor-pointer gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200"
               [class.bg-purple-600]="canAddToCart()"
               [class.text-white]="canAddToCart()"
               [class.hover:bg-purple-700]="canAddToCart()"
@@ -187,13 +169,16 @@
               <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0.75 0.75H1.25526C2.10578 0.75 2.81986 1.39042 2.9121 2.23592L3.5879 8.43074C3.68014 9.27625 4.39422 9.91667 5.24474 9.91667H12.455C13.2169 9.91667 13.8817 9.40007 14.07 8.66185L15.2199 4.15259C15.4887 3.09878 14.6925 2.07407 13.605 2.07407H3.75M3.77063 12.9374H4.39563M3.77063 13.5624H4.39563M12.9373 12.9374H13.5623M12.9373 13.5624H13.5623M4.91667 13.25C4.91667 13.7102 4.54357 14.0833 4.08333 14.0833C3.6231 14.0833 3.25 13.7102 3.25 13.25C3.25 12.7898 3.6231 12.4167 4.08333 12.4167C4.54357 12.4167 4.91667 12.7898 4.91667 13.25ZM14.0833 13.25C14.0833 13.7102 13.7102 14.0833 13.25 14.0833C12.7898 14.0833 12.4167 13.7102 12.4167 13.25C12.4167 12.7898 12.7898 12.4167 13.25 12.4167C13.7102 12.4167 14.0833 12.7898 14.0833 13.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
-              @if (!canAddToCart()) {
-                <span>Select size first</span>
+              @if (!selectedSize() && !selectedColor()) {
+                <span>Select size & color</span>
+              } @else if (!selectedSize()) {
+                <span>Select size</span>
+              } @else if (!selectedColor()) {
+                <span>Select color</span>
               } @else {
                 <span>Add to cart</span>
               }
             </button>
-
             <button
               type="button"
               class="px-12 py-3 font-causten font-bold text-lg rounded-lg border border-gray-300 text-gray-900 hover:border-purple-600 transition-colors"
@@ -280,8 +265,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Product Image Card (вместо видео) -->
       </div>
     </div>
   }

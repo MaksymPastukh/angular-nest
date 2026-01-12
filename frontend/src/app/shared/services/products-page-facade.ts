@@ -5,8 +5,8 @@ import { ProductStore } from '../store/product.store';
 import { mapToApiFilters } from './mapToApiFilters';
 import { filtersToQueryParams } from './filtersToQueryParams';
 import { parseUrlParams } from './parseUrlParams';
-import {SelectedFilters} from '../types/filter.types';
 import {ProductFilterParams} from '../../views/types/product.type';
+import {SelectedFilters} from '../store/types/product-selected-filters.interface';
 
 /**
  * ProductsPageFacade - Orchestration Layer
