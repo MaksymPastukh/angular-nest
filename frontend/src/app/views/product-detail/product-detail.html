@@ -100,12 +100,15 @@
         <div class="space-y-6">
 
           <!-- Breadcrumb -->
-          <p class="text-sm text-gray-400">
-            Shop <span class="mx-1">›</span> {{ prod.category }} <span class="mx-1">›</span> {{ prod.productType }}
-          </p>
+          <p-breadcrumb
+            [model]="breadcrumbItems()"
+            [home]="breadcrumbHome"
+            styleClass="bg-transparent border-0 p-0"
+          >
+          </p-breadcrumb>
 
           <!-- Title -->
-          <h1 class="text-3xl font-bold text-gray-900">
+          <h1 class="text-4xl font-coresans font-bold text-gray-900 mt-8">
             {{ prod.title }}
           </h1>
 
@@ -119,11 +122,22 @@
 
           <!-- Sizes -->
           <div>
-            <p class="font-family font-bold text-lg mb-2">Select Size</p>
-            <div class="flex gap-2 flex-wrap">
+            <p class="font-causten font-bold text-lg mb-2">
+              Select Size
+            </p>
+            <div class="flex  gap-2 flex-wrap">
               @for (size of prod.size; track $index) {
                 <button
-                  class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium"
+                  type="button"
+                  (click)="selectSize(size)"
+                  class="px-4 py-2 rounded-lg cursor-pointer border text-sm font-medium transition-all duration-200"
+                  [class.border-purple-600]="selectedSize() === size"
+                  [class.bg-purple-600]="selectedSize() === size"
+                  [class.text-white]="selectedSize() === size"
+                  [class.border-gray-300]="selectedSize() !== size"
+                  [class.text-gray-900]="selectedSize() !== size"
+                  [class.hover:border-purple-400]="selectedSize() !== size"
+                  [class.hover:bg-purple-50]="selectedSize() !== size"
                 >
                   {{ size }}
                 </button>
@@ -133,35 +147,63 @@
 
           <!-- Color -->
           <div>
-            <p class="font-family font-bold text-lg mb-2">Colour Available</p>
+            <p class="font-causten font-bold text-lg mb-2">Colour Available</p>
             <div class="flex gap-3 mt-3">
-              <span
-                class="w-6 h-6 rounded-full bg-gray-700 ring-2 ring-gray-700 ring-offset-2 ring-offset-white"
-                aria-label="color"
+              <button
+                type="button"
+                (click)="selectColor(prod.color)"
+                class="relative w-8 h-8 rounded-full ring-2 transition-all duration-200 cursor-pointer"
+                [class.ring-purple-600]="selectedColor() === prod.color"
+                [class.ring-offset-2]="selectedColor() === prod.color"
+                [class.ring-gray-300]="selectedColor() !== prod.color"
+                [class.ring-offset-0]="selectedColor() !== prod.color"
                 [style.background-color]="prod.color"
                 [title]="prod.color"
-              ></span>
+                aria-label="Select color"
+              >
+                @if (selectedColor() === prod.color) {
+                  <svg class="absolute inset-0 w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                }
+              </button>
             </div>
           </div>
 
           <!-- Actions -->
-          <div class="flex flex-wrap font-causten font-bold text-lg gap-8 mt-8">
+          <div class="flex flex-wrap gap-8 mt-8">
             <button
-              class="flex items-center cursor-pointer gap-2 px-12 py-3 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors">
+              type="button"
+              (click)="addToCart()"
+              [disabled]="!canAddToCart()"
+              class="flex items-center font-causten font-bold text-lg cursor-pointer gap-2 px-12 py-3 rounded-lg font-medium transition-all duration-200"
+              [class.bg-purple-600]="canAddToCart()"
+              [class.text-white]="canAddToCart()"
+              [class.hover:bg-purple-700]="canAddToCart()"
+              [class.bg-gray-300]="!canAddToCart()"
+              [class.text-gray-500]="!canAddToCart()"
+              [class.cursor-not-allowed]="!canAddToCart()"
+            >
               <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0.75 0.75H1.25526C2.10578 0.75 2.81986 1.39042 2.9121 2.23592L3.5879 8.43074C3.68014 9.27625 4.39422 9.91667 5.24474 9.91667H12.455C13.2169 9.91667 13.8817 9.40007 14.07 8.66185L15.2199 4.15259C15.4887 3.09878 14.6925 2.07407 13.605 2.07407H3.75M3.77063 12.9374H4.39563M3.77063 13.5624H4.39563M12.9373 12.9374H13.5623M12.9373 13.5624H13.5623M4.91667 13.25C4.91667 13.7102 4.54357 14.0833 4.08333 14.0833C3.6231 14.0833 3.25 13.7102 3.25 13.25C3.25 12.7898 3.6231 12.4167 4.08333 12.4167C4.54357 12.4167 4.91667 12.7898 4.91667 13.25ZM14.0833 13.25C14.0833 13.7102 13.7102 14.0833 13.25 14.0833C12.7898 14.0833 12.4167 13.7102 12.4167 13.25C12.4167 12.7898 12.7898 12.4167 13.25 12.4167C13.7102 12.4167 14.0833 12.7898 14.0833 13.25Z" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M0.75 0.75H1.25526C2.10578 0.75 2.81986 1.39042 2.9121 2.23592L3.5879 8.43074C3.68014 9.27625 4.39422 9.91667 5.24474 9.91667H12.455C13.2169 9.91667 13.8817 9.40007 14.07 8.66185L15.2199 4.15259C15.4887 3.09878 14.6925 2.07407 13.605 2.07407H3.75M3.77063 12.9374H4.39563M3.77063 13.5624H4.39563M12.9373 12.9374H13.5623M12.9373 13.5624H13.5623M4.91667 13.25C4.91667 13.7102 4.54357 14.0833 4.08333 14.0833C3.6231 14.0833 3.25 13.7102 3.25 13.25C3.25 12.7898 3.6231 12.4167 4.08333 12.4167C4.54357 12.4167 4.91667 12.7898 4.91667 13.25ZM14.0833 13.25C14.0833 13.7102 13.7102 14.0833 13.25 14.0833C12.7898 14.0833 12.4167 13.7102 12.4167 13.25C12.4167 12.7898 12.7898 12.4167 13.25 12.4167C13.7102 12.4167 14.0833 12.7898 14.0833 13.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
-              Add to cart
+              @if (!canAddToCart()) {
+                <span>Select size first</span>
+              } @else {
+                <span>Add to cart</span>
+              }
             </button>
 
             <button
-              class="px-12 py-3 rounded-lg border border-gray-300 text-gray-900 hover:border-purple-600 transition-colors">
+              type="button"
+              class="px-12 py-3 font-causten font-bold text-lg rounded-lg border border-gray-300 text-gray-900 hover:border-purple-600 transition-colors"
+            >
               ${{ prod.price }}
             </button>
           </div>
 
           <!-- Features -->
-          <div class="grid grid-cols-2 gap-4 text-sm pt-6 border-t border-gray-400">
+          <div class="grid grid-cols-2 gap-4 text-sm pt-6 border-t border-gray-400 font-causten font-medium text-lg">
             <div class="flex gap-2 items-center text-gray-600"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="22" cy="22" r="22" fill="#F6F6F6" />
               <path d="M15 18.75H30M18 26.25H21M24 26.25H27M17.4 30H27.6C28.4401 30 28.8601 30 29.181 29.7956C29.4632 29.6159 29.6927 29.329 29.8365 28.9762C30 28.5751 30 28.0501 30 27V18C30 16.9499 30 16.4249 29.8365 16.0238C29.6927 15.671 29.4632 15.3841 29.181 15.2044C28.8601 15 28.4401 15 27.6 15H17.4C16.5599 15 16.1399 15 15.819 15.2044C15.5368 15.3841 15.3073 15.671 15.1635 16.0238C15 16.4249 15 16.9499 15 18V27C15 28.0501 15 28.5751 15.1635 28.9762C15.3073 29.329 15.5368 29.6159 15.819 29.7956C16.1399 30 16.5599 30 17.4 30Z" stroke="#3C4242" stroke-width="1.1" stroke-linecap="round" />
