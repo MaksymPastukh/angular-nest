@@ -34,7 +34,9 @@ export interface SelectedFilters {
   selectedSizes: string[];
   /** Выбранные цвета */
   selectedColors: string[];
-  /** Выбранные категории (формат: "ProductType:Brand") */
+  /** Выбранная основная категория (Men, Women, Combos, Joggers) */
+  selectedCategory: string | null;
+  /** Выбранные подкатегории/типы продуктов (формат: "ProductType:Brand") */
   selectedCategories: string[];
   /** Выбранные стили (формат: "Style:Brand") */
   selectedStyles: string[];

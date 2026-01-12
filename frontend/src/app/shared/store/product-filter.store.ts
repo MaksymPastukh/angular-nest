@@ -42,6 +42,7 @@ const initialState: FilterState = {
     priceRange: [PRICE_DEFAULT.min, PRICE_DEFAULT.max],
     selectedSizes: [],
     selectedColors: [],
+    selectedCategory: null,
     selectedCategories: [],
     selectedStyles: [],
   },
@@ -209,7 +210,20 @@ export const ProductFilterStore = signalStore(
     }
 
     /**
-     * Toggle категории (убрана дублированная логика)
+     * Устанавливает основную категорию (Men, Women, Combos, Joggers)
+     * Сбрасывает подкатегории и стили при изменении
+     */
+    function setCategory(category: string | null) {
+      updateSelected(f => ({
+        ...f,
+        selectedCategory: category,
+        selectedCategories: [], // Сбрасываем подкатегории
+        selectedStyles: [],      // Сбрасываем стили
+      }));
+    }
+
+    /**
+     * Toggle категории (подкатегория товара, убрана дублированная логика)
      */
     function toggleCategory(category: string, brand: string) {
       const key = `${category}:${brand}`;
@@ -280,6 +294,7 @@ export const ProductFilterStore = signalStore(
           ],
           selectedSizes: parsed.sizes,
           selectedColors: parsed.colors,
+          selectedCategory: parsed.category || null,
           selectedCategories,
           selectedStyles,
         },
@@ -292,6 +307,7 @@ export const ProductFilterStore = signalStore(
       setPriceRange,
       toggleSize,
       toggleColor,
+      setCategory,
       toggleCategory,
       toggleStyle,
       resetFilters,

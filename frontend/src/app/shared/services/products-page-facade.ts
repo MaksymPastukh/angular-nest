@@ -5,6 +5,8 @@ import { ProductStore } from '../store/product.store';
 import { mapToApiFilters } from './mapToApiFilters';
 import { filtersToQueryParams } from './filtersToQueryParams';
 import { parseUrlParams } from './parseUrlParams';
+import {SelectedFilters} from '../types/filter.types';
+import {ProductFilterParams} from '../../views/types/product.type';
 
 /**
  * ProductsPageFacade - Orchestration Layer
@@ -30,16 +32,11 @@ export class ProductsPageFacade {
      * Signal already tracks changes - no need for manual comparison
      */
     effect(() => {
-      // Ждем инициализации фильтров
-      if (!this.filterStore.initialized()) {
-        return;
-      }
-
       // Читаем текущие UI фильтры
-      const uiFilters = this.filterStore.selected();
+      const uiFilters: SelectedFilters = this.filterStore.selected();
 
       // Конвертируем UI → API формат
-      const apiFilters = mapToApiFilters(uiFilters);
+      const apiFilters: ProductFilterParams = mapToApiFilters(uiFilters);
 
       // Обновляем ProductStore (это триггерит загрузку продуктов)
       // Используем untracked чтобы не создать цикл

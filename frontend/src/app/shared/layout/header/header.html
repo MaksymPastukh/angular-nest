@@ -39,17 +39,54 @@
             class="flex items-center gap-6 lg:gap-8 xl:gap-10 text-base font-medium text-gray-800"
           >
             <li>
-              <a routerLink="/products" routerLinkActive="!text-purple-600" class="hover:text-purple-600 transition-colors">Shop</a>
+              <a
+                routerLink="/products"
+                routerLinkActive="!text-purple-600"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="hover:text-purple-600 transition-colors"
+              >
+                Shop
+              </a>
             </li>
-            <li><a [routerLink]="['/']" class="hover:text-purple-600 transition-colors">Men</a></li>
             <li>
-              <a [routerLink]="['/']" class="hover:text-purple-600 transition-colors">Women</a>
+              <a
+                [routerLink]="['/products']"
+                [queryParams]="{category: 'Men'}"
+                routerLinkActive="!text-purple-600"
+                class="hover:text-purple-600 transition-colors"
+              >
+                Men
+              </a>
             </li>
             <li>
-              <a [routerLink]="['/']" class="hover:text-purple-600 transition-colors">Combos</a>
+              <a
+                [routerLink]="['/products']"
+                [queryParams]="{category: 'Women'}"
+                routerLinkActive="!text-purple-600"
+                class="hover:text-purple-600 transition-colors"
+              >
+                Women
+              </a>
             </li>
             <li>
-              <a [routerLink]="['/']" class="hover:text-purple-600 transition-colors">Joggers</a>
+              <a
+                [routerLink]="['/products']"
+                [queryParams]="{category: 'Combos'}"
+                routerLinkActive="!text-purple-600"
+                class="hover:text-purple-600 transition-colors"
+              >
+                Combos
+              </a>
+            </li>
+            <li>
+              <a
+                [routerLink]="['/products']"
+                [queryParams]="{category: 'Joggers'}"
+                routerLinkActive="!text-purple-600"
+                class="hover:text-purple-600 transition-colors"
+              >
+                Joggers
+              </a>
             </li>
           </ul>
         </nav>

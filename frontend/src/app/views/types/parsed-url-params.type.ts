@@ -7,6 +7,7 @@ export interface ParsedUrlParams {
   maxPrice?: number;
   sizes: string[];
   colors: string[];
+  category?: string;
   productType?: string;
   dressStyle?: string;
   brand?: string;

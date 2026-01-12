@@ -37,10 +37,11 @@ function parseCategoryBrand(value: string): [string, string] {
  * Конвертирует UI фильтры в API параметры
  *
  * Приоритет фильтрации:
- * 1. Category (productType) - высший приоритет
- * 2. Style (dressStyle) - применяется только если НЕТ категории
+ * 0. Main Category (category) - Men/Women/Combos/Joggers (новое!)
+ * 1. Sub-Category (productType) - высший приоритет среди детальных фильтров
+ * 2. Style (dressStyle) - применяется только если НЕТ подкатегории
  *
- * Brand может быть у категории ИЛИ стиля, но не у обоих одновременно
+ * Brand может быть у подкатегории ИЛИ стиля, но не у обоих одновременно
  */
 export function mapToApiFilters(
   filters: SelectedFilters
@@ -49,6 +50,12 @@ export function mapToApiFilters(
     page: 1,
     limit: 20,
   };
+
+  /* ---------- MAIN CATEGORY (Men/Women/Combos/Joggers) ---------- */
+
+  if (filters.selectedCategory) {
+    params.category = filters.selectedCategory;
+  }
 
   /* ---------- PRICE ---------- */
 
@@ -69,7 +76,7 @@ export function mapToApiFilters(
   params.size = arrayToStringOrArray(filters.selectedSizes);
   params.color = arrayToStringOrArray(filters.selectedColors);
 
-  /* ---------- CATEGORY + BRAND (приоритет 1) ---------- */
+  /* ---------- SUB-CATEGORY + BRAND (приоритет 1) ---------- */
 
   if (filters.selectedCategories.length > 0) {
     const [category, brand] = parseCategoryBrand(filters.selectedCategories[0]);
@@ -77,7 +84,7 @@ export function mapToApiFilters(
     params.productType = category;
     if (brand) params.brand = brand;
 
-    // Ранний выход - категория имеет приоритет над стилем
+    // Ранний выход - подкатегория имеет приоритет над стилем
     return params;
   }
 

@@ -25,7 +25,10 @@ export function parseUrlParams(params: Params): ParsedUrlParams {
         : [params['color']]
       : [],
 
-    // Категория + Бренд
+    // Категория (Men, Women, Combos, Joggers)
+    category: params['category'] || undefined,
+
+    // Подкатегория + Бренд
     productType: params['productType'] || undefined,
     dressStyle: params['dressStyle'] || undefined,
     brand: params['brand'] || undefined,
