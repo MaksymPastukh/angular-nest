@@ -16,6 +16,7 @@ export interface CreateProductFormData {
   pattern: string
   fit: string
   neck: string
+  isLiked: boolean
   sleeve: string
   size: string[]
   description: string

@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core'
 import { HttpClient, HttpParams } from '@angular/common/http'
+import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
-import { ProductType, ProductFilterParams, ProductsResponse } from '../../views/types/product.type'
 import { environment } from '../../../environments/environment'
+import { ProductFilterParams, ProductType, ProductsResponse } from '../../views/types/product.type'
 
 /**
  * Сервис для работы с продуктами
@@ -235,5 +235,22 @@ export class ProductService {
       order: 'asc',
       limit,
     })
+  }
+
+  /**
+   * Добавляет или удаляет продукт из избранного
+   * @param productId - идентификатор продукта
+   * @returns Observable с обновленным продуктом
+   */
+  toggleLike(productId: string): Observable<ProductType> {
+    return this.http.post<ProductType>(`${this.apiUrl}/${productId}/like`, {})
+  }
+
+  /**
+   * Получает список избранных продуктов пользователя
+   * @returns Observable с массивом избранных продуктов
+   */
+  getLikedProducts(): Observable<ProductType[]> {
+    return this.http.get<ProductType[]>(`${this.apiUrl}/liked/me`)
   }
 }

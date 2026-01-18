@@ -386,8 +386,8 @@
   </div>
   <div class="w-full flex justify-center">
     <div class="flex flex-wrap gap-[50px]">
-      @for (productIn of productsInTheLimelight; track $index) {
-        <product-card [product]="productIn" />
+      @for (product of productsInTheLimelight; track $index) {
+        <app-product-card [productIn]="product" />
       }
     </div>
   </div>

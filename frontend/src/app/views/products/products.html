@@ -16,7 +16,7 @@
         </div>
       } @else {
         @for (product of products; track product.id || product._id) {
-          <product-card [product]="product" />
+          <app-product-card [productIn]="product" />
         }
       }
     </div>

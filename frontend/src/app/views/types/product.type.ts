@@ -55,6 +55,8 @@ export interface ProductType {
   /** Дата создания */
   createdAt?: Date
 
+  isLiked: boolean
+
   /** Дата обновления */
   updatedAt?: Date
 }
