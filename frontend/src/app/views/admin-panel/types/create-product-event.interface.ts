@@ -2,11 +2,10 @@ export type ProductEventType =
   | 'productCreated'
   | 'productCreateError'
   | 'imageUploaded'
-  | 'imageUploadError';
+  | 'imageUploadError'
 
 export interface CreateProductEventInterface {
-  type: ProductEventType;
-  message?: string;
-  productTitle?: string;
+  type: ProductEventType
+  message?: string
+  productTitle?: string
 }
-

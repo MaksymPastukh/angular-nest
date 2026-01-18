@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, input} from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import {RouterLink} from '@angular/router';
-import {TableBestPriceInterface} from '../../../views/types/table-best-price.interface';
+import { RouterLink } from '@angular/router'
+import { TableBestPriceInterface } from '../../../views/types/table-best-price.interface'
 
 @Component({
   selector: 'table-best-price',
@@ -10,8 +10,6 @@ import {TableBestPriceInterface} from '../../../views/types/table-best-price.int
   styleUrl: './table-best-price.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
-
 export class TableBestPrice {
-  itemsTableBestPrice = input<TableBestPriceInterface[]>([]);
+  itemsTableBestPrice = input<TableBestPriceInterface[]>([])
 }

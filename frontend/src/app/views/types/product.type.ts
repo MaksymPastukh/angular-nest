@@ -1,54 +1,62 @@
 /**
  * Основной тип продукта согласно backend API
  */
-export type ProductType = {
+export interface ProductType {
   /** Уникальный идентификатор продукта (MongoDB _id) */
-  _id?: string;
+  _id?: string
 
   /** Уникальный идентификатор продукта (возвращается как id в API) */
-  id?: string;
+  id?: string
 
   /** Название продукта */
-  title: string;
+  title: string
 
   /** Рейтинг продукта (0-5) */
-  rating: number;
+  rating: number
 
   /** Бренд производитель */
-  brand: string;
+  brand: string
 
   /** Путь к изображению продукта */
-  image: string;
+  image: string
 
   /** Цена продукта в рублях */
-  price: number;
+  price: number
 
   /** Комментарий или краткое описание */
-  comment: string;
+  comment: string
 
   /** Категория товара (Shop All, Men, Women, Combos, Joggers) */
-  category: string;
+  category: string
 
   /** Тип товара (Tops, Printed T-shirts, Plain T-shirts, и т.д.) */
-  productType?: string;
+  productType?: string
 
   /** Стиль одежды (Classic, Casual, Business, Sport, Elegant, Formal) */
-  dressStyle?: string;
+  dressStyle?: string
+
+  fabric: string
+  pattern: string
+  fit: string
+  neck: string
+  sleeve: string
 
   /** Цвет товара */
-  color: string;
+  color: string
 
   /** Доступные размеры */
-  size: string[];
+  size: string[]
 
   /** Полное описание продукта */
-  description: string;
+  description: string
 
+  userComments: string
+  questionsAnswers: string
   /** Дата создания */
-  createdAt?: Date;
+  createdAt?: Date
 
   /** Дата обновления */
-  updatedAt?: Date;
+  updatedAt?: Date
 }
 
 /**
@@ -56,46 +64,46 @@ export type ProductType = {
  */
 export interface ProductFilterParams {
   /** Категория товара */
-  category?: string;
+  category?: string
 
   /** Тип товара */
-  productType?: string;
+  productType?: string
 
   /** Стиль одежды */
-  dressStyle?: string;
+  dressStyle?: string
 
   /** Бренд */
-  brand?: string;
+  brand?: string
 
   /** Минимальная цена */
-  minPrice?: number;
+  minPrice?: number
 
   /** Максимальная цена */
-  maxPrice?: number;
+  maxPrice?: number
 
   /** Минимальный рейтинг */
-  minRating?: number;
+  minRating?: number
 
   /** Цвет (может быть массив для множественного выбора) */
-  color?: string | string[];
+  color?: string | string[]
 
   /** Размер (может быть массив для множественного выбора) */
-  size?: string | string[];
+  size?: string | string[]
 
   /** Поисковый запрос по названию и описанию */
-  search?: string;
+  search?: string
 
   /** Поле для сортировки (price, rating, title, createdAt) */
-  sortBy?: 'price' | 'rating' | 'title' | 'createdAt';
+  sortBy?: 'price' | 'rating' | 'title' | 'createdAt'
 
   /** Направление сортировки (asc, desc) */
-  order?: 'asc' | 'desc';
+  order?: 'asc' | 'desc'
 
   /** Номер страницы */
-  page?: number;
+  page?: number
 
   /** Количество элементов на странице */
-  limit?: number;
+  limit?: number
 }
 
 /**
@@ -103,17 +111,17 @@ export interface ProductFilterParams {
  */
 export interface ProductsResponse {
   /** Массив продуктов */
-  products: ProductType[];
+  products: ProductType[]
 
   /** Общее количество продуктов */
-  total: number;
+  total: number
 
   /** Текущая страница */
-  page: number;
+  page: number
 
   /** Количество элементов на странице */
-  limit: number;
+  limit: number
 
   /** Общее количество страниц */
-  totalPages: number;
+  totalPages: number
 }

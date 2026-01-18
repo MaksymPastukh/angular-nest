@@ -1,10 +1,96 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 
 /**
  * Тип документа продукта
  */
 export type ProductDocument = HydratedDocument<Product>;
+
+/**
+ * Подсхема для комментария пользователя к продукту
+ */
+@Schema({ timestamps: true, _id: true })
+export class UserComment {
+  /** ID пользователя, оставившего комментарий */
+  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  public userId: string;
+
+  /** Имя пользователя */
+  @Prop({ required: true, type: String })
+  public userName: string;
+
+  /** Текст комментария */
+  @Prop({ required: true, type: String })
+  public text: string;
+
+  /** Рейтинг, поставленный пользователем (0-5) */
+  @Prop({ required: true, type: Number, min: 0, max: 5 })
+  public rating: number;
+
+  /** Дата создания комментария */
+  public createdAt: Date;
+
+  /** Дата обновления комментария */
+  public updatedAt: Date;
+}
+
+export const UserCommentSchema = SchemaFactory.createForClass(UserComment);
+
+/**
+ * Подсхема для ответа на вопрос
+ */
+@Schema({ timestamps: true, _id: true })
+export class Answer {
+  /** ID пользователя, оставившего ответ */
+  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  public userId: string;
+
+  /** Имя пользователя */
+  @Prop({ required: true, type: String })
+  public userName: string;
+
+  /** Текст ответа */
+  @Prop({ required: true, type: String })
+  public text: string;
+
+  /** Дата создания ответа */
+  public createdAt: Date;
+
+  /** Дата обновления ответа */
+  public updatedAt: Date;
+}
+
+export const AnswerSchema = SchemaFactory.createForClass(Answer);
+
+/**
+ * Подсхема для вопроса и ответов
+ */
+@Schema({ timestamps: true, _id: true })
+export class QuestionAnswer {
+  /** ID пользователя, задавшего вопрос */
+  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  public userId: string;
+
+  /** Имя пользователя */
+  @Prop({ required: true, type: String })
+  public userName: string;
+
+  /** Текст вопроса */
+  @Prop({ required: true, type: String })
+  public question: string;
+
+  /** Массив ответов на вопрос */
+  @Prop({ type: [AnswerSchema], default: [] })
+  public answers: Answer[];
+
+  /** Дата создания вопроса */
+  public createdAt: Date;
+
+  /** Дата обновления вопроса */
+  public updatedAt: Date;
+}
+
+export const QuestionAnswerSchema = SchemaFactory.createForClass(QuestionAnswer);
 
 /**
  * Схема продукта для MongoDB
@@ -28,90 +114,143 @@ export class Product {
    * @example "Футболка Nike Air"
    */
   @Prop({ required: true, type: String })
-  title: string;
+  public title: string;
 
   /**
    * Рейтинг продукта от 0 до 5
    * @example 4.5
    */
   @Prop({ required: true, type: Number, min: 0, max: 5, default: 0 })
-  rating: number;
+  public rating: number;
 
   /**
    * Бренд/производитель продукта
    * @example "Nike"
    */
   @Prop({ required: true, type: String })
-  brand: string;
+  public brand: string;
 
   /**
    * Путь к изображению продукта
    * @example "/images/products/nike-air-shirt.jpg"
    */
   @Prop({ required: true, type: String })
-  image: string;
+  public image: string;
 
   /**
    * Цена продукта
    * @example 1999.99
    */
   @Prop({ required: true, type: Number, min: 0 })
-  price: number;
+  public price: number;
 
   /**
    * Краткий комментарий или описание
    * @example "Удобная спортивная футболка"
    */
   @Prop({ required: true, type: String })
-  comment: string;
+  public comment: string;
 
   /**
    * Категория продукта
    * @example "Men"
    */
   @Prop({ required: true, type: String, index: true })
-  category: string;
+  public category: string;
 
   /**
    * Тип товара для фильтрации
    * @example "Printed T-shirts"
    */
   @Prop({ required: true, type: String, index: true })
-  productType: string;
+  public productType: string;
 
   /**
    * Стиль одежды
    * @example "Casual"
    */
   @Prop({ required: true, type: String, index: true })
-  dressStyle: string;
+  public dressStyle: string;
 
   /**
    * Цвет продукта
    * @example "Черный"
    */
   @Prop({ required: true, type: String })
-  color: string;
+  public color: string;
 
   /**
    * Доступные размеры продукта
    * @example ["S", "M", "L", "XL"]
    */
   @Prop({ required: true, type: [String] })
-  size: string[];
+  public size: string[];
 
   /**
    * Подробное описание продукта
    * @example "Спортивная футболка из высококачественного материала..."
    */
   @Prop({ required: true, type: String })
-  description: string;
+  public description: string;
+
+  /**
+   * Тип ткани
+   * @example "Cotton"
+   */
+  @Prop({ type: String, default: 'N/A' })
+  public fabric: string;
+
+  /**
+   * Узор/паттерн
+   * @example "Solid"
+   */
+  @Prop({ type: String, default: 'N/A' })
+  public pattern: string;
+
+  /**
+   * Посадка/крой
+   * @example "Regular Fit"
+   */
+  @Prop({ type: String, default: 'N/A' })
+  public fit: string;
+
+  /**
+   * Тип выреза
+   * @example "Round Neck"
+   */
+  @Prop({ type: String, default: 'N/A' })
+  public neck: string;
+
+  /**
+   * Тип рукава
+   * @example "Short Sleeve"
+   */
+  @Prop({ type: String, default: 'N/A' })
+  public sleeve: string;
+
+  /**
+   * Комментарии пользователей к продукту
+   */
+  @Prop({ type: [UserCommentSchema], default: [] })
+  public userComments: UserComment[];
+
+  /**
+   * Вопросы и ответы к продукту
+   */
+  @Prop({ type: [{ type: QuestionAnswerSchema }], default: [] })
+  public questionsAnswers: QuestionAnswer[];
+
+  /**
+   * Массив ID пользователей, которые добавили продукт в избранное (лайкнули)
+   */
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], default: [] })
+  public likedBy: string[];
 
   /** Дата создания записи (автоматически добавляется Mongoose) */
-  createdAt: Date;
+  public createdAt: Date;
 
   /** Дата последнего обновления записи (автоматически добавляется Mongoose) */
-  updatedAt: Date;
+  public updatedAt: Date;
 }
 
 /**

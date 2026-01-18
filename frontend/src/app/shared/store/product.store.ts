@@ -1,4 +1,4 @@
- import { computed, effect, inject } from '@angular/core';
+import { computed, effect, inject } from '@angular/core'
 import {
   patchState,
   signalStore,
@@ -6,26 +6,26 @@ import {
   withHooks,
   withMethods,
   withState,
-} from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { switchMap, tap, catchError, of } from 'rxjs';
-import { ProductService } from '../services/product.service';
-import type { ProductType, ProductFilterParams } from '../../views/types/product.type';
+} from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { switchMap, tap, catchError, of } from 'rxjs'
+import { ProductService } from '../services/product.service'
+import type { ProductType, ProductFilterParams } from '../../views/types/product.type'
 
 /* =======================
    STATE
 ======================= */
 
 interface ProductState {
-  products: ProductType[];
+  products: ProductType[]
 
-  filters: ProductFilterParams;
+  filters: ProductFilterParams
 
-  isLoading: boolean;
-  error: string | null;
+  isLoading: boolean
+  error: string | null
 
-  total: number;
-  totalPages: number;
+  total: number
+  totalPages: number
 }
 
 /* =======================
@@ -47,7 +47,7 @@ const initialState: ProductState = {
 
   total: 0,
   totalPages: 0,
-};
+}
 
 /* =======================
    STORE
@@ -88,14 +88,14 @@ export const ProductStore = signalStore(
      * Устанавливает состояние загрузки
      */
     function setLoading(isLoading: boolean) {
-      patchState(store, { isLoading, error: isLoading ? null : store.error() });
+      patchState(store, { isLoading, error: isLoading ? null : store.error() })
     }
 
     /**
      * Устанавливает ошибку
      */
     function setError(error: string) {
-      patchState(store, { isLoading: false, error });
+      patchState(store, { isLoading: false, error })
     }
 
     /* ---------- API ---------- */
@@ -111,22 +111,22 @@ export const ProductStore = signalStore(
                 total: response.total,
                 totalPages: response.totalPages,
                 isLoading: false,
-              });
+              })
             }),
             catchError((error) => {
-              console.error('[ProductStore] Failed to load products:', error);
+              console.error('[ProductStore] Failed to load products:', error)
 
               patchState(store, {
                 products: [],
-              });
+              })
 
-              setError(error?.message ?? 'Failed to load products');
-              return of(null);
+              setError(error?.message ?? 'Failed to load products')
+              return of(null)
             })
-          );
+          )
         })
       )
-    );
+    )
 
     /* ---------- FILTERS ---------- */
 
@@ -141,7 +141,7 @@ export const ProductStore = signalStore(
      * Это делает API явным и предсказуемым
      */
     function setFilters(filters: Partial<ProductFilterParams>) {
-      const current = store.filters();
+      const current = store.filters()
 
       // Базовые поля с дефолтами
       const base: ProductFilterParams = {
@@ -149,9 +149,9 @@ export const ProductStore = signalStore(
         limit: filters.limit ?? current.limit ?? 20,
         sortBy: filters.sortBy ?? current.sortBy ?? 'createdAt',
         order: filters.order ?? current.order ?? 'desc',
-      };
+      }
 
-      const next: ProductFilterParams = { ...base };
+      const next: ProductFilterParams = { ...base }
 
       /**
        * Helper для явного присваивания:
@@ -161,76 +161,73 @@ export const ProductStore = signalStore(
        */
       const assign = <K extends keyof ProductFilterParams>(key: K) => {
         if (key in filters) {
-          const value = filters[key];
+          const value = filters[key]
           if (value !== undefined) {
-            (next as any)[key] = value;
+            ;(next as any)[key] = value
           }
           // Если undefined — не копируем, тем самым удаляем
         } else if (current[key] !== undefined) {
           // Ключ не передан — оставляем текущее значение
-          (next as any)[key] = current[key];
+          ;(next as any)[key] = current[key]
         }
-      };
+      }
 
-      assign('productType');
-      assign('category');
-      assign('dressStyle');
-      assign('brand');
-      assign('color');
-      assign('size');
-      assign('minPrice');
-      assign('maxPrice');
-      assign('minRating');
-      assign('search');
+      assign('productType')
+      assign('category')
+      assign('dressStyle')
+      assign('brand')
+      assign('color')
+      assign('size')
+      assign('minPrice')
+      assign('maxPrice')
+      assign('minRating')
+      assign('search')
 
       patchState(store, {
         filters: next,
-      });
+      })
     }
 
     function resetFilters() {
       patchState(store, {
         filters: initialState.filters,
-      });
+      })
     }
 
     /* ---------- PAGINATION ---------- */
 
     function nextPage() {
-      const { page = 1 } = store.filters();
+      const { page = 1 } = store.filters()
       if (page < store.totalPages()) {
-        setFilters({ page: page + 1 });
+        setFilters({ page: page + 1 })
       }
     }
 
     function prevPage() {
-      const { page = 1 } = store.filters();
+      const { page = 1 } = store.filters()
       if (page > 1) {
-        setFilters({ page: page - 1 });
+        setFilters({ page: page - 1 })
       }
     }
 
     function setPage(page: number) {
-      setFilters({ page });
+      setFilters({ page })
     }
 
     function setPageSize(limit: number) {
-      setFilters({ limit, page: 1 });
+      setFilters({ limit, page: 1 })
     }
 
     /* ---------- SORTING ---------- */
 
-    function setSorting(
-      sortBy: ProductFilterParams['sortBy'],
-      order: 'asc' | 'desc'
-    ) {
-      setFilters({ sortBy, order, page: 1 });
+    function setSorting(sortBy: ProductFilterParams['sortBy'], order: 'asc' | 'desc') {
+      setFilters({ sortBy, order, page: 1 })
     }
 
     /* ---------- SEARCH ---------- */
 
     function search(search: string) {
-      setFilters({ search, page: 1 });
+      setFilters({ search, page: 1 })
     }
 
     return {
@@ -252,7 +249,7 @@ export const ProductStore = signalStore(
 
       /* Search */
       search,
-    };
+    }
   }),
 
   /* =======================
@@ -268,22 +265,22 @@ export const ProductStore = signalStore(
        * Защита от первого вызова: не стреляем запросом сразу при инициализации,
        * ждем пока фильтры будут восстановлены из URL/Facade
        */
-      let isFirstRun = true;
+      let isFirstRun = true
 
       effect(() => {
-        const filters = store.filters();
+        const filters = store.filters()
 
         if (isFirstRun) {
-          isFirstRun = false;
+          isFirstRun = false
           // Пропускаем первый запрос с дефолтными фильтрами
           // Фасад сам вызовет setFilters после восстановления из URL
           // После этого effect сработает снова и сделает запрос
-          return;
+          return
         }
 
         // Все последующие изменения фильтров → запрос на сервер
-        store.loadProducts(filters);
-      });
+        store.loadProducts(filters)
+      })
     },
   })
-);
+)

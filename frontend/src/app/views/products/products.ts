@@ -1,11 +1,11 @@
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { ProductCardComponent } from '../../shared/components/product-card/product-card';
-import { ProductFilterComponent } from '../../shared/components/products-filter/products-filter';
-import { TableBestPrice } from '../../shared/components/table-best-price/table-best-price';
-import { TableBestPriceInterface } from '../types/table-best-price.interface';
-import { ProductsPageFacade } from '../../shared/services/products-page-facade';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
+import { Subscription } from 'rxjs'
+import { ProductCardComponent } from '../../shared/components/product-card/product-card'
+import { ProductFilterComponent } from '../../shared/components/products-filter/products-filter'
+import { TableBestPrice } from '../../shared/components/table-best-price/table-best-price'
+import { TableBestPriceInterface } from '../types/table-best-price.interface'
+import { ProductsPageFacade } from '../../shared/services/products-page-facade'
 
 /**
  * Компонент страницы со списком продуктов
@@ -21,14 +21,13 @@ import { ProductsPageFacade } from '../../shared/services/products-page-facade';
 })
 export class Products implements OnInit, OnDestroy {
   /** Фасад страницы продуктов (продукты + фильтры + пагинация) */
-  readonly facade = inject(ProductsPageFacade);
+  readonly facade = inject(ProductsPageFacade)
 
   /** Route для получения query params при инициализации */
-  private readonly route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute)
 
   /** Subscription на query params для корректной отписки */
-  private queryParamsSubscription?: Subscription;
-
+  private queryParamsSubscription?: Subscription
 
   /** Данные для таблицы лучших цен */
   readonly itemsTableBestPrice: TableBestPriceInterface[] = [
@@ -57,7 +56,7 @@ export class Products implements OnInit, OnDestroy {
       price: 799,
       link: '/#',
     },
-  ];
+  ]
 
   /**
    * Инициализация компонента
@@ -69,50 +68,50 @@ export class Products implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       if (Object.keys(params).length > 0) {
         // Есть параметры в URL → восстанавливаем фильтры
-        this.facade.restoreFiltersFromUrl(params);
+        this.facade.restoreFiltersFromUrl(params)
       } else {
         // Нет параметров → сбрасываем фильтры (показываем все продукты)
-        this.facade.resetFilters();
+        this.facade.resetFilters()
       }
-    });
+    })
   }
 
   ngOnDestroy(): void {
     // Отписываемся от queryParams
-    this.queryParamsSubscription?.unsubscribe();
+    this.queryParamsSubscription?.unsubscribe()
 
     // Сбрасываем фильтры при уходе со страницы
-    this.facade.resetFilters();
+    this.facade.resetFilters()
   }
 
   /** Геттер для заголовка категории на основе активных фильтров */
   get titleCategory(): string {
-    const selected = this.facade.filters();
+    const selected = this.facade.filters()
 
     // Приоритет 1: Основная категория (Men, Women, Combos, Joggers)
     if (selected.selectedCategory) {
-      return selected.selectedCategory;
+      return selected.selectedCategory
     }
 
     // Приоритет 2: Подкатегория (Product Type)
     if (selected.selectedCategories.length > 0) {
-      const [raw] = selected.selectedCategories;
-      const [productType] = raw.split(':');
-      return productType || 'All';
+      const [raw] = selected.selectedCategories
+      const [productType] = raw.split(':')
+      return productType || 'All'
     }
 
     // Приоритет 3: Стиль
     if (selected.selectedStyles.length > 0) {
-      const [raw] = selected.selectedStyles;
-      const [style] = raw.split(':');
-      return style || 'All';
+      const [raw] = selected.selectedStyles
+      const [style] = raw.split(':')
+      return style || 'All'
     }
 
-    return 'All';
+    return 'All'
   }
 
   /** Публичный геттер для продуктов */
   get products() {
-    return this.facade.products();
+    return this.facade.products()
   }
 }

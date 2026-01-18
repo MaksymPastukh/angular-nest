@@ -1,18 +1,17 @@
-import {FilterData} from './product-response-filter.interface';
-import {SelectedFilters} from './product-selected-filters.interface';
-
+import { FilterData } from './product-response-filter.interface'
+import { SelectedFilters } from './product-selected-filters.interface'
 
 export interface FilterState {
-  filterData: FilterData | null;
+  filterData: FilterData | null
 
-  selected: SelectedFilters;
+  selected: SelectedFilters
 
   ui: {
-    currentCategory: string | null;
-    currentStyle: string | null;
-  };
+    currentCategory: string | null
+    currentStyle: string | null
+  }
 
-  isLoading: boolean;
-  error: string | null;
-  initialized: boolean;
+  isLoading: boolean
+  error: string | null
+  initialized: boolean
 }

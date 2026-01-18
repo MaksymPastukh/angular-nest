@@ -42,7 +42,7 @@
               <a
                 routerLink="/products"
                 routerLinkActive="!text-purple-600"
-                [routerLinkActiveOptions]="{exact: true}"
+                [routerLinkActiveOptions]="{ exact: true }"
                 class="hover:text-purple-600 transition-colors"
               >
                 Shop
@@ -51,7 +51,7 @@
             <li>
               <a
                 [routerLink]="['/products']"
-                [queryParams]="{category: 'Men'}"
+                [queryParams]="{ category: 'Men' }"
                 routerLinkActive="!text-purple-600"
                 class="hover:text-purple-600 transition-colors"
               >
@@ -61,7 +61,7 @@
             <li>
               <a
                 [routerLink]="['/products']"
-                [queryParams]="{category: 'Women'}"
+                [queryParams]="{ category: 'Women' }"
                 routerLinkActive="!text-purple-600"
                 class="hover:text-purple-600 transition-colors"
               >
@@ -71,7 +71,7 @@
             <li>
               <a
                 [routerLink]="['/products']"
-                [queryParams]="{category: 'Combos'}"
+                [queryParams]="{ category: 'Combos' }"
                 routerLinkActive="!text-purple-600"
                 class="hover:text-purple-600 transition-colors"
               >
@@ -81,7 +81,7 @@
             <li>
               <a
                 [routerLink]="['/products']"
-                [queryParams]="{category: 'Joggers'}"
+                [queryParams]="{ category: 'Joggers' }"
                 routerLinkActive="!text-purple-600"
                 class="hover:text-purple-600 transition-colors"
               >
@@ -127,8 +127,9 @@
       @if (authStore.isAuthenticated()) {
         <div class="flex items-center gap-2 sm:gap-3">
           <!-- Wishlist -->
-          <a [routerLink]="['/']"
-             class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+          <a
+            [routerLink]="['/']"
+            class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
           >
             <svg
               width="44"
@@ -175,8 +176,9 @@
           </a>
 
           <!-- Cart -->
-          <a [routerLink]="['/']"
-             class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+          <a
+            [routerLink]="['/']"
+            class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
           >
             <svg
               width="44"
@@ -207,8 +209,7 @@
             optionLabel="label"
             optionValue="value"
             styleClass="!border-0 !shadow-none !outline-none focus:!ring-0"
-          >
-          </p-select>
+          />
         </div>
         <div class="flex items-center gap-2 sm:gap-6">
           <!-- Auth buttons -->

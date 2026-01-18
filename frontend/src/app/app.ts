@@ -1,9 +1,9 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core'
-import {RouterOutlet} from '@angular/router'
+import { Component, effect, inject, OnInit, signal } from '@angular/core'
+import { RouterOutlet } from '@angular/router'
 import { Toast } from 'primeng/toast'
-import {AuthStore} from './core/auth/store/auth.store';
-import {MessageService} from 'primeng/api';
-import { CreateProductStore } from './views/admin-panel/store/create-product.store';
+import { AuthStore } from './core/auth/store/auth.store'
+import { MessageService } from 'primeng/api'
+import { CreateProductStore } from './views/admin-panel/store/create-product.store'
 
 @Component({
   selector: 'app-root',
@@ -12,17 +12,17 @@ import { CreateProductStore } from './views/admin-panel/store/create-product.sto
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
-  protected readonly authStore = inject(AuthStore);
-  protected readonly productStore = inject(CreateProductStore);
+  protected readonly authStore = inject(AuthStore)
+  protected readonly productStore = inject(CreateProductStore)
   protected readonly title = signal('Euphoria')
-  private messageService = inject(MessageService)
+  private readonly messageService = inject(MessageService)
 
   constructor() {
     // Effect для обработки событий аутентификации
     effect(() => {
-      const event = this.authStore.event();
-      console.log('Auth Event:', event);
-      if (!event) return;
+      const event = this.authStore.event()
+      console.log('Auth Event:', event)
+      if (!event) return
 
       switch (event.type) {
         case 'loginSuccess':
@@ -30,37 +30,37 @@ export class App implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: event.type === 'loginSuccess' ? 'Login Successful' : 'Registration Successful',
-            detail: `Welcome, ${event.userName}!`
-          });
-          break;
+            detail: `Welcome, ${event.userName}!`,
+          })
+          break
 
         case 'loginError':
         case 'registerError':
           this.messageService.add({
             severity: 'error',
             summary: event.type === 'loginError' ? 'Login Failed' : 'Registration Failed',
-            detail: event.message
-          });
-          break;
+            detail: event.message,
+          })
+          break
 
         case 'logout':
           this.messageService.add({
             severity: 'info',
             summary: 'Logged Out',
-            detail: 'You have been logged out successfully.'
-          });
-          break;
+            detail: 'You have been logged out successfully.',
+          })
+          break
       }
 
       // Очищаем event после обработки
       this.authStore.clearEvent()
-    });
+    })
 
     // Effect для обработки событий создания продукта
     effect(() => {
-      const event = this.productStore.event();
-      console.log('Product Event:', event);
-      if (!event) return;
+      const event = this.productStore.event()
+      console.log('Product Event:', event)
+      if (!event) return
 
       switch (event.type) {
         case 'productCreated':
@@ -69,8 +69,8 @@ export class App implements OnInit {
             summary: 'Продукт создан!',
             detail: `Продукт "${event.productTitle}" успешно создан`,
             life: 3000,
-          });
-          break;
+          })
+          break
 
         case 'productCreateError':
           this.messageService.add({
@@ -78,8 +78,8 @@ export class App implements OnInit {
             summary: 'Ошибка создания',
             detail: event.message,
             life: 3000,
-          });
-          break;
+          })
+          break
 
         case 'imageUploaded':
           this.messageService.add({
@@ -87,8 +87,8 @@ export class App implements OnInit {
             summary: 'Изображение загружено',
             detail: 'Изображение успешно загружено на сервер',
             life: 2000,
-          });
-          break;
+          })
+          break
 
         case 'imageUploadError':
           this.messageService.add({
@@ -96,13 +96,13 @@ export class App implements OnInit {
             summary: 'Ошибка загрузки',
             detail: event.message,
             life: 3000,
-          });
-          break;
+          })
+          break
       }
 
       // Очищаем event после обработки
-      this.productStore.clearEvent();
-    });
+      this.productStore.clearEvent()
+    })
   }
 
   ngOnInit() {

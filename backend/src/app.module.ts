@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
+import type { Response as ExpressResponse } from 'express';
 
 /**
  * Главный модуль приложения
@@ -35,7 +36,7 @@ import { UsersModule } from './users/users.module';
       exclude: ['/api*'], // Исключаем API роуты из статической раздачи
       serveStaticOptions: {
         index: false, // Отключаем автоматический index.html
-        setHeaders: (res, path) => {
+        setHeaders: (res: ExpressResponse, path: string) => {
           // Определяем MIME-тип на основе расширения файла
           if (path.endsWith('.png')) {
             res.setHeader('Content-Type', 'image/png');

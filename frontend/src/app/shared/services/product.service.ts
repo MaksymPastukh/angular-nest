@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ProductType, ProductFilterParams, ProductsResponse } from '../../views/types/product.type';
-import { environment } from '../../../environments/environment';
+import { Injectable, inject } from '@angular/core'
+import { HttpClient, HttpParams } from '@angular/common/http'
+import { Observable } from 'rxjs'
+import { ProductType, ProductFilterParams, ProductsResponse } from '../../views/types/product.type'
+import { environment } from '../../../environments/environment'
 
 /**
  * Сервис для работы с продуктами
@@ -17,18 +17,18 @@ import { environment } from '../../../environments/environment';
 })
 export class ProductService {
   /** HTTP клиент для выполнения запросов */
-  private readonly http = inject(HttpClient);
+  private readonly http = inject(HttpClient)
 
   /** Базовый URL API из окружения */
-  private readonly apiUrl = `${environment.api}products`;
+  private readonly apiUrl = `${environment.api}products`
 
   /**
    * Получает все продукты без фильтрации
    * @returns Observable с ответом API, содержащим массив продуктов и метаданные пагинации
    */
   getAllProducts(): Observable<ProductsResponse> {
-    console.log('🌐 ProductService: Making HTTP request to get ALL products:', this.apiUrl);
-    return this.http.get<ProductsResponse>(this.apiUrl);
+    console.log('🌐 ProductService: Making HTTP request to get ALL products:', this.apiUrl)
+    return this.http.get<ProductsResponse>(this.apiUrl)
   }
 
   /**
@@ -38,23 +38,23 @@ export class ProductService {
    */
   getFilteredProducts(filters: ProductFilterParams): Observable<ProductsResponse> {
     // Создаем параметры запроса, исключая пустые значения
-    let params = new HttpParams();
+    let params = new HttpParams()
 
     // Добавляем параметры только если они определены
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         // Если значение это массив - добавляем каждый элемент отдельно
         if (Array.isArray(value)) {
-          value.forEach(item => {
-            params = params.append(key, item.toString());
-          });
+          value.forEach((item) => {
+            params = params.append(key, item.toString())
+          })
         } else {
-          params = params.append(key, value.toString());
+          params = params.append(key, value.toString())
         }
       }
-    });
+    })
 
-    return this.http.get<ProductsResponse>(this.apiUrl, { params });
+    return this.http.get<ProductsResponse>(this.apiUrl, { params })
   }
 
   /**
@@ -63,7 +63,7 @@ export class ProductService {
    * @returns Observable с данными продукта
    */
   getProductById(id: string): Observable<ProductType> {
-    return this.http.get<ProductType>(`${this.apiUrl}/${id}`);
+    return this.http.get<ProductType>(`${this.apiUrl}/${id}`)
   }
 
   /**
@@ -72,7 +72,7 @@ export class ProductService {
    * @returns Observable с созданным продуктом
    */
   createProduct(product: Omit<ProductType, '_id'>): Observable<ProductType> {
-    return this.http.post<ProductType>(this.apiUrl, product);
+    return this.http.post<ProductType>(this.apiUrl, product)
   }
 
   /**
@@ -81,10 +81,10 @@ export class ProductService {
    * @returns Observable с путем к загруженному изображению
    */
   uploadImage(file: File): Observable<{ imagePath: string }> {
-    const formData = new FormData();
-    formData.append('image', file);
+    const formData = new FormData()
+    formData.append('image', file)
 
-    return this.http.post<{ imagePath: string }>(`${this.apiUrl}/upload-image`, formData);
+    return this.http.post<{ imagePath: string }>(`${this.apiUrl}/upload-image`, formData)
   }
 
   /**
@@ -94,7 +94,7 @@ export class ProductService {
    * @returns Observable с обновленным продуктом
    */
   updateProduct(id: string, product: Partial<ProductType>): Observable<ProductType> {
-    return this.http.patch<ProductType>(`${this.apiUrl}/${id}`, product);
+    return this.http.patch<ProductType>(`${this.apiUrl}/${id}`, product)
   }
 
   /**
@@ -103,7 +103,7 @@ export class ProductService {
    * @returns Observable с результатом удаления
    */
   deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
   }
 
   // ===== Методы для получения данных фильтров =====
@@ -113,7 +113,7 @@ export class ProductService {
    * @returns Observable с массивом категорий (Shop All, Men, Women, Combos, Joggers)
    */
   getCategories(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/filters/categories`);
+    return this.http.get<string[]>(`${this.apiUrl}/filters/categories`)
   }
 
   /**
@@ -121,7 +121,7 @@ export class ProductService {
    * @returns Observable с массивом типов (Tops, Printed T-shirts, Plain T-shirts, и т.д.)
    */
   getProductTypes(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/filters/product-types`);
+    return this.http.get<string[]>(`${this.apiUrl}/filters/product-types`)
   }
 
   /**
@@ -129,7 +129,7 @@ export class ProductService {
    * @returns Observable с массивом стилей (Classic, Casual, Business, Sport, и т.д.)
    */
   getDressStyles(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/filters/dress-styles`);
+    return this.http.get<string[]>(`${this.apiUrl}/filters/dress-styles`)
   }
 
   /**
@@ -137,7 +137,7 @@ export class ProductService {
    * @returns Observable с массивом брендов
    */
   getBrands(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/filters/brands`);
+    return this.http.get<string[]>(`${this.apiUrl}/filters/brands`)
   }
 
   /**
@@ -145,7 +145,7 @@ export class ProductService {
    * @returns Observable с массивом цветов
    */
   getColors(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/filters/colors`);
+    return this.http.get<string[]>(`${this.apiUrl}/filters/colors`)
   }
 
   /**
@@ -153,7 +153,7 @@ export class ProductService {
    * @returns Observable с массивом размеров
    */
   getSizes(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/filters/sizes`);
+    return this.http.get<string[]>(`${this.apiUrl}/filters/sizes`)
   }
 
   // ===== Дополнительные методы для удобства =====
@@ -164,12 +164,15 @@ export class ProductService {
    * @param additionalFilters - дополнительные фильтры (опционально)
    * @returns Observable с результатами поиска
    */
-  searchProducts(searchQuery: string, additionalFilters?: Partial<ProductFilterParams>): Observable<ProductsResponse> {
+  searchProducts(
+    searchQuery: string,
+    additionalFilters?: Partial<ProductFilterParams>
+  ): Observable<ProductsResponse> {
     const filters: ProductFilterParams = {
       search: searchQuery,
       ...additionalFilters,
-    };
-    return this.getFilteredProducts(filters);
+    }
+    return this.getFilteredProducts(filters)
   }
 
   /**
@@ -184,7 +187,7 @@ export class ProductService {
       sortBy: 'rating',
       order: 'desc',
       limit,
-    });
+    })
   }
 
   /**
@@ -197,7 +200,7 @@ export class ProductService {
       sortBy: 'createdAt',
       order: 'desc',
       limit,
-    });
+    })
   }
 
   /**
@@ -216,7 +219,7 @@ export class ProductService {
       minPrice,
       maxPrice,
       ...additionalFilters,
-    });
+    })
   }
 
   /**
@@ -231,6 +234,6 @@ export class ProductService {
       sortBy: 'price',
       order: 'asc',
       limit,
-    });
+    })
   }
 }

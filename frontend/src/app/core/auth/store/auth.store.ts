@@ -1,30 +1,24 @@
-import {computed, inject} from '@angular/core'
-import {
-  patchState,
-  signalStore,
-  withComputed,
-  withMethods,
-  withState,
-} from '@ngrx/signals'
-import {rxMethod} from '@ngrx/signals/rxjs-interop'
-import {pipe, tap, switchMap, catchError, of, Observable} from 'rxjs'
-import {AuthService} from '../services/auth.service'
-import {RegisterDataInterface} from '../types/registerData.interface'
-import {CurrentUserResponseInterface} from '../types/current-user.interface'
-import {Router} from '@angular/router'
-import {AuthState} from '../types/auth-state.interface'
-import {AUTHORIZATION_STATE} from '../types/authorization.constants';
-import {LoginDataInterface} from '../types/loginData.interface';
-import {HttpErrorResponse} from '@angular/common/http';
-import {AuthEventInterface} from '../types/auth-event.interface';
-import {UserRole} from '../types/user-role.enum';
+import { computed, inject } from '@angular/core'
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { pipe, tap, switchMap, catchError, of, Observable } from 'rxjs'
+import { AuthService } from '../services/auth.service'
+import { RegisterDataInterface } from '../types/registerData.interface'
+import { CurrentUserResponseInterface } from '../types/current-user.interface'
+import { Router } from '@angular/router'
+import { AuthState } from '../types/auth-state.interface'
+import { AUTHORIZATION_STATE } from '../types/authorization.constants'
+import { LoginDataInterface } from '../types/loginData.interface'
+import { HttpErrorResponse } from '@angular/common/http'
+import { AuthEventInterface } from '../types/auth-event.interface'
+import { UserRole } from '../types/user-role.enum'
 
 const initialState: AuthState = {
   user: null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
-  event: null
+  event: null,
 }
 
 /**
@@ -39,7 +33,7 @@ const initialState: AuthState = {
 
 export const AuthStore = signalStore(
   // Уникальный идентификатор store (можно использовать для DevTools)
-  {providedIn: 'root'},
+  { providedIn: 'root' },
 
   /**
    * ШАГ 1: Определяем STATE
@@ -110,7 +104,7 @@ export const AuthStore = signalStore(
         event: {
           type,
           userName: response.user.firstName,
-        } as AuthEventInterface
+        } as AuthEventInterface,
       })
 
       // Перенаправляем на главную
@@ -146,7 +140,6 @@ export const AuthStore = signalStore(
         }
       },
 
-
       /**
        * Проверка наличия конкретной роли у пользователя
        * @param role - роль для проверки (UserRole enum или string)
@@ -154,7 +147,6 @@ export const AuthStore = signalStore(
       hasRole: (role: UserRole | string): boolean => {
         return store.userRole() === role
       },
-
 
       /**
        * МЕТОД: register
@@ -179,20 +171,20 @@ export const AuthStore = signalStore(
               isLoading: true,
               error: null,
             })
-          }), switchMap(
+          }),
+          switchMap(
             (
               registerData: RegisterDataInterface
             ): Observable<CurrentUserResponseInterface | null> =>
               authService.register(registerData).pipe(
                 // Обрабатываем успешный ответ
-                tap((response) => handleAuthSuccess(response, 'Registration Successful', 'registerSuccess')),
+                tap((response) =>
+                  handleAuthSuccess(response, 'Registration Successful', 'registerSuccess')
+                ),
 
                 // Обрабатываем ошибки
                 catchError((error: HttpErrorResponse): Observable<null> => {
-                  const message =
-                    error?.error?.message ??
-                    error?.message ??
-                    'Something went wrong.'
+                  const message = error?.error?.message ?? error?.message ?? 'Something went wrong.'
 
                   patchState(store, {
                     error: { message },
@@ -202,7 +194,7 @@ export const AuthStore = signalStore(
                     event: {
                       type: 'registerError',
                       message,
-                    } as AuthEventInterface
+                    } as AuthEventInterface,
                   })
 
                   return of(null)
@@ -232,10 +224,7 @@ export const AuthStore = signalStore(
               authService.login(loginData).pipe(
                 tap((response) => handleAuthSuccess(response, 'Login Successful', 'loginSuccess')),
                 catchError((error: HttpErrorResponse): Observable<null> => {
-                  const message =
-                    error?.error?.message ??
-                    error?.message ??
-                    'Something went wrong.'
+                  const message = error?.error?.message ?? error?.message ?? 'Something went wrong.'
 
                   patchState(store, {
                     error: { message },
@@ -245,7 +234,7 @@ export const AuthStore = signalStore(
                     event: {
                       type: 'loginError',
                       message,
-                    } as AuthEventInterface
+                    } as AuthEventInterface,
                   })
 
                   return of(null)
@@ -284,7 +273,7 @@ export const AuthStore = signalStore(
        * Полезно для закрытия уведомлений об ошибках
        */
       clearError: () => {
-        patchState(store, {error: null})
+        patchState(store, { error: null })
       },
 
       /**
@@ -310,8 +299,7 @@ export const AuthStore = signalStore(
 
       clearEvent: () => {
         patchState(store, { event: null })
-      }
+      },
     }
   })
 )
-

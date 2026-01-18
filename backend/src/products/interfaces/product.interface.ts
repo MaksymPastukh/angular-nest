@@ -1,6 +1,72 @@
 import { Document } from 'mongoose';
 
 /**
+ * Интерфейс для комментария пользователя
+ */
+export interface IUserComment {
+  /** ID пользователя */
+  userId: string;
+
+  /** Имя пользователя */
+  userName: string;
+
+  /** Текст комментария */
+  text: string;
+
+  /** Рейтинг (0-5) */
+  rating: number;
+
+  /** Дата создания */
+  createdAt: Date;
+
+  /** Дата обновления */
+  updatedAt: Date;
+}
+
+/**
+ * Интерфейс для ответа на вопрос
+ */
+export interface IAnswer {
+  /** ID пользователя */
+  userId: string;
+
+  /** Имя пользователя */
+  userName: string;
+
+  /** Текст ответа */
+  text: string;
+
+  /** Дата создания */
+  createdAt: Date;
+
+  /** Дата обновления */
+  updatedAt: Date;
+}
+
+/**
+ * Интерфейс для вопроса и ответов
+ */
+export interface IQuestionAnswer {
+  /** ID пользователя, задавшего вопрос */
+  userId: string;
+
+  /** Имя пользователя */
+  userName: string;
+
+  /** Текст вопроса */
+  question: string;
+
+  /** Массив ответов */
+  answers: IAnswer[];
+
+  /** Дата создания */
+  createdAt: Date;
+
+  /** Дата обновления */
+  updatedAt: Date;
+}
+
+/**
  * Интерфейс для продукта
  * Описывает структуру данных продукта в магазине
  */
@@ -40,6 +106,30 @@ export interface IProduct {
 
   /** Подробное описание продукта */
   description: string;
+
+  /** Тип ткани */
+  fabric: string;
+
+  /** Узор/паттерн */
+  pattern: string;
+
+  /** Посадка/крой */
+  fit: string;
+
+  /** Тип выреза */
+  neck: string;
+
+  /** Тип рукава */
+  sleeve: string;
+
+  /** Комментарии пользователей */
+  userComments: IUserComment[];
+
+  /** Вопросы и ответы */
+  questionsAnswers: IQuestionAnswer[];
+
+  /** ID пользователей, которые добавили в избранное */
+  likedBy: string[];
 }
 
 /**
@@ -52,6 +142,14 @@ export interface IProductDocument extends IProduct, Document {
 
   /** Дата последнего обновления записи */
   updatedAt: Date;
+}
+
+/**
+ * Интерфейс для ответа продукта с информацией о лайке текущего пользователя
+ */
+export interface IProductResponse extends IProductDocument {
+  /** Лайкнул ли текущий пользователь этот продукт */
+  isLiked?: boolean;
 }
 
 /**

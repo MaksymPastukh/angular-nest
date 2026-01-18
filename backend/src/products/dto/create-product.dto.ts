@@ -116,4 +116,39 @@ export class CreateProductDto {
   @IsNotEmpty()
   @MinLength(10)
   description: string;
+
+  /**
+   * Тип ткани
+   * @example "Cotton"
+   */
+  @IsString()
+  fabric?: string;
+
+  /**
+   * Узор/паттерн
+   * @example "Solid"
+   */
+  @IsString()
+  pattern?: string;
+
+  /**
+   * Посадка/крой
+   * @example "Regular Fit"
+   */
+  @IsString()
+  fit?: string;
+
+  /**
+   * Тип выреза
+   * @example "Round Neck"
+   */
+  @IsString()
+  neck?: string;
+
+  /**
+   * Тип рукава
+   * @example "Short Sleeve"
+   */
+  @IsString()
+  sleeve?: string;
 }

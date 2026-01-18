@@ -1,19 +1,15 @@
-
 /**
  * Интерфейс данных фильтров загруженных с Backend
  */
 export interface FilterData {
   /** Типы продуктов (категории) */
-  productTypes: string[];
+  productTypes: string[]
   /** Стили одежды */
-  dressStyles: string[];
+  dressStyles: string[]
   /** Бренды */
-  brands: string[];
+  brands: string[]
   /** Цвета */
-  colors: string[];
+  colors: string[]
   /** Размеры */
-  sizes: string[];
+  sizes: string[]
 }
-
-
-

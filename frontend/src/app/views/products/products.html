@@ -12,9 +12,7 @@
       } @else if (facade.products().length === 0) {
         <div class="w-full text-center py-8">
           <p class="text-lg text-gray-600">Продукты не найдены</p>
-          <p class="text-sm text-gray-500 mt-2">
-            Попробуйте изменить фильтры или сбросить их
-          </p>
+          <p class="text-sm text-gray-500 mt-2">Попробуйте изменить фильтры или сбросить их</p>
         </div>
       } @else {
         @for (product of products; track product.id || product._id) {

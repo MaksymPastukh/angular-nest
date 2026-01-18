@@ -29,21 +29,21 @@ import { ImageUrlPipe } from '../../pipes/image-url.pipe'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  readonly authStore = inject(AuthStore);
-  private readonly router = inject(Router);
-  private readonly productService = inject(ProductService);
+  readonly authStore = inject(AuthStore)
+  private readonly router = inject(Router)
+  private readonly productService = inject(ProductService)
 
   // Signals для реактивного состояния
-  readonly searchQuery = signal<string>('');
-  readonly searchSuggestions = signal<ProductType[]>([]);
-  readonly isSearching = signal<boolean>(false);
+  readonly searchQuery = signal<string>('')
+  readonly searchSuggestions = signal<ProductType[]>([])
+  readonly isSearching = signal<boolean>(false)
 
   languages = [
     { label: 'English (United States)', value: 'en-US' },
     { label: 'Russian (Russia)', value: 'ru-RU' },
-  ];
+  ]
 
-  selectedLanguage = 'en-US';
+  selectedLanguage = 'en-US'
 
   /**
    * Реактивный метод поиска с использованием rxMethod
@@ -57,40 +57,42 @@ export class HeaderComponent {
       switchMap((query) => {
         // Проверка минимальной длины
         if (!query || query.length < 2) {
-          this.searchSuggestions.set([]);
-          this.isSearching.set(false);
-          return of(null);
+          this.searchSuggestions.set([])
+          this.isSearching.set(false)
+          return of(null)
         }
 
         // API запрос
-        return this.productService.getFilteredProducts({
-          search: query,
-          limit: 10,
-          page: 1,
-        }).pipe(
-          tap((response) => {
-            this.searchSuggestions.set(response.products);
-            this.isSearching.set(false);
-          }),
-          catchError((error) => {
-            console.error('[HeaderSearch] Error:', error);
-            this.searchSuggestions.set([]);
-            this.isSearching.set(false);
-            return of(null);
+        return this.productService
+          .getFilteredProducts({
+            search: query,
+            limit: 10,
+            page: 1,
           })
-        );
+          .pipe(
+            tap((response) => {
+              this.searchSuggestions.set(response.products)
+              this.isSearching.set(false)
+            }),
+            catchError((error) => {
+              console.error('[HeaderSearch] Error:', error)
+              this.searchSuggestions.set([])
+              this.isSearching.set(false)
+              return of(null)
+            })
+          )
       })
     )
-  );
+  )
 
   /**
    * Метод поиска продуктов для autocomplete
    * Вызывается при вводе текста (минимум 2 символа)
    */
   searchProducts(event: any): void {
-    const query = event.query.trim();
+    const query = event.query.trim()
     // Используем rxMethod для реактивного поиска
-    this.performSearch(query);
+    this.performSearch(query)
   }
 
   /**
@@ -98,18 +100,17 @@ export class HeaderComponent {
    * Навигирует на страницу конкретного продукта
    */
   onProductSelect(event: any): void {
-    const product = event.value as ProductType;
+    const product = event.value as ProductType
 
-    if (product && product.id) {
-      console.log('[HeaderSearch] Selected product:', product);
-      console.log('[HeaderSearch] Selected product:', product.id);
+    if (product?.id) {
+      console.log('[HeaderSearch] Selected product:', product)
+      console.log('[HeaderSearch] Selected product:', product.id)
       // Навигация на страницу продукта
-      this.router.navigate(['/product', product.id]);
+      this.router.navigate(['/product', product.id])
 
       // Очищаем поле поиска после выбора
-      this.searchQuery.set('');
-      this.searchSuggestions.set([]);
+      this.searchQuery.set('')
+      this.searchSuggestions.set([])
     }
   }
-
 }

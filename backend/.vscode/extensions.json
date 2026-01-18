@@ -5,31 +5,31 @@
   // Эти расширения будут предложены к установке при открытии проекта
   
   "recommendations": [
-    // Angular Language Service - автодополнение и проверка синтаксиса в шаблонах
-    "angular.ng-template",
-    
     // ESLint - проверка кода на соответствие правилам
     "dbaeumer.vscode-eslint",
     
     // Prettier - форматирование кода
     "esbenp.prettier-vscode",
     
-    // Angular Snippets - полезные сниппеты для Angular
-    "johnpapa.angular2",
-    
     // Path Intellisense - автодополнение путей к файлам
     "christian-kohler.path-intellisense",
     
-    // Auto Rename Tag - автоматическое переименование парных тегов
-    "formulahendry.auto-rename-tag",
+    // REST Client - тестирование API напрямую из VS Code
+    "humao.rest-client",
     
-    // Angular Schematics - быстрое создание компонентов через UI
-    "cyrilletuzi.angular-schematics",
+    // MongoDB для VS Code
+    "mongodb.mongodb-vscode",
     
-    // TypeScript Hero - организация импортов
-    "rbbit.typescript-hero",
+    // Thunder Client - альтернатива Postman
+    "rangav.vscode-thunder-client",
     
     // EditorConfig - поддержка .editorconfig
-    "editorconfig.editorconfig"
+    "editorconfig.editorconfig",
+    
+    // dotENV - подсветка .env файлов
+    "mikestead.dotenv",
+    
+    // GitLens - расширенные возможности Git
+    "eamodio.gitlens"
   ]
 }

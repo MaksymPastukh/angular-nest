@@ -11,10 +11,10 @@ import { filter, Subject, takeUntil } from 'rxjs'
   templateUrl: './layout.html',
 })
 export class LayoutComponent implements OnInit, OnDestroy {
-  private router = inject(Router)
-  private route = inject(ActivatedRoute)
+  private readonly router = inject(Router)
+  private readonly route = inject(ActivatedRoute)
   isFooterVisible = true
-  private destroy$ = new Subject<void>()
+  private readonly destroy$ = new Subject<void>()
 
   ngOnInit(): void {
     this.checkFooterVisibility()

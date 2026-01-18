@@ -1,14 +1,14 @@
-import {inject, Injectable} from '@angular/core'
-import {HttpClient} from '@angular/common/http'
-import {catchError, map, Observable, throwError} from 'rxjs'
-import {DefaultResponseInterface} from '../../../shared/types/default-response.interface'
-import {environment} from '../../../../environments/environment'
-import {CurrentUserResponseInterface} from '../types/current-user.interface'
-import {LoginInterface} from '../types/login.interface'
-import {RegisterDataInterface} from '../types/registerData.interface'
-import {LoginDataInterface} from '../types/loginData.interface'
-import {AUTHORIZATION_STATE} from '../types/authorization.constants';
-import {GetTokensInterface} from '../types/get-tokens.interface';
+import { inject, Injectable } from '@angular/core'
+import { HttpClient } from '@angular/common/http'
+import { catchError, map, Observable, throwError } from 'rxjs'
+import { DefaultResponseInterface } from '../../../shared/types/default-response.interface'
+import { environment } from '../../../../environments/environment'
+import { CurrentUserResponseInterface } from '../types/current-user.interface'
+import { LoginInterface } from '../types/login.interface'
+import { RegisterDataInterface } from '../types/registerData.interface'
+import { LoginDataInterface } from '../types/loginData.interface'
+import { AUTHORIZATION_STATE } from '../types/authorization.constants'
+import { GetTokensInterface } from '../types/get-tokens.interface'
 
 @Injectable({
   providedIn: 'root',
@@ -35,7 +35,10 @@ export class AuthService {
           return loginResponse
         }),
         catchError((error) => {
-          const errorMessage = error?.error?.message || error?.message || 'Error during registration. Please try again.'
+          const errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Error during registration. Please try again.'
           return throwError(() => new Error(errorMessage))
         })
       )
@@ -60,7 +63,8 @@ export class AuthService {
           return loginResponse
         }),
         catchError((error) => {
-          const errorMessage = error?.error?.message || error?.message || 'Error during login. Please try again.'
+          const errorMessage =
+            error?.error?.message || error?.message || 'Error during login. Please try again.'
           return throwError(() => new Error(errorMessage))
         })
       )
@@ -103,27 +107,30 @@ export class AuthService {
 
   refreshToken(): Observable<CurrentUserResponseInterface> {
     const token: GetTokensInterface = this.getTokens()
-    const url: string = `${environment.api}refresh`;
+    const url: string = `${environment.api}refresh`
 
     if (!token?.refreshToken) {
       throw new Error('No refresh token available.')
     }
 
-    return this.http.post<DefaultResponseInterface | CurrentUserResponseInterface>(url, {
-      refreshToken: token.refreshToken
-    }).pipe(
-      map((response: CurrentUserResponseInterface | DefaultResponseInterface) => {
+    return this.http
+      .post<DefaultResponseInterface | CurrentUserResponseInterface>(url, {
+        refreshToken: token.refreshToken,
+      })
+      .pipe(
+        map((response: CurrentUserResponseInterface | DefaultResponseInterface) => {
           if ((response as DefaultResponseInterface).message !== undefined) {
             throw new Error((response as DefaultResponseInterface).message)
           }
 
-          const refreshResponse: CurrentUserResponseInterface = response as CurrentUserResponseInterface
+          const refreshResponse: CurrentUserResponseInterface =
+            response as CurrentUserResponseInterface
           if (!refreshResponse.access_token) {
             throw new Error('Error during token refresh. Please try again.')
           }
 
           return refreshResponse
-        }
-      ))
+        })
+      )
   }
 }

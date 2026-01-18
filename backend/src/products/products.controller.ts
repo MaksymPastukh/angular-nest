@@ -9,12 +9,18 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AddAnswerDto } from './dto/add-answer.dto';
+import { AddCommentDto } from './dto/add-comment.dto';
+import { AddQuestionDto } from './dto/add-question.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -42,7 +48,7 @@ export class ProductsController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createProductDto: CreateProductDto): Promise<ProductDocument> {
+  public async create(@Body() createProductDto: CreateProductDto): Promise<ProductDocument> {
     return await this.productsService.create(createProductDto);
   }
 
@@ -60,7 +66,7 @@ export class ProductsController {
         destination: './public/images/products',
         filename: (_req, file, callback) => {
           // Генерируем уникальное имя файла
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           const ext = extname(file.originalname);
           const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
           callback(null, filename);
@@ -78,7 +84,9 @@ export class ProductsController {
       },
     }),
   )
-  async uploadImage(@UploadedFile() file: any): Promise<{ imagePath: string }> {
+  public async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ imagePath: string }> {
     if (!file) {
       throw new Error('Файл не загружен');
     }
@@ -95,7 +103,7 @@ export class ProductsController {
    */
   @Get('filters/categories')
   @HttpCode(HttpStatus.OK)
-  async getCategories(): Promise<string[]> {
+  public async getCategories(): Promise<string[]> {
     return await this.productsService.getCategories();
   }
 
@@ -106,7 +114,7 @@ export class ProductsController {
    */
   @Get('filters/brands')
   @HttpCode(HttpStatus.OK)
-  async getBrands(): Promise<string[]> {
+  public async getBrands(): Promise<string[]> {
     return await this.productsService.getBrands();
   }
 
@@ -117,7 +125,7 @@ export class ProductsController {
    */
   @Get('filters/colors')
   @HttpCode(HttpStatus.OK)
-  async getColors(): Promise<string[]> {
+  public async getColors(): Promise<string[]> {
     return await this.productsService.getColors();
   }
 
@@ -128,7 +136,7 @@ export class ProductsController {
    */
   @Get('filters/sizes')
   @HttpCode(HttpStatus.OK)
-  async getSizes(): Promise<string[]> {
+  public async getSizes(): Promise<string[]> {
     return await this.productsService.getSizes();
   }
 
@@ -139,7 +147,7 @@ export class ProductsController {
    */
   @Get('filters/product-types')
   @HttpCode(HttpStatus.OK)
-  async getProductTypes(): Promise<string[]> {
+  public async getProductTypes(): Promise<string[]> {
     return await this.productsService.getProductTypes();
   }
 
@@ -150,32 +158,53 @@ export class ProductsController {
    */
   @Get('filters/dress-styles')
   @HttpCode(HttpStatus.OK)
-  async getDressStyles(): Promise<string[]> {
+  public async getDressStyles(): Promise<string[]> {
     return await this.productsService.getDressStyles();
+  }
+
+  /**
+   * Получение избранных продуктов пользователя
+   * GET /products/liked/me
+   * @param req - Запрос с данными пользователя
+   * @returns Список избранных продуктов
+   */
+  @Get('liked/me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  public async getLikedProducts(@Request() req: any): Promise<any[]> {
+    const userId = req.user.userId as string;
+    return await this.productsService.getLikedProducts(userId);
   }
 
   /**
    * Получение списка всех продуктов с фильтрацией
    * GET /products
    * @param filterDto - Параметры фильтрации и пагинации
+   * @param req - Запрос с данными пользователя (опционально)
    * @returns Список продуктов с метаданными
    */
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(@Query() filterDto: FilterProductDto): Promise<IProductsResponse> {
-    return await this.productsService.findAll(filterDto);
+  public async findAll(
+    @Query() filterDto: FilterProductDto,
+    @Request() req?: any,
+  ): Promise<IProductsResponse> {
+    const userId = req?.user?.userId as string | undefined;
+    return await this.productsService.findAll(filterDto, userId);
   }
 
   /**
    * Получение продукта по ID
    * GET /products/:id
    * @param id - ID продукта
+   * @param req - Запрос с данными пользователя (опционально)
    * @returns Найденный продукт
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id') id: string): Promise<ProductDocument> {
-    return await this.productsService.findOne(id);
+  public async findOne(@Param('id') id: string, @Request() req?: any): Promise<any> {
+    const userId = req?.user?.userId as string | undefined;
+    return await this.productsService.findOne(id, userId);
   }
 
   /**
@@ -187,7 +216,7 @@ export class ProductsController {
    */
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  async update(
+  public async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<ProductDocument> {
@@ -202,7 +231,87 @@ export class ProductsController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  async remove(@Param('id') id: string): Promise<ProductDocument> {
+  public async remove(@Param('id') id: string): Promise<ProductDocument> {
     return await this.productsService.remove(id);
+  }
+
+  /**
+   * Добавление комментария к продукту
+   * POST /products/:id/comments
+   * @param id - ID продукта
+   * @param addCommentDto - Данные комментария
+   * @param req - Запрос с данными пользователя
+   * @returns Обновленный продукт
+   */
+  @Post(':id/comments')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  public async addComment(
+    @Param('id') id: string,
+    @Body() addCommentDto: AddCommentDto,
+    @Request() req: any,
+  ): Promise<ProductDocument> {
+    const userId = req.user.userId as string;
+    const userName = (req.user.firstName ?? req.user.email) as string;
+    return await this.productsService.addComment(id, userId, userName, addCommentDto);
+  }
+
+  /**
+   * Добавление вопроса к продукту
+   * POST /products/:id/questions
+   * @param id - ID продукта
+   * @param addQuestionDto - Данные вопроса
+   * @param req - Запрос с данными пользователя
+   * @returns Обновленный продукт
+   */
+  @Post(':id/questions')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  public async addQuestion(
+    @Param('id') id: string,
+    @Body() addQuestionDto: AddQuestionDto,
+    @Request() req: any,
+  ): Promise<ProductDocument> {
+    const userId = req.user.userId as string;
+    const userName = (req.user.firstName ?? req.user.email) as string;
+    return await this.productsService.addQuestion(id, userId, userName, addQuestionDto);
+  }
+
+  /**
+   * Добавление ответа на вопрос
+   * POST /products/:id/questions/:questionId/answers
+   * @param id - ID продукта
+   * @param questionId - ID вопроса
+   * @param addAnswerDto - Данные ответа
+   * @param req - Запрос с данными пользователя
+   * @returns Обновленный продукт
+   */
+  @Post(':id/questions/:questionId/answers')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  public async addAnswer(
+    @Param('id') id: string,
+    @Param('questionId') questionId: string,
+    @Body() addAnswerDto: AddAnswerDto,
+    @Request() req: any,
+  ): Promise<ProductDocument> {
+    const userId = req.user.userId as string;
+    const userName = (req.user.firstName ?? req.user.email) as string;
+    return await this.productsService.addAnswer(id, questionId, userId, userName, addAnswerDto);
+  }
+
+  /**
+   * Добавление/удаление продукта из избранного
+   * POST /products/:id/like
+   * @param id - ID продукта
+   * @param req - Запрос с данными пользователя
+   * @returns Обновленный продукт
+   */
+  @Post(':id/like')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  public async toggleLike(@Param('id') id: string, @Request() req: any): Promise<ProductDocument> {
+    const userId = req.user.userId as string;
+    return await this.productsService.toggleLike(id, userId);
   }
 }

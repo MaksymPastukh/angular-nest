@@ -4,16 +4,11 @@
   <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 sm:p-8 lg:p-10">
     <form (submit)="onSubmit($event)" novalidate class="space-y-10">
       <section>
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
-          Создать новый продукт
-        </h2>
-        <p class="text-sm text-gray-500 mt-1">
-          Заполните основную информацию о товаре
-        </p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Создать новый продукт</h2>
+        <p class="text-sm text-gray-500 mt-1">Заполните основную информацию о товаре</p>
       </section>
 
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
         <div class="md:col-span-2 space-y-1">
           <label for="title" class="label">
             Название продукта <span class="text-red-500">*</span>
@@ -38,9 +33,7 @@
         </div>
 
         <div class="space-y-1">
-          <label for="brand" class="label">
-            Бренд <span class="text-red-500">*</span>
-          </label>
+          <label for="brand" class="label"> Бренд <span class="text-red-500">*</span> </label>
 
           <input
             id="brand"
@@ -59,9 +52,7 @@
         </div>
 
         <div class="space-y-1">
-          <label for="price" class="label">
-            Цена <span class="text-red-500">*</span>
-          </label>
+          <label for="price" class="label"> Цена <span class="text-red-500">*</span> </label>
 
           <p-inputNumber
             inputId="price"
@@ -93,13 +84,10 @@
       <section class="space-y-6">
         <div>
           <h3 class="section-title">Категории и классификация</h3>
-          <p class="section-subtitle">
-            Определите, где будет отображаться товар
-          </p>
+          <p class="section-subtitle">Определите, где будет отображаться товар</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
           <div class="space-y-1">
             <label class="label">Категория *</label>
             <p-select
@@ -165,19 +153,16 @@
               display="chip"
               placeholder="Выберите размеры"
               class="w-full"
-            ></p-multiselect>
+            />
             <p class="hint-text">Можно выбрать несколько размеров</p>
           </div>
-
         </div>
       </section>
 
       <section class="space-y-6">
         <div>
           <h3 class="section-title">Описание и медиа</h3>
-          <p class="section-subtitle">
-            Добавьте описание и изображение товара
-          </p>
+          <p class="section-subtitle">Добавьте описание и изображение товара</p>
         </div>
 
         <div class="space-y-1">
@@ -198,7 +183,9 @@
             placeholder="Подробное описание продукта..."
             [field]="productForm.description"
             class="input resize-none"
-            [class.input-error]="productForm.description().touched() && productForm.description().invalid()"
+            [class.input-error]="
+              productForm.description().touched() && productForm.description().invalid()
+            "
           ></textarea>
           <p class="hint-text">Минимум 10 символов</p>
         </div>
@@ -215,10 +202,12 @@
               (onSelect)="onImageSelect($event)"
               [auto]="false"
               [disabled]="store.isUploadingImage()"
-            ></p-fileUpload>
+            />
             <p class="hint-text mt-2">JPG, PNG, WEBP — до 5 МБ</p>
           } @else {
-            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 flex items-center justify-between">
+            <div
+              class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 flex items-center justify-between"
+            >
               <div class="flex items-center gap-2">
                 <i class="pi pi-check-circle text-green-600"></i>
                 <span class="text-sm text-green-800 font-medium">Изображение выбрано</span>

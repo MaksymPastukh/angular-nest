@@ -1,11 +1,11 @@
-import { ColorOption, FormSelectOption } from './create-product.interface';
+import { ColorOption, FormSelectOption } from './create-product.interface'
 
 export const CATEGORIES: FormSelectOption[] = [
   { label: 'Men', value: 'Men' },
   { label: 'Women', value: 'Women' },
   { label: 'Combos', value: 'Combos' },
   { label: 'Joggers', value: 'Joggers' },
-] as const;
+] as const
 
 export const PRODUCT_TYPES: FormSelectOption[] = [
   { label: 'T-shirts', value: 'T-shirts' },
@@ -13,14 +13,14 @@ export const PRODUCT_TYPES: FormSelectOption[] = [
   { label: 'Hoodies', value: 'Hoodies' },
   { label: 'Shorts', value: 'Shorts' },
   { label: 'Jeans', value: 'Jeans' },
-] as const;
+] as const
 
 export const DRESS_STYLES: FormSelectOption[] = [
   { label: 'Casual', value: 'Casual' },
   { label: 'Formal', value: 'Formal' },
   { label: 'Party', value: 'Party' },
   { label: 'Gym', value: 'Gym' },
-] as const;
+] as const
 
 export const COLORS: ColorOption[] = [
   { name: 'Red', value: '#FF0000' },
@@ -33,7 +33,7 @@ export const COLORS: ColorOption[] = [
   { name: 'Orange', value: '#FFA500' },
   { name: 'Pink', value: '#FFC0CB' },
   { name: 'Gray', value: '#808080' },
-] as const;
+] as const
 
 export const SIZES: FormSelectOption[] = [
   { label: 'XS', value: 'XS' },
@@ -42,4 +42,4 @@ export const SIZES: FormSelectOption[] = [
   { label: 'L', value: 'L' },
   { label: 'XL', value: 'XL' },
   { label: 'XXL', value: 'XXL' },
-] as const;
+] as const

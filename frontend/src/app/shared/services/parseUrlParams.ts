@@ -1,5 +1,5 @@
-import type { Params } from '@angular/router';
-import type { ParsedUrlParams } from '../../views/types/parsed-url-params.type';
+import type { Params } from '@angular/router'
+import type { ParsedUrlParams } from '../../views/types/parsed-url-params.type'
 
 /**
  * Парсит query параметры из URL в типизированный объект
@@ -43,6 +43,5 @@ export function parseUrlParams(params: Params): ParsedUrlParams {
     // Сортировка (с type assertion для строгих типов)
     sortBy: params['sortBy'] as 'price' | 'rating' | 'title' | 'createdAt' | undefined,
     order: params['order'] as 'asc' | 'desc' | undefined,
-  };
+  }
 }
-
