@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
-import { environment } from '../../../environments/environment'
-import { ProductFilterParams, ProductType, ProductsResponse } from '../../views/types/product.type'
-
+import { environment } from '../../../../../environments/environment'
+import { ProductFilterParams, ProductType } from '../../detail/types/product.interface'
+import { ProductsResponse } from '../../detail/types/products-response.interface'
 /**
  * Сервис для работы с продуктами
  *
@@ -27,7 +27,6 @@ export class ProductService {
    * @returns Observable с ответом API, содержащим массив продуктов и метаданные пагинации
    */
   getAllProducts(): Observable<ProductsResponse> {
-    console.log('🌐 ProductService: Making HTTP request to get ALL products:', this.apiUrl)
     return this.http.get<ProductsResponse>(this.apiUrl)
   }
 
@@ -45,11 +44,11 @@ export class ProductService {
       if (value !== undefined && value !== null && value !== '') {
         // Если значение это массив - добавляем каждый элемент отдельно
         if (Array.isArray(value)) {
-          value.forEach((item) => {
+          value.forEach((item: string) => {
             params = params.append(key, item.toString())
           })
         } else {
-          params = params.append(key, value.toString())
+          params = params.append(key, String(value))
         }
       }
     })
@@ -170,7 +169,7 @@ export class ProductService {
   ): Observable<ProductsResponse> {
     const filters: ProductFilterParams = {
       search: searchQuery,
-      ...additionalFilters,
+      ...(additionalFilters ?? {}),
     }
     return this.getFilteredProducts(filters)
   }

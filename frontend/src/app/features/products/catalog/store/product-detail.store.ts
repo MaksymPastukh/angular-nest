@@ -1,12 +1,12 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { pipe, switchMap, tap, catchError, of, Observable } from 'rxjs'
+import { catchError, Observable, of, pipe, switchMap, tap } from 'rxjs'
 import { ProductService } from '../services/product.service'
-import { ProductType } from '../../views/types/product.type'
-import { ProductDetailState } from './types/product-detail-state.interface'
-import { HttpErrorResponse } from '@angular/common/http'
-import { ProductDetailGalleryInterface } from './types/product-detail-gallery.interface'
+import { ProductDetailGalleryInterface } from '../types/product-detail-gallery.interface'
+import { ProductDetailState } from '../types/product-detail-state.interface'
+import { ProductType } from '../../detail/types/product.interface'
 
 const initialState: ProductDetailState = {
   product: null,
@@ -35,7 +35,7 @@ export const ProductDetailStore = signalStore(
               patchState(store, {
                 product: null,
                 isLoading: false,
-                error: error?.error?.message || 'Failed to load product',
+                error: (error?.error as { message?: string })?.message ?? 'Failed to load product',
               })
               return of(null)
             })
@@ -59,14 +59,14 @@ export const ProductDetailStore = signalStore(
 
     return {
       hasProduct: computed((): boolean => store.product() !== null),
-      productTitle: computed((): string => store.product()?.title || ''),
+      productTitle: computed((): string => store.product()?.title ?? ''),
       galleryImages: computed((): ProductDetailGalleryInterface[] => {
         const product: ProductType | null = store.product()
         if (!product) return []
 
         // Если массив уже есть для этого продукта — возвращаем его
         if (galleryImagesCache.has(product)) {
-          return galleryImagesCache.get(product)!
+          return galleryImagesCache.get(product) ?? []
         }
 
         // Создаём массив изображений

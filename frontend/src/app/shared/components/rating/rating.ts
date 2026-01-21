@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, Input, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, Input } from '@angular/core'
 import { CommonModule } from '@angular/common'
 
 @Component({

@@ -1,5 +1,5 @@
-import type { ProductFilterParams } from '../../views/types/product.type'
-import type { QueryParams } from '../../views/types/query-params.type'
+import type { QueryParams } from '../../../features/products/catalog/types/query-params.type'
+import type { ProductFilterParams } from '../../../features/products/detail/types/product.interface'
 
 /**
  * Конвертирует API фильтры в query параметры для URL

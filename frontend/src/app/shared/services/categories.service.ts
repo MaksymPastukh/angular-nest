@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Categories } from '../types/categories'
+import { Categories } from '../types/categories.interface'
 
 @Injectable({
   providedIn: 'root',

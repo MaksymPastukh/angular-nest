@@ -1,3 +1,5 @@
+import { computed, inject } from '@angular/core'
+import type { Params } from '@angular/router'
 import {
   patchState,
   signalStore,
@@ -6,15 +8,14 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals'
-import { catchError, forkJoin, of, switchMap, tap } from 'rxjs'
-import { computed, inject } from '@angular/core'
-import { ProductService } from '../services/product.service'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { MenuItem } from 'primeng/api'
-import { parseUrlParams } from '../services/parseUrlParams'
-import type { Params } from '@angular/router'
-import { SelectedFilters } from './types/product-selected-filters.interface'
-import { FilterState } from './types/product-filter-state.interface'
+import { parseUrlParams } from '@/shared/utils/filters'
+import { catchError, forkJoin, of, switchMap, tap } from 'rxjs'
+import { ProductService } from '../services/product.service'
+import { FilterState } from '../types/product-filter-state.interface'
+import { SelectedFilters } from '../types/product-selected-filters.interface'
+import { ParsedUrlParams } from '../types/parsed-url-params.type'
 
 const PRICE_DEFAULT = { min: 70, max: 270 } as const
 type CompositeFilterKey = 'selectedCategories' | 'selectedStyles'
@@ -235,16 +236,16 @@ export const ProductFilterStore = signalStore(
      * Детерминированно, без side-effects - один patchState
      */
     function restoreFromQueryParams(params: Params) {
-      const parsed = parseUrlParams(params)
+      const parsed: ParsedUrlParams = parseUrlParams(params)
 
       // Формируем полное состояние фильтров
       const selectedCategories: string[] = parsed.productType
-        ? [`${parsed.productType}:${parsed.brand || ''}`]
+        ? [`${parsed.productType}:${parsed.brand ?? ''}`]
         : []
 
       const selectedStyles: string[] =
         !parsed.productType && parsed.dressStyle
-          ? [`${parsed.dressStyle}:${parsed.brand || ''}`]
+          ? [`${parsed.dressStyle}:${parsed.brand ?? ''}`]
           : []
 
       // Один детерминированный update
@@ -253,10 +254,10 @@ export const ProductFilterStore = signalStore(
           priceRange: [parsed.minPrice ?? PRICE_DEFAULT.min, parsed.maxPrice ?? PRICE_DEFAULT.max],
           selectedSizes: parsed.sizes,
           selectedColors: parsed.colors,
-          selectedCategory: parsed.category || null,
+          selectedCategory: parsed.category ?? null,
           selectedCategories,
           selectedStyles,
-          searchQuery: parsed.search || '',
+          searchQuery: parsed.search ?? '',
         },
       })
     }

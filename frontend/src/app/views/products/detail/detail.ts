@@ -6,14 +6,14 @@ import { MenuItem } from 'primeng/api'
 import { Breadcrumb } from 'primeng/breadcrumb'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
-import { RatingComponent } from '../../shared/components/rating/rating'
-import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe'
-import { ProductDetailStore } from '../../shared/store/product-detail.store'
-import { ProductType } from '../types/product.type'
-import { TabsInterface } from '../types/tabs.interface'
+import { ProductDetailStore } from '../../../features/products/catalog/store/product-detail.store'
+import { ProductType } from '../../../features/products/detail/types/product.interface'
+import { RatingComponent } from '../../../shared/components/rating/rating'
+import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
+import { TabsInterface } from '../../../features/products/detail/types/tabs-info.interface'
 
 @Component({
-  selector: 'app-product-detail',
+  selector: 'app-detail',
   imports: [
     CommonModule,
     RouterLink,
@@ -26,8 +26,8 @@ import { TabsInterface } from '../types/tabs.interface'
     TabPanels,
     TabPanel,
   ],
-  templateUrl: './product-detail.html',
-  styleUrl: './product-detail.scss',
+  templateUrl: './detail.html',
+  styleUrl: './detail.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

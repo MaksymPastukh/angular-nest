@@ -1,12 +1,10 @@
 import { Injectable, effect, inject, untracked } from '@angular/core'
-import { Router, Params } from '@angular/router'
+import { Params, Router } from '@angular/router'
 import { ProductFilterStore } from '../store/product-filter.store'
 import { ProductStore } from '../store/product.store'
-import { mapToApiFilters } from './mapToApiFilters'
-import { filtersToQueryParams } from './filtersToQueryParams'
-import { parseUrlParams } from './parseUrlParams'
-import { ProductFilterParams } from '../../views/types/product.type'
-import { SelectedFilters } from '../store/types/product-selected-filters.interface'
+import { SelectedFilters } from '../types/product-selected-filters.interface'
+import { mapToApiFilters, filtersToQueryParams, parseUrlParams } from '@/shared/utils/filters'
+import { ProductFilterParams } from '../../detail/types/product.interface'
 
 /**
  * ProductsPageFacade - Orchestration Layer
@@ -54,7 +52,7 @@ export class ProductsPageFacade {
   private syncUrlWithFilters(apiFilters: ReturnType<typeof mapToApiFilters>): void {
     const queryParams = filtersToQueryParams(apiFilters)
 
-    this.router.navigate([], {
+    void this.router.navigate([], {
       queryParams,
       replaceUrl: true,
     })

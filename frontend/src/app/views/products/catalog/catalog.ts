@@ -1,11 +1,12 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { CatalogFilterComponent } from '@/features/products/catalog/components/products-filter/catalog-filter'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Subscription } from 'rxjs'
-import { ProductCardComponent } from '../../shared/components/product-card/product-card'
-import { ProductFilterComponent } from '../../shared/components/products-filter/products-filter'
-import { TableBestPrice } from '../../shared/components/table-best-price/table-best-price'
-import { TableBestPriceInterface } from '../types/table-best-price.interface'
-import { ProductsPageFacade } from '../../shared/services/products-page-facade'
+import { ProductsPageFacade } from '../../../features/products/catalog/facade/products-page-facade.service'
+import { TableBestPriceInterface } from '../../../features/products/catalog/types/table-best-price.interface'
+import { ProductType } from '../../../features/products/detail/types/product.interface'
+import { ProductCardComponent } from '../../../shared/components/product-card/product-card'
+import { TableBestPrice } from '../../../shared/components/table-best-price/table-best-price'
 
 /**
  * Компонент страницы со списком продуктов
@@ -14,10 +15,11 @@ import { ProductsPageFacade } from '../../shared/services/products-page-facade'
  * Использует NgRx Signal Store для управления состоянием
  */
 @Component({
-  selector: 'app-products',
-  imports: [ProductCardComponent, ProductFilterComponent, TableBestPrice],
-  templateUrl: './products.html',
-  styleUrl: './products.scss',
+  selector: 'app-catalog',
+  imports: [ProductCardComponent, TableBestPrice, CatalogFilterComponent],
+  templateUrl: './catalog.html',
+  styleUrl: './catalog.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Products implements OnInit, OnDestroy {
   /** Фасад страницы продуктов (продукты + фильтры + пагинация) */
@@ -111,7 +113,7 @@ export class Products implements OnInit, OnDestroy {
   }
 
   /** Публичный геттер для продуктов */
-  get products() {
+  get products(): ProductType[] {
     return this.facade.products()
   }
 }

@@ -10,8 +10,8 @@ import { MultiSelect } from 'primeng/multiselect'
 import { Rating } from 'primeng/rating'
 import { Select } from 'primeng/select'
 import { Toast } from 'primeng/toast'
-import { CreateProductStore } from '../store/create-product.store'
-import { CreateProductFormData } from '../types/create-product.interface'
+import { CreateProductStore } from '../../../features/personal/admin/shop/store/create-product.store'
+import { CreateProductFormData } from '../../../features/personal/admin/shop/types/create-product.interface'
 
 @Component({
   selector: 'app-create-product',

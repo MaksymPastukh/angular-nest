@@ -1,10 +1,10 @@
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { inject } from '@angular/core'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, of, switchMap, tap } from 'rxjs'
-import { ProductService } from '../../../shared/services/product.service'
-import { CreateProductFormData } from '../types/create-product.interface'
-import { ProductType } from '../../types/product.type'
+import { ProductService } from '../../../../products/catalog/services/product.service'
+import { ProductType } from '../../../../products/detail/types/product.interface'
+import { CreateProductStoreState } from '../types/create-product-state.interface'
 import {
   CATEGORIES,
   COLORS,
@@ -12,7 +12,7 @@ import {
   PRODUCT_TYPES,
   SIZES,
 } from '../types/create-product.constants'
-import { CreateProductStoreState } from '../types/create-product-state.interface'
+import { CreateProductFormData } from '../types/create-product.interface'
 
 const initialState: CreateProductStoreState = {
   options: {

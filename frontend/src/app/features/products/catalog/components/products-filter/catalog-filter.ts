@@ -1,8 +1,8 @@
-import { Component, inject, effect } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion'
 import { Slider } from 'primeng/slider'
 import { TieredMenu } from 'primeng/tieredmenu'
-import { FormsModule } from '@angular/forms'
 import { ProductFilterStore } from '../../store/product-filter.store'
 
 /**
@@ -13,7 +13,7 @@ import { ProductFilterStore } from '../../store/product-filter.store'
  * мапит SelectedFilters в API фильтры и триггерит загрузку продуктов.
  */
 @Component({
-  selector: 'products-filter',
+  selector: 'app-catalog-filter',
   imports: [
     AccordionContent,
     Accordion,
@@ -23,10 +23,11 @@ import { ProductFilterStore } from '../../store/product-filter.store'
     TieredMenu,
     FormsModule,
   ],
-  templateUrl: './products-filter.html',
-  styleUrl: './products-filter.scss',
+  templateUrl: './catalog-filter.html',
+  styleUrl: './catalog-filter.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductFilterComponent {
+export class CatalogFilterComponent {
   /** Инжектируем стор фильтров */
   readonly filterStore = inject(ProductFilterStore)
 

@@ -1,9 +1,9 @@
 import { Component, effect, inject, OnInit, signal } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
+import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
 import { AuthStore } from './core/auth/store/auth.store'
-import { MessageService } from 'primeng/api'
-import { CreateProductStore } from './views/admin-panel/store/create-product.store'
+import { CreateProductStore } from './features/personal/admin/shop/store/create-product.store'
 
 @Component({
   selector: 'app-root',

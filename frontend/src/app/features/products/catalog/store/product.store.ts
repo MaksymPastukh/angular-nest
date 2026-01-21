@@ -8,9 +8,11 @@ import {
   withState,
 } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { switchMap, tap, catchError, of } from 'rxjs'
+import { catchError, of, switchMap, tap } from 'rxjs'
 import { ProductService } from '../services/product.service'
-import type { ProductType, ProductFilterParams } from '../../views/types/product.type'
+import { ProductType, ProductFilterParams } from '../../detail/types/product.interface'
+import { HttpErrorResponse } from '@angular/common/http'
+import { ProductsResponse } from '../../detail/types/products-response.interface'
 
 /* =======================
    STATE
@@ -105,22 +107,20 @@ export const ProductStore = signalStore(
         tap(() => setLoading(true)),
         switchMap((filters) => {
           return productService.getFilteredProducts(filters).pipe(
-            tap((response) => {
+            tap((response: ProductsResponse) => {
               patchState(store, {
-                products: response.products,
+                products: response?.products,
                 total: response.total,
                 totalPages: response.totalPages,
                 isLoading: false,
               })
             }),
-            catchError((error) => {
-              console.error('[ProductStore] Failed to load products:', error)
-
+            catchError((error: HttpErrorResponse) => {
               patchState(store, {
                 products: [],
               })
 
-              setError(error?.message ?? 'Failed to load products')
+              setError((error?.error as { message?: string }).message ?? 'Failed to load products')
               return of(null)
             })
           )
@@ -163,12 +163,12 @@ export const ProductStore = signalStore(
         if (key in filters) {
           const value = filters[key]
           if (value !== undefined) {
-            ;(next as any)[key] = value
+            next[key] = value as ProductFilterParams[K]
           }
           // Если undefined — не копируем, тем самым удаляем
         } else if (current[key] !== undefined) {
           // Ключ не передан — оставляем текущее значение
-          ;(next as any)[key] = current[key]
+          next[key] = current[key] as ProductFilterParams[K]
         }
       }
 

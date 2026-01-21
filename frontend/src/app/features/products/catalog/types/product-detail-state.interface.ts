@@ -1,4 +1,4 @@
-import { ProductType } from '../../../views/types/product.type'
+import { ProductType } from '../../detail/types/product.interface'
 
 export interface ProductDetailState {
   product: ProductType | null

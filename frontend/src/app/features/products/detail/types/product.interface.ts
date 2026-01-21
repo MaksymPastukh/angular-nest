@@ -111,19 +111,3 @@ export interface ProductFilterParams {
 /**
  * Ответ API при получении списка продуктов с пагинацией
  */
-export interface ProductsResponse {
-  /** Массив продуктов */
-  products: ProductType[]
-
-  /** Общее количество продуктов */
-  total: number
-
-  /** Текущая страница */
-  page: number
-
-  /** Количество элементов на странице */
-  limit: number
-
-  /** Общее количество страниц */
-  totalPages: number
-}

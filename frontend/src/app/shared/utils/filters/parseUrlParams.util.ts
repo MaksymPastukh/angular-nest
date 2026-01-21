@@ -1,5 +1,5 @@
 import type { Params } from '@angular/router'
-import type { ParsedUrlParams } from '../../views/types/parsed-url-params.type'
+import type { ParsedUrlParams } from '../../../features/products/catalog/types/parsed-url-params.type'
 
 /**
  * Парсит query параметры из URL в типизированный объект

@@ -3,4 +3,3 @@ export interface TabsInterface {
   value: number
   content: string
 }
-;[]

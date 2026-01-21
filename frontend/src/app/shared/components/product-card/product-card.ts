@@ -9,9 +9,9 @@ import {
   signal,
 } from '@angular/core'
 import { Router } from '@angular/router'
-import { ProductType } from '../../../views/types/product.type'
+import { ProductService } from '../../../features/products/catalog/services/product.service'
+import { ProductType } from '../../../features/products/detail/types/product.interface'
 import { ImageUrlPipe } from '../../pipes/image-url.pipe'
-import { ProductService } from '../../services/product.service'
 
 @Component({
   selector: 'app-product-card',
@@ -41,20 +41,7 @@ export class ProductCardComponent {
     const product = this.productIn()
     if (!product?._id) return
 
-    // Оптимистическое обновление UI
-    this.isLiked.update((liked) => !liked)
-
-    this.productService.toggleLike(product._id).subscribe({
-      next: (updatedProduct) => {
-        // Обновляем состояние на основе ответа сервера
-        this.isLiked.set(updatedProduct.isLiked || false)
-      },
-      error: (err) => {
-        // Откатываем изменение в случае ошибки
-        this.isLiked.update((liked) => !liked)
-        console.error('Error toggling like:', err)
-      },
-    })
+    console.log('like')
   }
 
   onImageError(event: Event): void {

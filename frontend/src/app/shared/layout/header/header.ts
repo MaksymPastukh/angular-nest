@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { Router, RouterLink, RouterLinkActive } from '@angular/router'
-import { AutoComplete } from 'primeng/autocomplete'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Select } from 'primeng/select'
-import { PrimeTemplate } from 'primeng/api'
+import { Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { pipe, tap, switchMap, catchError, of, debounceTime } from 'rxjs'
+import { PrimeTemplate } from 'primeng/api'
+import { AutoComplete, AutoCompleteSelectEvent } from 'primeng/autocomplete'
+import { Select } from 'primeng/select'
+import { catchError, debounceTime, of, pipe, switchMap, tap } from 'rxjs'
 import { AuthStore } from '../../../core/auth/store/auth.store'
-import { ProductService } from '../../services/product.service'
-import { ProductType } from '../../../views/types/product.type'
+import { ProductType } from '../../../features/products/detail/types/product.interface'
 import { ImageUrlPipe } from '../../pipes/image-url.pipe'
+import { ProductService } from '../../../features/products/catalog/services/product.service'
 
 @Component({
   selector: 'app-header',
@@ -89,7 +89,7 @@ export class HeaderComponent {
    * Метод поиска продуктов для autocomplete
    * Вызывается при вводе текста (минимум 2 символа)
    */
-  searchProducts(event: any): void {
+  searchProducts(event: { query: string }): void {
     const query = event.query.trim()
     // Используем rxMethod для реактивного поиска
     this.performSearch(query)
@@ -99,14 +99,12 @@ export class HeaderComponent {
    * Обработчик выбора продукта из dropdown
    * Навигирует на страницу конкретного продукта
    */
-  onProductSelect(event: any): void {
+  onProductSelect(event: AutoCompleteSelectEvent): void {
     const product = event.value as ProductType
 
     if (product?.id) {
-      console.log('[HeaderSearch] Selected product:', product)
-      console.log('[HeaderSearch] Selected product:', product.id)
       // Навигация на страницу продукта
-      this.router.navigate(['/product', product.id])
+      void this.router.navigate(['/product', product.id])
 
       // Очищаем поле поиска после выбора
       this.searchQuery.set('')
