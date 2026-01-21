@@ -56,9 +56,10 @@ export function mapToApiFilters(filters: SelectedFilters): ProductFilterParams {
   }
 
   /* ---------- SEARCH ---------- */
+  const search = filters.searchQuery.trim()
 
-  if (filters.searchQuery && filters.searchQuery.trim()) {
-    params.search = filters.searchQuery.trim()
+  if (search) {
+    params.search = search
   }
 
   /* ---------- PRICE ---------- */
