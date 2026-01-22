@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal, inject, OnDestroy } from '@angular/core'
 import { CommonModule, NgOptimizedImage } from '@angular/common'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
+import { email, Field, form, required, submit } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
 import { MessageService } from 'primeng/api'
-import { email, Field, form, required, submit } from '@angular/forms/signals'
-import { LoginDataInterface } from '../../types/loginData.interface'
 import { AuthStore } from '../../store/auth.store'
+import { LoginDataInterface } from '../../types/loginData.interface'
 
 @Component({
   selector: 'app-login',
@@ -33,7 +33,7 @@ export class Login {
   login(event: Event): void {
     event.preventDefault()
 
-    submit(this.loginForm, async () => {
+    submit(this.loginForm, () => {
       const formModel: LoginDataInterface = this.loginModel()
       const loginData: LoginDataInterface = {
         email: formModel.email,
@@ -41,6 +41,8 @@ export class Login {
       }
 
       this.authStore.login(loginData)
+
+      return Promise.resolve(undefined)
     }).catch(console.error)
   }
 }

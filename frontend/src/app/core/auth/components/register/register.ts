@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { CommonModule, NgOptimizedImage } from '@angular/common'
-import { RouterLink } from '@angular/router'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { RegisterDataInterface } from '../../types/registerData.interface'
 import {
   debounce,
   email,
@@ -14,7 +12,9 @@ import {
   submit,
   validate,
 } from '@angular/forms/signals'
+import { RouterLink } from '@angular/router'
 import { AuthStore } from '../../store/auth.store'
+import { RegisterDataInterface } from '../../types/registerData.interface'
 
 @Component({
   selector: 'app-register',
@@ -54,9 +54,9 @@ export class Register {
     })
     required(controlSchema.confirmPassword, { message: 'Please confirm your password.' })
 
-    validate(controlSchema.confirmPassword, ({ value, valueOf }) => {
-      const confirmPassword: string = value()
-      const password: string = valueOf(controlSchema.password)
+    validate(controlSchema.confirmPassword, (helpers) => {
+      const confirmPassword: string = helpers.value()
+      const password: string = helpers.valueOf(controlSchema.password)
 
       if (confirmPassword !== password) {
         return {
@@ -72,7 +72,7 @@ export class Register {
   protected register(event: Event): void {
     event.preventDefault()
 
-    submit(this.registerForm, async () => {
+    submit(this.registerForm, () => {
       const formModel = this.registerModel()
 
       const registerData: RegisterDataInterface = {
@@ -85,6 +85,8 @@ export class Register {
       }
 
       this.authStore.register(registerData)
+
+      return Promise.resolve(undefined)
     }).catch(console.error)
   }
 }
