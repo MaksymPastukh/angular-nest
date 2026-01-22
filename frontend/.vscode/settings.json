@@ -1,0 +1,201 @@
+{
+  // ========================================
+  // НАСТРОЙКИ ФОРМАТИРОВАНИЯ
+  // ========================================
+  
+  // Автоматически форматировать файл при сохранении
+  "editor.formatOnSave": true,
+
+  // Prettier как форматтер по умолчанию
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Автоматически исправлять ошибки ESLint при сохранении
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never" // ESLint управляет импортами
+  },
+
+  // ========================================
+  // НАСТРОЙКИ ESLINT (Angular 21+ & Signals)
+  // ========================================
+  
+  // Типы файлов, которые нужно проверять ESLint
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html" // Важно для Angular шаблонов
+  ],
+
+  // Использовать Flat Config формат (ESLint 9+)
+  "eslint.useFlatConfig": true,
+
+  // Показывать статус ESLint в строке состояния
+  "eslint.alwaysShowStatus": true,
+
+  // Включить ESLint для всех поддерживаемых языков
+  "eslint.probe": [
+    "javascript",
+    "typescript",
+    "html"
+  ],
+
+  // ========================================
+  // НАСТРОЙКИ PRETTIER
+  // ========================================
+
+  // Использовать Prettier для форматирования TypeScript
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Использовать Prettier для форматирования HTML
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Использовать Prettier для форматирования SCSS
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Использовать Prettier для форматирования JSON
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ========================================
+  // НАСТРОЙКИ TYPESCRIPT (Angular 21+ & Signal API)
+  // ========================================
+
+  // Путь к TypeScript SDK проекта
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // Автоматически обновлять импорты при перемещении файлов
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // Предлагать автоматический импорт
+  "typescript.suggest.autoImports": true,
+
+  // --- INLAY HINTS для лучшей читаемости Signal кода ---
+  
+  // Показывать подсказки для параметров функций
+  "typescript.inlayHints.parameterNames.enabled": "all",
+
+  // Показывать подсказки для типов переменных (полезно для signals)
+  "typescript.inlayHints.variableTypes.enabled": true,
+
+  // Показывать подсказки для типов свойств
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+
+  // Показывать подсказки для возвращаемых типов функций
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+
+  // Показывать подсказки для enum значений
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+
+  // Включить строгие проверки null
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+
+  // Включить строгие проверки null
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+
+  // ========================================
+  // НАСТРОЙКИ ANGULAR (Angular 21+ Support)
+  // ========================================
+
+  // Включить Angular Language Service
+  "angular.log": "verbose",
+
+  // Включить строгие проверки в шаблонах
+  "angular.enable-strict-mode-prompt": false,
+
+  // Показывать подсказки для Angular в HTML
+  "html.suggest.angular1": false,
+  
+  // Форматировать Angular templates
+  "html.format.enable": true,
+
+  // ========================================
+  // НАСТРОЙКИ РЕДАКТОРА
+  // ========================================
+
+  // Размер табуляции (соответствует Prettier конфигурации)
+  "editor.tabSize": 2,
+
+  // Использовать пробелы вместо табуляции
+  "editor.insertSpaces": true,
+
+  // Автоматически обнаруживать отступы (отключено для консистентности)
+  "editor.detectIndentation": false,
+
+  // Обрезать пробелы в конце строк
+  "files.trimTrailingWhitespace": true,
+
+  // Добавлять пустую строку в конец файла
+  "files.insertFinalNewline": true,
+
+  // Обрезать финальные пустые строки
+  "files.trimFinalNewlines": true,
+
+  // Тип окончания строк (LF для всех платформ)
+  "files.eol": "\n",
+
+  // Включить подсказки во время набора текста
+  "editor.parameterHints.enabled": true,
+
+  // Показывать контекстные подсказки
+  "editor.hover.enabled": "on",
+
+  // Автоматическое закрытие тегов HTML
+  "html.autoClosingTags": true,
+  "typescript.autoClosingTags": true,
+
+  // ========================================
+  // ИСКЛЮЧЕНИЯ ИЗ ПОИСКА И НАБЛЮДЕНИЯ
+  // ========================================
+
+  // Исключить из поиска
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.angular": true,
+    "**/coverage": true
+  },
+
+  // Исключить из наблюдения за файлами
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.angular/**": true,
+    "**/coverage/**": true
+  },
+
+  // ========================================
+  // ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ
+  // ========================================
+
+  // Автоматически сохранять файлы при потере фокуса
+  "files.autoSave": "onFocusChange",
+
+  // Включить навигацию по хлебным крошкам
+  "breadcrumbs.enabled": true,
+
+  // Показывать миникарту кода
+  "editor.minimap.enabled": true,
+
+  // Включить предложения на основе слов из документа
+  "editor.wordBasedSuggestions": "matchingDocuments",
+
+  // Включить Quick Suggestions для всех типов
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  }
+}

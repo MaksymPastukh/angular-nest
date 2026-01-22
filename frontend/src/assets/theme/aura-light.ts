@@ -1,5 +1,5 @@
 import Aura from '@primeuix/themes/aura'
-import {definePreset} from '@primeuix/themes'
+import { definePreset } from '@primeuix/themes'
 
 export const AuraLight = definePreset(Aura, {
   semantic: {
@@ -14,7 +14,7 @@ export const AuraLight = definePreset(Aura, {
       700: '{purple.700}',
       800: '{purple.800}',
       900: '{purple.900}',
-      950: '{purple.950}'
+      950: '{purple.950}',
     },
     colorScheme: {
       light: {
@@ -30,9 +30,9 @@ export const AuraLight = definePreset(Aura, {
           700: '{slate.700}',
           800: '{slate.800}',
           900: '{slate.900}',
-          950: '{slate.950}'
-        }
-      }
-    }
-  }
+          950: '{slate.950}',
+        },
+      },
+    },
+  },
 })

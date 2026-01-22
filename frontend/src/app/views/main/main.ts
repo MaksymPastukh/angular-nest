@@ -1,15 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { Carousel } from 'primeng/carousel'
 import { GalleriaModule } from 'primeng/galleria'
+import { ProductType } from '../../features/products/detail/types/product.interface'
 import { CategoriesCardComponent } from '../../shared/components/categories-card/categories-card'
-import { CategoriesService } from '../../shared/services/categories.service'
-import { Categories } from '../../shared/types/categories'
 import { ProductCardComponent } from '../../shared/components/product-card/product-card'
-import { ProductService } from '../../shared/services/product.service'
-import { ProductType } from '../types/product.type'
 import { RatingComponent } from '../../shared/components/rating/rating'
-import { RouterLink } from '@angular/router'
+import { CategoriesService } from '../../shared/services/categories.service'
+import { Categories } from '../../shared/types/categories.interface'
 
 @Component({
   selector: 'app-main',

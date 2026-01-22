@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { AccordionModule } from 'primeng/accordion'
-import {RouterLink} from '@angular/router';
+import { RouterLink } from '@angular/router'
 
 @Component({
   selector: 'app-footer',

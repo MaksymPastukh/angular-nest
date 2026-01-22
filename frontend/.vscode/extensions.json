@@ -1,4 +1,35 @@
 {
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=827846
-  "recommendations": ["angular.ng-template"]
+  // ========================================
+  // РЕКОМЕНДУЕМЫЕ РАСШИРЕНИЯ ДЛЯ VS CODE
+  // ========================================
+  // Эти расширения будут предложены к установке при открытии проекта
+  
+  "recommendations": [
+    // Angular Language Service - автодополнение и проверка синтаксиса в шаблонах
+    "angular.ng-template",
+    
+    // ESLint - проверка кода на соответствие правилам
+    "dbaeumer.vscode-eslint",
+    
+    // Prettier - форматирование кода
+    "esbenp.prettier-vscode",
+    
+    // Angular Snippets - полезные сниппеты для Angular
+    "johnpapa.angular2",
+    
+    // Path Intellisense - автодополнение путей к файлам
+    "christian-kohler.path-intellisense",
+    
+    // Auto Rename Tag - автоматическое переименование парных тегов
+    "formulahendry.auto-rename-tag",
+    
+    // Angular Schematics - быстрое создание компонентов через UI
+    "cyrilletuzi.angular-schematics",
+    
+    // TypeScript Hero - организация импортов
+    "rbbit.typescript-hero",
+    
+    // EditorConfig - поддержка .editorconfig
+    "editorconfig.editorconfig"
+  ]
 }

@@ -26,6 +26,11 @@
               "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.app.json",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets/styles"
+              ]
+            },
             "assets": [
               {
                 "glob": "**/*",
