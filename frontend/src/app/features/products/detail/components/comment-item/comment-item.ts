@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core'
-import { CommentInterface } from '../../types/comment.interface'
 import { Router } from '@angular/router'
+import { CommentResponse } from '../../types/comment-response.interface'
 
 @Component({
   selector: 'app-comment-item',
@@ -12,7 +12,7 @@ import { Router } from '@angular/router'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommentItem {
-  comment = input.required<CommentInterface>()
+  comment = input.required<CommentResponse>()
   readonly router = inject(Router)
   currentUserId = input<string | null>(null)
 

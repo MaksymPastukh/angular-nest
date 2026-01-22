@@ -1,5 +1,5 @@
 export interface TabsInterface {
   title: string
   value: number
-  content: string
+  content: string | number
 }

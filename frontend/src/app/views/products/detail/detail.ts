@@ -8,6 +8,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ProductDetailStore } from '../../../features/products/catalog/store/product-detail.store'
 import { CommentsComponent } from '../../../features/products/detail/components/comments/comments'
+import { CommentStore } from '../../../features/products/detail/store/comment.store'
 import { ProductType } from '../../../features/products/detail/types/product.interface'
 import { TabsInterface } from '../../../features/products/detail/types/tabs-info.interface'
 import { RatingComponent } from '../../../shared/components/rating/rating'
@@ -36,6 +37,7 @@ import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
 export class ProductDetail {
   private readonly route = inject(ActivatedRoute)
   readonly store = inject(ProductDetailStore)
+  readonly commentStore = inject(CommentStore)
 
   readonly selectedImageIndex = signal(0)
   private readonly imageErrorHandled = signal(false)
@@ -52,22 +54,18 @@ export class ProductDetail {
 
   readonly tabss = computed<TabsInterface[]>((): TabsInterface[] => {
     const product = this.store.product()
+    const commentsCount = this.commentStore.commentsCount()
 
     return [
       {
         title: 'Description',
         value: 0,
-        content: product?.description as string,
+        content: product?.description ?? '',
       },
       {
         title: 'User Comments',
         value: 1,
-        content: product?.userComments as string,
-      },
-      {
-        title: 'Question & Answer',
-        value: 2,
-        content: product?.questionsAnswers as string,
+        content: commentsCount,
       },
     ]
   })
@@ -81,6 +79,7 @@ export class ProductDetail {
       const id = this.productId()
       if (id) {
         this.store.loadProduct(id)
+        this.commentStore.loadComments(id)
         this.resetState()
       }
     })

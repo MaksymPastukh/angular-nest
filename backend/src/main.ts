@@ -40,10 +40,11 @@ async function bootstrap() {
 
   /**
    * Устанавливаем глобальный префикс для всех роутов API
-   * Теперь все API эндпоинты будут начинаться с /api
-   * Статические файлы остаются без префикса благодаря ServeStaticModule
+   * Исключаем StaticController из префикса - статические файлы доступны напрямую
    */
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: ['images/*'],
+  });
 
   // Логирование пути к статическим файлам для отладки
   const publicPath = join(process.cwd(), 'public');

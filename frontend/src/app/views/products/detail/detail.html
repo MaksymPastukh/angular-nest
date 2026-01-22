@@ -298,7 +298,7 @@
       </div>
 
       <!-- ================= DESCRIPTION ================= -->
-      <div class="mt-16">
+      <div class="mt-16 max-w-3xl">
         <!-- Tabs -->
         <div class="lg:col-span-2">
           <p-tabs [value]="activeTabIndex()" (valueChange)="onTabChange($event)">
@@ -312,13 +312,7 @@
                     @case (1) {
                       <span class="font-causten font-medium text-lg">{{ tab.title }}</span>
                       <span class="ml-1 px-2 py-0.5 text-xs rounded-md bg-purple-600 text-white">{{
-                        tabss()[1].content.length
-                      }}</span>
-                    }
-                    @case (2) {
-                      <span class="font-causten font-medium text-lg">{{ tab.title }}</span>
-                      <span class="ml-1 px-2 py-0.5 text-xs rounded-md bg-gray-800 text-white">{{
-                        tabss()[2].content.length
+                        tab.content
                       }}</span>
                     }
                   }
@@ -328,33 +322,35 @@
             <p-tabpanels>
               <p-tabpanel [value]="0">
                 <div class="py-6">
-                  <h3 class="text-xl font-bold mb-4">Product Information</h3>
                   <div class="mt-4">
                     <p class="text-gray-700 font-causten font-normal leading-relaxed">
                       {{ tabss()[0].content }}
                     </p>
                   </div>
                   <div
-                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 bg-gray-50 rounded-2xl overflow-hidden divide-y divide-gray-200 sm:divide-y-0 sm:divide-x"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-8 bg-gray-50 rounded-2xl overflow-hidden"
                   >
-                    <div class="p-4">
+                    <div class="p-4 border-b border-gray-200 sm:border-r">
                       <p class="text-gray-500 text-xs mb-1">fabric</p>
                       <p class="font-medium text-gray-900">{{ prod.fabric }}</p>
                     </div>
 
-                    <div class="p-4">
+                    <div class="p-4 border-b border-gray-200 lg:border-r">
                       <p class="text-gray-500 text-xs mb-1">pattern</p>
                       <p class="font-medium text-gray-900">{{ prod.pattern }}</p>
                     </div>
-                    <div class="p-4">
+
+                    <div class="p-4 border-b border-gray-200">
                       <p class="text-gray-500 text-xs mb-1">fit</p>
                       <p class="font-medium text-gray-900">{{ prod.fit }}</p>
                     </div>
-                    <div class="p-4">
+
+                    <div class="p-4 sm:border-r border-gray-200">
                       <p class="text-gray-500 text-xs mb-1">neck</p>
                       <p class="font-medium text-gray-900">{{ prod.neck }}</p>
                     </div>
-                    <div class="p-4">
+
+                    <div class="p-4 lg:border-r border-gray-200">
                       <p class="text-gray-500 text-xs mb-1">sleeve</p>
                       <p class="font-medium text-gray-900">{{ prod.sleeve }}</p>
                     </div>
@@ -368,15 +364,9 @@
               </p-tabpanel>
               <p-tabpanel [value]="1">
                 <div class="py-6">
-                  <p class="text-gray-700 leading-relaxed">{{ tabss()[1].content }}</p>
                   @if (productId(); as id) {
                     <app-comments [productId]="id" />
                   }
-                </div>
-              </p-tabpanel>
-              <p-tabpanel [value]="2">
-                <div class="py-6">
-                  <p class="text-gray-700 leading-relaxed">{{ tabss()[2].content }}</p>
                 </div>
               </p-tabpanel>
             </p-tabpanels>

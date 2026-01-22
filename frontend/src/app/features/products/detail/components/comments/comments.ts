@@ -1,16 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core'
 import { AuthStore } from '../../../../../core/auth/store/auth.store'
 import { CommentStore } from '../../store/comment.store'
 import { CommentItem } from '../comment-item/comment-item'
-import { CommentCreateInterface } from '../../types/comments-create.interface'
+import { CommentResponse } from '../../types/comment-response.interface'
 
 @Component({
   selector: 'app-comments',
@@ -22,73 +14,64 @@ import { CommentCreateInterface } from '../../types/comments-create.interface'
 })
 export class CommentsComponent {
   // Inject stores
-  readonly commentStore = inject(CommentStore)
+  readonly store = inject(CommentStore)
   readonly authStore = inject(AuthStore)
 
   // Input: ID продукта
   productId = input.required<string>()
-
-  // Текущий пользователь
-  currentUserId = computed(() => this.authStore.user()?.user?.id ?? null)
-
-  // Локальное состояние формы
-  newCommentText = signal('')
-  newCommentRating = signal(5)
+  newCommentText = signal<string>('')
+  editCommentText = signal<string>('')
+  editingCommentId = signal<string | null>(null)
+  isAuthenticated = signal<boolean>(false) // Получить из AuthStore
 
   constructor() {
     // Загружаем комментарии при изменении productId
     effect(() => {
       const id = this.productId()
       if (id) {
-        this.commentStore.loadComments(id)
+        this.store.loadComments(id)
       }
     })
   }
 
-  /**
-   * Отправка нового комментария
-   */
-  handleSubmit(event?: Event) {
-    event?.preventDefault()
-
+  onCreateComment() {
     const text = this.newCommentText().trim()
-    if (!text) return
-
-    const comment: CommentCreateInterface = {
-      text,
-      rating: this.newCommentRating(),
-    }
-
-    this.commentStore.addComment({
-      productId: this.productId(),
-      comment,
-    })
-
-    // Очищаем форму
-    this.newCommentText.set('')
-    this.newCommentRating.set(5)
-  }
-
-  /**
-   * Лайк комментария
-   */
-  handleLike(commentId: string) {
-    this.commentStore.toggleLikeComment({
-      productId: this.productId(),
-      commentId,
-    })
-  }
-
-  /**
-   * Удаление комментария
-   */
-  handleDelete(commentId: string) {
-    // eslint-disable-next-line no-alert
-    if (window.confirm('Вы уверены, что хотите удалить этот комментарий?')) {
-      this.commentStore.deleteComment({
+    if (text && this.productId()) {
+      this.store.createComment({
         productId: this.productId(),
-        commentId,
+        comment: { text },
       })
+      this.newCommentText.set('')
     }
+  }
+
+  onEditComment(comment: CommentResponse) {
+    this.editingCommentId.set(comment.id)
+    this.editCommentText.set(comment.text)
+  }
+
+  onSaveEdit() {
+    const text = this.editCommentText().trim()
+    const commentId = this.editingCommentId()
+    if (text && commentId) {
+      this.store.updateComment({
+        commentId,
+        upComment: { text },
+      })
+      this.onCancelEdit()
+    }
+  }
+
+  onCancelEdit() {
+    this.editingCommentId.set(null)
+    this.editCommentText.set('')
+  }
+
+  onDeleteComment(commentId: string) {
+    this.store.deleteComment(commentId)
+  }
+
+  onToggleLike(commentId: string) {
+    this.store.toggleLike(commentId)
   }
 }

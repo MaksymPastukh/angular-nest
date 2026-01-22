@@ -1,10 +1,8 @@
-import { CommentInterface } from './comment.interface'
+import { CommentResponse } from './comment-response.interface'
 
 export interface CommentStateInterface {
-  comments: CommentInterface[]
-  productId: string | null
+  comments: CommentResponse[]
+  currentProductId: string | null
   isLoading: boolean
-  isSubmitting: boolean
   error: string | null
-  total: number
 }

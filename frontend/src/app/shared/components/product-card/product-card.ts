@@ -40,8 +40,6 @@ export class ProductCardComponent {
 
     const product = this.productIn()
     if (!product?._id) return
-
-    console.log('like')
   }
 
   onImageError(event: Event): void {

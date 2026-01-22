@@ -1,4 +1,3 @@
-import { CommentInterface } from './comment.interface'
 export interface ProductType {
   _id?: string
   id?: string
@@ -8,7 +7,6 @@ export interface ProductType {
   image: string
   price: number
   comment: string
-  comments?: CommentInterface[]
   category: string
   productType?: string
   dressStyle?: string
@@ -20,8 +18,6 @@ export interface ProductType {
   color: string
   size: string[]
   description: string
-  userComments: string
-  questionsAnswers: string
   isLiked: boolean
   createdAt?: Date
   updatedAt?: Date

@@ -7,96 +7,6 @@ import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 export type ProductDocument = HydratedDocument<Product>;
 
 /**
- * Подсхема для комментария пользователя к продукту
- */
-@Schema({ timestamps: true, _id: true })
-export class UserComment {
-  /** ID пользователя, оставившего комментарий */
-  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User' })
-  public userId: string;
-
-  /** Имя пользователя */
-  @Prop({ required: true, type: String })
-  public userName: string;
-
-  /** Текст комментария */
-  @Prop({ required: true, type: String })
-  public text: string;
-
-  /** Рейтинг, поставленный пользователем (0-5) */
-  @Prop({ required: true, type: Number, min: 0, max: 5 })
-  public rating: number;
-
-  /** Массив ID пользователей, которые лайкнули комментарий */
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], default: [] })
-  public likedBy: string[];
-
-  /** Дата создания комментария */
-  public createdAt: Date;
-
-  /** Дата обновления комментария */
-  public updatedAt: Date;
-}
-
-export const UserCommentSchema = SchemaFactory.createForClass(UserComment);
-
-/**
- * Подсхема для ответа на вопрос
- */
-@Schema({ timestamps: true, _id: true })
-export class Answer {
-  /** ID пользователя, оставившего ответ */
-  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User' })
-  public userId: string;
-
-  /** Имя пользователя */
-  @Prop({ required: true, type: String })
-  public userName: string;
-
-  /** Текст ответа */
-  @Prop({ required: true, type: String })
-  public text: string;
-
-  /** Дата создания ответа */
-  public createdAt: Date;
-
-  /** Дата обновления ответа */
-  public updatedAt: Date;
-}
-
-export const AnswerSchema = SchemaFactory.createForClass(Answer);
-
-/**
- * Подсхема для вопроса и ответов
- */
-@Schema({ timestamps: true, _id: true })
-export class QuestionAnswer {
-  /** ID пользователя, задавшего вопрос */
-  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User' })
-  public userId: string;
-
-  /** Имя пользователя */
-  @Prop({ required: true, type: String })
-  public userName: string;
-
-  /** Текст вопроса */
-  @Prop({ required: true, type: String })
-  public question: string;
-
-  /** Массив ответов на вопрос */
-  @Prop({ type: [AnswerSchema], default: [] })
-  public answers: Answer[];
-
-  /** Дата создания вопроса */
-  public createdAt: Date;
-
-  /** Дата обновления вопроса */
-  public updatedAt: Date;
-}
-
-export const QuestionAnswerSchema = SchemaFactory.createForClass(QuestionAnswer);
-
-/**
  * Схема продукта для MongoDB
  * Определяет структуру документа продукта в базе данных
  */
@@ -231,18 +141,6 @@ export class Product {
    */
   @Prop({ type: String, default: 'N/A' })
   public sleeve: string;
-
-  /**
-   * Комментарии пользователей к продукту
-   */
-  @Prop({ type: [UserCommentSchema], default: [] })
-  public userComments: UserComment[];
-
-  /**
-   * Вопросы и ответы к продукту
-   */
-  @Prop({ type: [{ type: QuestionAnswerSchema }], default: [] })
-  public questionsAnswers: QuestionAnswer[];
 
   /**
    * Массив ID пользователей, которые добавили продукт в избранное (лайкнули)
