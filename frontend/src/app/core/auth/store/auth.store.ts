@@ -263,7 +263,7 @@ export const AuthStore = signalStore(
         })
 
         // Перенаправляем на страницу логина
-        router.navigate(['/login']).catch(console.error)
+        void router.navigate(['/login'])
       },
 
       /**

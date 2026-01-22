@@ -369,6 +369,9 @@
               <p-tabpanel [value]="1">
                 <div class="py-6">
                   <p class="text-gray-700 leading-relaxed">{{ tabss()[1].content }}</p>
+                  @if (productId(); as id) {
+                    <app-comments [productId]="id" />
+                  }
                 </div>
               </p-tabpanel>
               <p-tabpanel [value]="2">

@@ -2,8 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
-import { ProductFilterParams, ProductType } from '../../detail/types/product.interface'
 import { ProductsResponse } from '../../detail/types/products-response.interface'
+import { ProductFilterParams } from '../../detail/types/product-filter-params.interface'
+import { ProductType } from '../../detail/types/product.interface'
 /**
  * Сервис для работы с продуктами
  *

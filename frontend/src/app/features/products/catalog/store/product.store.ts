@@ -10,9 +10,10 @@ import {
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, of, switchMap, tap } from 'rxjs'
 import { ProductService } from '../services/product.service'
-import { ProductType, ProductFilterParams } from '../../detail/types/product.interface'
 import { HttpErrorResponse } from '@angular/common/http'
 import { ProductsResponse } from '../../detail/types/products-response.interface'
+import { ProductFilterParams } from '../../detail/types/product-filter-params.interface'
+import { ProductType } from '../../detail/types/product.interface'
 
 /* =======================
    STATE

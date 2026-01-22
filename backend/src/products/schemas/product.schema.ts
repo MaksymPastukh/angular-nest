@@ -27,6 +27,10 @@ export class UserComment {
   @Prop({ required: true, type: Number, min: 0, max: 5 })
   public rating: number;
 
+  /** Массив ID пользователей, которые лайкнули комментарий */
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], default: [] })
+  public likedBy: string[];
+
   /** Дата создания комментария */
   public createdAt: Date;
 

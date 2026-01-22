@@ -7,10 +7,11 @@ import { Breadcrumb } from 'primeng/breadcrumb'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ProductDetailStore } from '../../../features/products/catalog/store/product-detail.store'
+import { CommentsComponent } from '../../../features/products/detail/components/comments/comments'
 import { ProductType } from '../../../features/products/detail/types/product.interface'
+import { TabsInterface } from '../../../features/products/detail/types/tabs-info.interface'
 import { RatingComponent } from '../../../shared/components/rating/rating'
 import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
-import { TabsInterface } from '../../../features/products/detail/types/tabs-info.interface'
 
 @Component({
   selector: 'app-detail',
@@ -25,6 +26,7 @@ import { TabsInterface } from '../../../features/products/detail/types/tabs-info
     Tab,
     TabPanels,
     TabPanel,
+    CommentsComponent,
   ],
   templateUrl: './detail.html',
   styleUrl: './detail.scss',
@@ -70,9 +72,7 @@ export class ProductDetail {
     ]
   })
 
-  private readonly productId = toSignal(
-    this.route.params.pipe(map((params) => params['id'] as string))
-  )
+  readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
 
   readonly galleryImages = computed(() => this.store.galleryImages())
 

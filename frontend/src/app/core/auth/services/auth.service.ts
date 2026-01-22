@@ -1,14 +1,13 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
 import { catchError, map, Observable, throwError } from 'rxjs'
-import { DefaultResponseInterface } from '../../../shared/types/default-response.interface'
 import { environment } from '../../../../environments/environment'
-import { CurrentUserResponseInterface } from '../types/current-user.interface'
-import { LoginInterface } from '../types/login.interface'
-import { RegisterDataInterface } from '../types/registerData.interface'
-import { LoginDataInterface } from '../types/loginData.interface'
+import { DefaultResponseInterface } from '../../../shared/types/default-response.interface'
 import { AUTHORIZATION_STATE } from '../types/authorization.constants'
+import { CurrentUserResponseInterface } from '../types/current-user.interface'
 import { GetTokensInterface } from '../types/get-tokens.interface'
+import { LoginDataInterface } from '../types/loginData.interface'
+import { RegisterDataInterface } from '../types/registerData.interface'
 
 @Injectable({
   providedIn: 'root',
@@ -34,10 +33,9 @@ export class AuthService {
 
           return loginResponse
         }),
-        catchError((error) => {
+        catchError((error: HttpErrorResponse) => {
           const errorMessage =
-            error?.error?.message ||
-            error?.message ||
+            (error?.error as { message?: string })?.message ??
             'Error during registration. Please try again.'
           return throwError(() => new Error(errorMessage))
         })
@@ -62,32 +60,16 @@ export class AuthService {
 
           return loginResponse
         }),
-        catchError((error) => {
+        catchError((error: HttpErrorResponse) => {
           const errorMessage =
-            error?.error?.message || error?.message || 'Error during login. Please try again.'
+            (error?.error as { message?: string })?.message ??
+            'Error during login. Please try again.'
           return throwError(() => new Error(errorMessage))
         })
       )
   }
 
-  refresh(): Observable<LoginInterface | DefaultResponseInterface> {
-    const token = this.getTokens()
-    if (token && token.refreshToken) {
-      return this.http
-        .post<LoginInterface>(`${environment.api}/auth/refresh`, {
-          refreshToken: token.refreshToken,
-        })
-        .pipe(
-          catchError((error) => {
-            return throwError(() => new Error(error))
-          })
-        )
-    }
-
-    throw throwError(() => 'Can not use token')
-  }
-
-  setItem(key: string, value: any): void {
+  setItem(key: string, value: unknown): void {
     try {
       localStorage.setItem(key, JSON.stringify(value))
     } catch (e) {

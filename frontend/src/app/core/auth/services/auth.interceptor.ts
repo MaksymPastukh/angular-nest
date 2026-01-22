@@ -6,11 +6,11 @@ import {
   HttpRequest,
 } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { AuthService } from './auth.service'
 import { catchError, Observable, switchMap, throwError } from 'rxjs'
-import { GetTokensInterface } from '../types/get-tokens.interface'
-import { CurrentUserResponseInterface } from '../types/current-user.interface'
 import { AuthStore } from '../store/auth.store'
+import { CurrentUserResponseInterface } from '../types/current-user.interface'
+import { GetTokensInterface } from '../types/get-tokens.interface'
+import { AuthService } from './auth.service'
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService)
@@ -21,15 +21,17 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const isAuthUrl: boolean =
     req.url.includes('/login') || req.url.includes('/register') || req.url.includes('/refresh')
 
+  let modifiedReq = req
+
   if (tokens?.accessToken && !isAuthUrl) {
-    req = req.clone({
+    modifiedReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${tokens.accessToken}`,
       },
     })
   }
 
-  return next(req).pipe(
+  return next(modifiedReq).pipe(
     catchError((error: HttpErrorResponse) => {
       // Обрабатываем 401 ошибку только для защищенных маршрутов
       // НЕ обрабатываем для login/register/refresh
@@ -50,11 +52,11 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
 }
 
 function handle401Error(
-  req: HttpRequest<any>,
+  req: HttpRequest<unknown>,
   next: HttpHandlerFn,
   authService: AuthService,
   authStore: InstanceType<typeof AuthStore>
-): Observable<HttpEvent<any>> {
+): Observable<HttpEvent<unknown>> {
   return authService.refreshToken().pipe(
     switchMap((result: CurrentUserResponseInterface) => {
       authStore.updateAfterRefresh(result)
@@ -67,7 +69,7 @@ function handle401Error(
 
       return next(clonedReq)
     }),
-    catchError((err) => {
+    catchError((err: HttpErrorResponse) => {
       authStore.logout()
       return throwError(() => err)
     })

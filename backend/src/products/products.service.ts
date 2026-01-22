@@ -309,6 +309,7 @@ export class ProductsService {
       userName,
       text: addCommentDto.text,
       rating: addCommentDto.rating,
+      likedBy: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     } as any);
@@ -317,6 +318,95 @@ export class ProductsService {
     const totalRating = product.userComments.reduce((sum, comment) => sum + comment.rating, 0);
     product.rating = totalRating / product.userComments.length;
 
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Удаление комментария
+   * @param productId - ID продукта
+   * @param commentId - ID комментария
+   * @param userId - ID пользователя (для проверки прав)
+   * @returns Обновленный продукт
+   */
+  public async deleteComment(
+    productId: string,
+    commentId: string,
+    userId: string,
+  ): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    // Находим индекс комментария
+    const commentIndex = product.userComments.findIndex(
+      (comment: any) => comment._id.toString() === commentId,
+    );
+
+    if (commentIndex === -1) {
+      throw new NotFoundException(`Комментарий с ID ${commentId} не найден`);
+    }
+
+    // Проверяем, что пользователь удаляет свой комментарий
+    if (product.userComments[commentIndex].userId.toString() !== userId) {
+      throw new Error('Вы можете удалять только свои комментарии');
+    }
+
+    // Удаляем комментарий
+    product.userComments.splice(commentIndex, 1);
+
+    // Пересчитываем средний рейтинг продукта
+    if (product.userComments.length > 0) {
+      const totalRating = product.userComments.reduce((sum, comment) => sum + comment.rating, 0);
+      product.rating = totalRating / product.userComments.length;
+    } else {
+      product.rating = 0;
+    }
+
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Переключение лайка комментария
+   * @param productId - ID продукта
+   * @param commentId - ID комментария
+   * @param userId - ID пользователя
+   * @returns Обновленный продукт
+   */
+  public async toggleLikeComment(
+    productId: string,
+    commentId: string,
+    userId: string,
+  ): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    // Находим комментарий
+    const comment = product.userComments.find((c: any) => c._id.toString() === commentId);
+
+    if (!comment) {
+      throw new NotFoundException(`Комментарий с ID ${commentId} не найден`);
+    }
+
+    // Проверяем, лайкнул ли пользователь уже этот комментарий
+    const likedByArray = (comment as any).likedBy || [];
+    const userIndex = likedByArray.findIndex((id: string) => id.toString() === userId);
+
+    if (userIndex === -1) {
+      // Добавляем лайк
+      likedByArray.push(userId);
+    } else {
+      // Убираем лайк
+      likedByArray.splice(userIndex, 1);
+    }
+
+    (comment as any).likedBy = likedByArray;
     await product.save();
     return product as ProductDocument;
   }

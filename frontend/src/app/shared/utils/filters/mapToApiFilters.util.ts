@@ -1,5 +1,5 @@
 import { SelectedFilters } from '../../../features/products/catalog/types/product-selected-filters.interface'
-import { ProductFilterParams } from '../../../features/products/detail/types/product.interface'
+import { ProductFilterParams } from '../../../features/products/detail/types/product-filter-params.interface'
 
 /* ==========================================
    CONSTANTS (вынесены наружу)

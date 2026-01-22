@@ -4,7 +4,7 @@ import { ProductFilterStore } from '../store/product-filter.store'
 import { ProductStore } from '../store/product.store'
 import { SelectedFilters } from '../types/product-selected-filters.interface'
 import { mapToApiFilters, filtersToQueryParams, parseUrlParams } from '@/shared/utils/filters'
-import { ProductFilterParams } from '../../detail/types/product.interface'
+import { ProductFilterParams } from '../../detail/types/product-filter-params.interface'
 
 /**
  * ProductsPageFacade - Orchestration Layer

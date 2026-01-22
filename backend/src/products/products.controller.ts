@@ -172,7 +172,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   public async getLikedProducts(@Request() req: any): Promise<any[]> {
-    const userId = req.user.userId as string;
+    const userId = req.user.id as string;
     return await this.productsService.getLikedProducts(userId);
   }
 
@@ -251,9 +251,49 @@ export class ProductsController {
     @Body() addCommentDto: AddCommentDto,
     @Request() req: any,
   ): Promise<ProductDocument> {
-    const userId = req.user.userId as string;
+    const userId = req.user.id as string;
     const userName = (req.user.firstName ?? req.user.email) as string;
     return await this.productsService.addComment(id, userId, userName, addCommentDto);
+  }
+
+  /**
+   * Удаление комментария
+   * DELETE /products/:id/comments/:commentId
+   * @param id - ID продукта
+   * @param commentId - ID комментария
+   * @param req - Запрос с данными пользователя
+   * @returns Обновленный продукт
+   */
+  @Delete(':id/comments/:commentId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  public async deleteComment(
+    @Param('id') id: string,
+    @Param('commentId') commentId: string,
+    @Request() req: any,
+  ): Promise<ProductDocument> {
+    const userId = req.user.id as string;
+    return await this.productsService.deleteComment(id, commentId, userId);
+  }
+
+  /**
+   * Лайк/дизлайк комментария
+   * POST /products/:id/comments/:commentId/like
+   * @param id - ID продукта
+   * @param commentId - ID комментария
+   * @param req - Запрос с данными пользователя
+   * @returns Обновленный продукт
+   */
+  @Post(':id/comments/:commentId/like')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  public async toggleLikeComment(
+    @Param('id') id: string,
+    @Param('commentId') commentId: string,
+    @Request() req: any,
+  ): Promise<ProductDocument> {
+    const userId = req.user.id as string;
+    return await this.productsService.toggleLikeComment(id, commentId, userId);
   }
 
   /**
@@ -272,7 +312,7 @@ export class ProductsController {
     @Body() addQuestionDto: AddQuestionDto,
     @Request() req: any,
   ): Promise<ProductDocument> {
-    const userId = req.user.userId as string;
+    const userId = req.user.id as string;
     const userName = (req.user.firstName ?? req.user.email) as string;
     return await this.productsService.addQuestion(id, userId, userName, addQuestionDto);
   }
@@ -295,7 +335,7 @@ export class ProductsController {
     @Body() addAnswerDto: AddAnswerDto,
     @Request() req: any,
   ): Promise<ProductDocument> {
-    const userId = req.user.userId as string;
+    const userId = req.user.id as string;
     const userName = (req.user.firstName ?? req.user.email) as string;
     return await this.productsService.addAnswer(id, questionId, userId, userName, addAnswerDto);
   }
@@ -311,7 +351,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   public async toggleLike(@Param('id') id: string, @Request() req: any): Promise<ProductDocument> {
-    const userId = req.user.userId as string;
+    const userId = req.user.id as string;
     return await this.productsService.toggleLike(id, userId);
   }
 }
