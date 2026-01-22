@@ -12,7 +12,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString()
-  category?: string;
+  public category?: string;
 
   /**
    * Фильтр по типу товара
@@ -20,7 +20,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString()
-  productType?: string;
+  public productType?: string;
 
   /**
    * Фильтр по стилю одежды
@@ -28,7 +28,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString()
-  dressStyle?: string;
+  public dressStyle?: string;
 
   /**
    * Фильтр по бренду
@@ -36,7 +36,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString()
-  brand?: string;
+  public brand?: string;
 
   /**
    * Минимальная цена
@@ -46,7 +46,7 @@ export class FilterProductDto {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  minPrice?: number;
+  public minPrice?: number;
 
   /**
    * Максимальная цена
@@ -56,7 +56,7 @@ export class FilterProductDto {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  maxPrice?: number;
+  public maxPrice?: number;
 
   /**
    * Минимальный рейтинг
@@ -67,7 +67,7 @@ export class FilterProductDto {
   @Min(0)
   @Max(5)
   @Type(() => Number)
-  minRating?: number;
+  public minRating?: number;
 
   /**
    * Фильтр по цвету (может быть несколько)
@@ -75,7 +75,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString({ each: true })
-  color?: string | string[];
+  public color?: string | string[];
 
   /**
    * Фильтр по размеру (может быть несколько)
@@ -83,7 +83,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString({ each: true })
-  size?: string | string[];
+  public size?: string | string[];
 
   /**
    * Поиск по названию и описанию
@@ -91,7 +91,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString()
-  search?: string;
+  public search?: string;
 
   /**
    * Поле для сортировки
@@ -99,7 +99,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString()
-  sortBy?: 'price' | 'rating' | 'title' | 'createdAt';
+  public sortBy?: 'price' | 'rating' | 'title' | 'createdAt';
 
   /**
    * Направление сортировки
@@ -107,7 +107,7 @@ export class FilterProductDto {
    */
   @IsOptional()
   @IsString()
-  order?: 'asc' | 'desc';
+  public order?: 'asc' | 'desc';
 
   /**
    * Номер страницы (начиная с 1)
@@ -117,7 +117,7 @@ export class FilterProductDto {
   @IsNumber()
   @Min(1)
   @Type(() => Number)
-  page?: number;
+  public page?: number;
 
   /**
    * Количество элементов на странице
@@ -128,5 +128,5 @@ export class FilterProductDto {
   @Min(1)
   @Max(100)
   @Type(() => Number)
-  limit?: number;
+  public limit?: number;
 }

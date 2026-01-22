@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { AddAnswerDto } from './dto/add-answer.dto';
+import { AddCommentDto } from './dto/add-comment.dto';
+import { AddQuestionDto } from './dto/add-question.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -27,7 +30,7 @@ export class ProductsService {
    * @param createProductDto - Данные для создания продукта
    * @returns Созданный продукт
    */
-  async create(createProductDto: CreateProductDto): Promise<ProductDocument> {
+  public async create(createProductDto: CreateProductDto): Promise<ProductDocument> {
     const newProduct = new this.productModel(createProductDto);
     return (await newProduct.save()) as ProductDocument;
   }
@@ -35,9 +38,10 @@ export class ProductsService {
   /**
    * Получение списка всех продуктов с фильтрацией, сортировкой и пагинацией
    * @param filterDto - Параметры фильтрации и пагинации
+   * @param userId - ID текущего пользователя
    * @returns Список продуктов с метаданными пагинации
    */
-  async findAll(filterDto: FilterProductDto): Promise<IProductsResponse> {
+  public async findAll(filterDto: FilterProductDto, userId?: string): Promise<IProductsResponse> {
     const {
       category,
       productType,
@@ -76,7 +80,7 @@ export class ProductsService {
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
-      filter.price = {} as any;
+      filter.price = {};
       if (minPrice !== undefined) {
         filter.price.$gte = minPrice;
       }
@@ -96,7 +100,7 @@ export class ProductsService {
         colors = color;
       } else if (typeof color === 'string' && color.includes(',')) {
         // Если пришла строка с запятыми - разбиваем её
-        colors = color.split(',').map(c => c.trim());
+        colors = color.split(',').map((c) => c.trim());
       } else {
         colors = [color];
       }
@@ -105,8 +109,8 @@ export class ProductsService {
       if (colors.length === 1) {
         filter.color = { $regex: new RegExp(`^${colors[0]}$`, 'i') };
       } else {
-        filter.$or = colors.map(c => ({
-          color: { $regex: new RegExp(`^${c}$`, 'i') }
+        filter.$or = colors.map((c) => ({
+          color: { $regex: new RegExp(`^${c}$`, 'i') },
         }));
       }
     }
@@ -118,7 +122,7 @@ export class ProductsService {
         sizes = size;
       } else if (typeof size === 'string' && size.includes(',')) {
         // Если пришла строка с запятыми - разбиваем её
-        sizes = size.split(',').map(s => s.trim());
+        sizes = size.split(',').map((s) => s.trim());
       } else {
         sizes = [size];
       }
@@ -130,7 +134,6 @@ export class ProductsService {
     if (search) {
       filter.$text = { $search: search };
     }
-
 
     // Вычисление пагинации
     const skip = (page - 1) * limit;
@@ -145,12 +148,14 @@ export class ProductsService {
       this.productModel.countDocuments(filter).exec(),
     ]);
 
-
     // Вычисление общего количества страниц
     const totalPages = Math.ceil(total / limit);
 
+    // Трансформируем продукты
+    const transformedProducts = products.map((product) => this.transformProduct(product, userId));
+
     return {
-      products,
+      products: transformedProducts as any,
       total,
       page,
       limit,
@@ -161,17 +166,18 @@ export class ProductsService {
   /**
    * Получение продукта по ID
    * @param id - ID продукта
+   * @param userId - ID текущего пользователя
    * @returns Найденный продукт
    * @throws NotFoundException если продукт не найден
    */
-  async findOne(id: string): Promise<ProductDocument> {
+  public async findOne(id: string, userId?: string): Promise<any> {
     const product = await this.productModel.findById(id).exec();
 
     if (!product) {
       throw new NotFoundException(`Продукт с ID ${id} не найден`);
     }
 
-    return product as ProductDocument;
+    return this.transformProduct(product, userId);
   }
 
   /**
@@ -181,7 +187,7 @@ export class ProductsService {
    * @returns Обновленный продукт
    * @throws NotFoundException если продукт не найден
    */
-  async update(id: string, updateProductDto: UpdateProductDto): Promise<ProductDocument> {
+  public async update(id: string, updateProductDto: UpdateProductDto): Promise<ProductDocument> {
     const updatedProduct = await this.productModel
       .findByIdAndUpdate(id, updateProductDto, { new: true })
       .exec();
@@ -199,7 +205,7 @@ export class ProductsService {
    * @returns Удаленный продукт
    * @throws NotFoundException если продукт не найден
    */
-  async remove(id: string): Promise<ProductDocument> {
+  public async remove(id: string): Promise<ProductDocument> {
     const deletedProduct = await this.productModel.findByIdAndDelete(id).exec();
 
     if (!deletedProduct) {
@@ -213,7 +219,7 @@ export class ProductsService {
    * Получение уникальных категорий
    * @returns Список всех уникальных категорий
    */
-  async getCategories(): Promise<string[]> {
+  public async getCategories(): Promise<string[]> {
     return await this.productModel.distinct('category').exec();
   }
 
@@ -221,7 +227,7 @@ export class ProductsService {
    * Получение уникальных брендов
    * @returns Список всех уникальных брендов
    */
-  async getBrands(): Promise<string[]> {
+  public async getBrands(): Promise<string[]> {
     return await this.productModel.distinct('brand').exec();
   }
 
@@ -229,7 +235,7 @@ export class ProductsService {
    * Получение уникальных цветов
    * @returns Список всех уникальных цветов
    */
-  async getColors(): Promise<string[]> {
+  public async getColors(): Promise<string[]> {
     return await this.productModel.distinct('color').exec();
   }
 
@@ -237,7 +243,7 @@ export class ProductsService {
    * Получение уникальных размеров
    * @returns Список всех уникальных размеров
    */
-  async getSizes(): Promise<string[]> {
+  public async getSizes(): Promise<string[]> {
     const sizes = await this.productModel.distinct('size').exec();
     // Размеры могут быть массивами, поэтому собираем все уникальные значения
     return [...new Set(sizes.flat())];
@@ -247,7 +253,7 @@ export class ProductsService {
    * Получение уникальных типов товаров
    * @returns Список всех уникальных типов товаров
    */
-  async getProductTypes(): Promise<string[]> {
+  public async getProductTypes(): Promise<string[]> {
     return await this.productModel.distinct('productType').exec();
   }
 
@@ -255,7 +261,268 @@ export class ProductsService {
    * Получение уникальных стилей одежды
    * @returns Список всех уникальных стилей одежды
    */
-  async getDressStyles(): Promise<string[]> {
+  public async getDressStyles(): Promise<string[]> {
     return await this.productModel.distinct('dressStyle').exec();
+  }
+
+  /**
+   * Трансформация продукта для ответа
+   * @param product - Продукт
+   * @param userId - ID текущего пользователя (опционально)
+   * @returns Продукт с isLiked
+   */
+  private transformProduct(product: ProductDocument, userId?: string): any {
+    const productObj = (product as any).toObject ? (product as any).toObject() : product;
+    const isLiked = userId ? (productObj.likedBy as string[]).includes(userId) : false;
+
+    // Удаляем likedBy и добавляем isLiked
+    const { likedBy, ...rest } = productObj;
+    return {
+      ...rest,
+      isLiked,
+    };
+  }
+
+  /**
+   * Добавление комментария к продукту
+   * @param productId - ID продукта
+   * @param userId - ID пользователя
+   * @param userName - Имя пользователя
+   * @param addCommentDto - Данные комментария
+   * @returns Обновленный продукт
+   */
+  public async addComment(
+    productId: string,
+    userId: string,
+    userName: string,
+    addCommentDto: AddCommentDto,
+  ): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    // Добавляем новый комментарий
+    product.userComments.push({
+      userId,
+      userName,
+      text: addCommentDto.text,
+      rating: addCommentDto.rating,
+      likedBy: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+
+    // Пересчитываем средний рейтинг продукта
+    const totalRating = product.userComments.reduce((sum, comment) => sum + comment.rating, 0);
+    product.rating = totalRating / product.userComments.length;
+
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Удаление комментария
+   * @param productId - ID продукта
+   * @param commentId - ID комментария
+   * @param userId - ID пользователя (для проверки прав)
+   * @returns Обновленный продукт
+   */
+  public async deleteComment(
+    productId: string,
+    commentId: string,
+    userId: string,
+  ): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    // Находим индекс комментария
+    const commentIndex = product.userComments.findIndex(
+      (comment: any) => comment._id.toString() === commentId,
+    );
+
+    if (commentIndex === -1) {
+      throw new NotFoundException(`Комментарий с ID ${commentId} не найден`);
+    }
+
+    // Проверяем, что пользователь удаляет свой комментарий
+    if (product.userComments[commentIndex].userId.toString() !== userId) {
+      throw new Error('Вы можете удалять только свои комментарии');
+    }
+
+    // Удаляем комментарий
+    product.userComments.splice(commentIndex, 1);
+
+    // Пересчитываем средний рейтинг продукта
+    if (product.userComments.length > 0) {
+      const totalRating = product.userComments.reduce((sum, comment) => sum + comment.rating, 0);
+      product.rating = totalRating / product.userComments.length;
+    } else {
+      product.rating = 0;
+    }
+
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Переключение лайка комментария
+   * @param productId - ID продукта
+   * @param commentId - ID комментария
+   * @param userId - ID пользователя
+   * @returns Обновленный продукт
+   */
+  public async toggleLikeComment(
+    productId: string,
+    commentId: string,
+    userId: string,
+  ): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    // Находим комментарий
+    const comment = product.userComments.find((c: any) => c._id.toString() === commentId);
+
+    if (!comment) {
+      throw new NotFoundException(`Комментарий с ID ${commentId} не найден`);
+    }
+
+    // Проверяем, лайкнул ли пользователь уже этот комментарий
+    const likedByArray = (comment as any).likedBy || [];
+    const userIndex = likedByArray.findIndex((id: string) => id.toString() === userId);
+
+    if (userIndex === -1) {
+      // Добавляем лайк
+      likedByArray.push(userId);
+    } else {
+      // Убираем лайк
+      likedByArray.splice(userIndex, 1);
+    }
+
+    (comment as any).likedBy = likedByArray;
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Добавление вопроса к продукту
+   * @param productId - ID продукта
+   * @param userId - ID пользователя
+   * @param userName - Имя пользователя
+   * @param addQuestionDto - Данные вопроса
+   * @returns Обновленный продукт
+   */
+  public async addQuestion(
+    productId: string,
+    userId: string,
+    userName: string,
+    addQuestionDto: AddQuestionDto,
+  ): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    // Добавляем новый вопрос
+    product.questionsAnswers.push({
+      userId,
+      userName,
+      question: addQuestionDto.question,
+      answers: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Добавление ответа на вопрос
+   * @param productId - ID продукта
+   * @param questionId - ID вопроса
+   * @param userId - ID пользователя
+   * @param userName - Имя пользователя
+   * @param addAnswerDto - Данные ответа
+   * @returns Обновленный продукт
+   */
+  public async addAnswer(
+    productId: string,
+    questionId: string,
+    userId: string,
+    userName: string,
+    addAnswerDto: AddAnswerDto,
+  ): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    // Находим вопрос по ID
+    const question = product.questionsAnswers.find((q: any) => q._id.toString() === questionId);
+
+    if (!question) {
+      throw new NotFoundException(`Вопрос с ID ${questionId} не найден`);
+    }
+
+    // Добавляем ответ к вопросу
+    question.answers.push({
+      userId,
+      userName,
+      text: addAnswerDto.text,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+
+    question.updatedAt = new Date();
+
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Добавление/удаление продукта из избранного
+   * @param productId - ID продукта
+   * @param userId - ID пользователя
+   * @returns Обновленный продукт
+   */
+  public async toggleLike(productId: string, userId: string): Promise<ProductDocument> {
+    const product = await this.productModel.findById(productId).exec();
+
+    if (!product) {
+      throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+    }
+
+    const likedIndex = product.likedBy.indexOf(userId);
+
+    if (likedIndex === -1) {
+      // Если продукт еще не в избранном - добавляем
+      product.likedBy.push(userId);
+    } else {
+      // Если продукт уже в избранном - удаляем
+      product.likedBy.splice(likedIndex, 1);
+    }
+
+    await product.save();
+    return product as ProductDocument;
+  }
+
+  /**
+   * Получение избранных продуктов пользователя
+   * @param userId - ID пользователя
+   * @returns Список избранных продуктов
+   */
+  public async getLikedProducts(userId: string): Promise<any[]> {
+    const products = await this.productModel.find({ likedBy: userId }).exec();
+    return products.map((product) => this.transformProduct(product, userId));
   }
 }

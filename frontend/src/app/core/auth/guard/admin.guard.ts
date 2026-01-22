@@ -35,4 +35,3 @@ export const adminGuard: CanActivateFn = (route, state) => {
   // Если не админ — редирект на главную
   return router.createUrlTree(['/'])
 }
-

@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { email, Field, form, required, submit } from '@angular/forms/signals'
 import { LoginDataInterface } from '../../types/loginData.interface'
-import {AuthStore} from '../../store/auth.store';
+import { AuthStore } from '../../store/auth.store'
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,7 @@ import {AuthStore} from '../../store/auth.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {
-  private authStore = inject(AuthStore)
+  private readonly authStore = inject(AuthStore)
 
   loginModel = signal<LoginDataInterface>({
     email: '',
@@ -43,5 +43,4 @@ export class Login {
       this.authStore.login(loginData)
     }).catch(console.error)
   }
-
 }

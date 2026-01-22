@@ -1,0 +1,35 @@
+{
+  // ========================================
+  // РЕКОМЕНДУЕМЫЕ РАСШИРЕНИЯ ДЛЯ VS CODE
+  // ========================================
+  // Эти расширения будут предложены к установке при открытии проекта
+  
+  "recommendations": [
+    // ESLint - проверка кода на соответствие правилам
+    "dbaeumer.vscode-eslint",
+    
+    // Prettier - форматирование кода
+    "esbenp.prettier-vscode",
+    
+    // Path Intellisense - автодополнение путей к файлам
+    "christian-kohler.path-intellisense",
+    
+    // REST Client - тестирование API напрямую из VS Code
+    "humao.rest-client",
+    
+    // MongoDB для VS Code
+    "mongodb.mongodb-vscode",
+    
+    // Thunder Client - альтернатива Postman
+    "rangav.vscode-thunder-client",
+    
+    // EditorConfig - поддержка .editorconfig
+    "editorconfig.editorconfig",
+    
+    // dotENV - подсветка .env файлов
+    "mikestead.dotenv",
+    
+    // GitLens - расширенные возможности Git
+    "eamodio.gitlens"
+  ]
+}
