@@ -1,8 +1,13 @@
-import { CommentResponse } from './comment-response.interface'
+import { CommentEntity } from './comment.interface'
 
 export interface CommentStateInterface {
-  comments: CommentResponse[]
-  currentProductId: string | null
+  comments: CommentEntity[]
+  productId: string | null
   isLoading: boolean
   error: string | null
+  page: number
+  pageSize: number
+  total: number
+  hasMore: boolean
+  isSubmitting: boolean
 }

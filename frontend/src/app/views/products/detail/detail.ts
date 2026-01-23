@@ -75,14 +75,16 @@ export class ProductDetail {
   readonly galleryImages = computed(() => this.store.galleryImages())
 
   constructor() {
-    effect(() => {
-      const id = this.productId()
-      if (id) {
-        this.store.loadProduct(id)
-        this.commentStore.loadComments(id)
-        this.resetState()
-      }
-    })
+    effect(
+      () => {
+        const id = this.productId()
+        if (id) {
+          this.store.loadProduct(id)
+          this.resetState()
+        }
+      },
+      { allowSignalWrites: true }
+    )
   }
 
   private resetState(): void {

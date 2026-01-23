@@ -16,7 +16,7 @@
   }
 
   <!-- Форма нового комментария -->
-  <form (submit)="onCreateComment()" class="mb-12">
+  <form (submit)="onCreateComment($event)" class="mb-12">
     <!-- Текст комментария -->
     <div
       class="rounded-2xl border border-gray-200 bg-white p-4 transition-shadow focus-within:shadow-md"
@@ -48,9 +48,11 @@
   <!-- Список комментариев -->
   @if (store.hasComments()) {
     <div class="space-y-6">
-      @for (comment of store.sortedComments(); track comment.id) {
+      @for (comment of store.comments(); track comment._id) {
         <app-comment-item
           [comment]="comment"
+          [currentUserId]="authStore.user()?.user?.id ?? null"
+          [isUserAdmin]="authStore.isAdmin()"
           (like)="onToggleLike($event)"
           (delete)="onDeleteComment($event)"
         />

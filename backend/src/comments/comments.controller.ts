@@ -8,12 +8,14 @@ import {
     Param,
     Patch,
     Post,
+    Query,
     Request,
     UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { FilterCommentDto } from './dto/filter-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentDocument } from './schemas/comment.schema';
 
@@ -46,7 +48,32 @@ export class CommentsController {
   }
 
   /**
-   * Получение всех комментариев для продукта
+   * Получение комментариев для продукта с пагинацией
+   * GET /comments?productId=1&page=1&pageSize=20
+   * @param filterDto - Параметры фильтрации и пагинации
+   * @param req - Запрос с данными пользователя (опционально)
+   * @returns Объект с массивом комментариев и общим количеством
+   */
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  public async findByProduct(
+    @Query() filterDto: FilterCommentDto,
+    @Request() req?: any,
+  ): Promise<{ items: any[]; total: number }> {
+    const userId = req?.user?.id as string | undefined;
+    const page = parseInt(filterDto.page || '1', 10);
+    const pageSize = parseInt(filterDto.pageSize || '20', 10);
+
+    return await this.commentsService.findByProductIdWithPagination(
+      filterDto.productId,
+      page,
+      pageSize,
+      userId,
+    );
+  }
+
+  /**
+   * Получение всех комментариев для продукта (старый эндпоинт для обратной совместимости)
    * GET /comments/product/:productId
    * @param productId - ID продукта
    * @param req - Запрос с данными пользователя (опционально)
@@ -54,7 +81,7 @@ export class CommentsController {
    */
   @Get('product/:productId')
   @HttpCode(HttpStatus.OK)
-  public async findByProduct(@Param('productId') productId: string, @Request() req?: any): Promise<any[]> {
+  public async findByProductOld(@Param('productId') productId: string, @Request() req?: any): Promise<any[]> {
     const userId = req?.user?.id as string | undefined;
     return await this.commentsService.findByProductId(productId, userId);
   }

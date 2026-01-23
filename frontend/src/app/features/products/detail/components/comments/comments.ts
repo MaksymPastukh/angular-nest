@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core'
 import { AuthStore } from '../../../../../core/auth/store/auth.store'
 import { CommentStore } from '../../store/comment.store'
+import { CommentEntity } from '../../types/comment.interface'
 import { CommentItem } from '../comment-item/comment-item'
-import { CommentResponse } from '../../types/comment-response.interface'
 
 @Component({
   selector: 'app-comments',
@@ -27,14 +27,17 @@ export class CommentsComponent {
   constructor() {
     // Загружаем комментарии при изменении productId
     effect(() => {
-      const id = this.productId()
+      const id: string = this.productId()
+
       if (id) {
-        this.store.loadComments(id)
+        this.store.loadComments({ productId: id })
       }
     })
   }
 
-  onCreateComment() {
+  onCreateComment(event: Event): void {
+    event.preventDefault()
+
     const text = this.newCommentText().trim()
     if (text && this.productId()) {
       this.store.createComment({
@@ -45,21 +48,9 @@ export class CommentsComponent {
     }
   }
 
-  onEditComment(comment: CommentResponse) {
-    this.editingCommentId.set(comment.id)
+  onEditComment(comment: CommentEntity) {
+    this.editingCommentId.set(comment._id)
     this.editCommentText.set(comment.text)
-  }
-
-  onSaveEdit() {
-    const text = this.editCommentText().trim()
-    const commentId = this.editingCommentId()
-    if (text && commentId) {
-      this.store.updateComment({
-        commentId,
-        upComment: { text },
-      })
-      this.onCancelEdit()
-    }
   }
 
   onCancelEdit() {

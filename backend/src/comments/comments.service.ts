@@ -71,6 +71,48 @@ export class CommentsService {
   }
 
   /**
+   * Получение комментариев для продукта с пагинацией
+   * @param productId - ID продукта
+   * @param page - Номер страницы (начиная с 1)
+   * @param pageSize - Количество элементов на странице
+   * @param userId - ID текущего пользователя (для определения isLiked)
+   * @returns Объект с массивом комментариев и общим количеством
+   */
+  public async findByProductIdWithPagination(
+    productId: string,
+    page: number = 1,
+    pageSize: number = 20,
+    userId?: string,
+  ): Promise<{ items: any[]; total: number }> {
+    const skip = (page - 1) * pageSize;
+
+    const [comments, total] = await Promise.all([
+      this.commentModel
+        .find({ productId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .exec(),
+      this.commentModel.countDocuments({ productId }).exec(),
+    ]);
+
+    // Добавляем поле isLiked для каждого комментария
+    const items = comments.map((comment) => {
+      const commentObj = comment.toObject();
+      const isLiked = userId ? commentObj.likedBy.includes(userId) : false;
+      const { likedBy, ...rest } = commentObj;
+
+      return {
+        ...rest,
+        likesCount: likedBy.length,
+        isLiked,
+      };
+    });
+
+    return { items, total };
+  }
+
+  /**
    * Получение комментария по ID
    * @param id - ID комментария
    * @returns Комментарий

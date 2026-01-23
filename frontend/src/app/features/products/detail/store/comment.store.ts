@@ -2,16 +2,26 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, of, pipe, switchMap, tap } from 'rxjs'
+import { catchError, concatMap, EMPTY, exhaustMap, filter, map, pipe, switchMap, tap } from 'rxjs'
 import { CommentService } from '../services/comment.service'
 import { CommentCreateInterface } from '../types/comment-create.interface'
-import { CommentResponse } from '../types/comment-response.interface'
 import { CommentStateInterface } from '../types/comment-state.interface'
+import { CommentEntity, CommentInterface } from '../types/comment.interface'
+import {
+  mapAndSortComments,
+  mapCommentToEntity,
+  mergeComments,
+} from '../utils/mapMergAndSortCommnets'
 
 const initialState: CommentStateInterface = {
   comments: [],
-  currentProductId: null,
+  productId: null,
+  page: 1,
+  pageSize: 20,
+  total: 0,
+  hasMore: true,
   isLoading: false,
+  isSubmitting: false,
   error: null,
 }
 
@@ -26,158 +36,172 @@ export const CommentStore = signalStore(
 
     /** Количество комментариев */
     commentsCount: computed(() => store.comments().length),
-
-    /** Отсортированные комментарии (новые сверху) */
-    sortedComments: computed(() => {
-      return [...store.comments()].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-    }),
   })),
-  withMethods((store, commentsService = inject(CommentService)) => ({
-    /**
-     * Загрузить комментарии для продукта
-     */
-    loadComments: rxMethod<string>(
-      pipe(
-        tap((productId) => {
-          patchState(store, { isLoading: true, error: null, currentProductId: productId })
-        }),
-        switchMap((productId: string) =>
-          commentsService.getProductComments(productId).pipe(
-            tap((response: CommentResponse[]) => {
-              patchState(store, {
-                comments: response,
-                isLoading: false,
-              })
-            }),
-            catchError((error: HttpErrorResponse) => {
-              patchState(store, {
-                comments: [],
-                isLoading: false,
-                error: (error?.error as { message?: string }).message ?? 'Failed to load comments',
-              })
-              return of(null)
+  withMethods((store, commentsService = inject(CommentService)) => {
+    const setLoading = (isLoading: boolean) =>
+      patchState(store, { isLoading, error: isLoading ? null : store.error() })
+
+    const setSubmitting = (isSubmitting: boolean) =>
+      patchState(store, { isSubmitting, error: isSubmitting ? null : store.error() })
+
+    const setError = (error: string) =>
+      patchState(store, {
+        isLoading: false,
+        isSubmitting: false,
+        error,
+      })
+
+    const handleHttpError = (error: HttpErrorResponse) => {
+      const message =
+        (error.error as { message?: string })?.message ?? error.message ?? 'Произошла ошибка'
+
+      setError(String(message))
+    }
+
+    const handleInitialLoad = (items: CommentInterface[], total: number) => {
+      const comments: CommentEntity[] = mapAndSortComments(items)
+
+      patchState(store, {
+        comments,
+        total,
+        page: 1,
+        hasMore: comments.length < total,
+        isLoading: false,
+        error: null,
+      })
+    }
+
+    const handleNextPage = (items: CommentInterface[], total: number) => {
+      const merged: CommentEntity[] = mergeComments(store.comments(), items)
+
+      patchState(store, {
+        comments: merged,
+        total,
+        page: store.page() + 1,
+        hasMore: merged.length < total,
+        isLoading: false,
+      })
+    }
+
+    return {
+      loadComments: rxMethod<{ productId: string }>(
+        pipe(
+          tap(({ productId }) => {
+            patchState(store, {
+              ...initialState,
+              productId,
+              isLoading: true,
             })
+          }),
+          switchMap(({ productId }) => {
+            return commentsService.getProductComments(productId, 1, store.pageSize()).pipe(
+              tap(({ items, total }) => {
+                handleInitialLoad(items, total)
+              }),
+              catchError((error: HttpErrorResponse) => {
+                console.error('❌ API Error:', error)
+                handleHttpError(error)
+                return EMPTY
+              })
+            )
+          })
+        )
+      ),
+      /**
+       * Загрузить следующую страницу комментариев
+       */
+      loadNextPage: rxMethod<void>(
+        pipe(
+          filter(() => store.hasMore() && !store.isLoading()),
+          tap(() => setLoading(true)),
+          switchMap(() => {
+            const nextPage = store.page() + 1
+            return commentsService
+              .getProductComments(store.productId(), nextPage, store.pageSize())
+              .pipe(
+                tap(({ items, total }) => {
+                  handleNextPage(items, total)
+                }),
+                catchError((error: HttpErrorResponse) => {
+                  handleHttpError(error)
+                  return EMPTY
+                })
+              )
+          })
+        )
+      ),
+
+      /**
+       * Создать комментарий
+       */
+      createComment: rxMethod<{ productId: string; comment: CommentCreateInterface }>(
+        pipe(
+          tap(() => setSubmitting(true)),
+          concatMap(({ productId, comment }) =>
+            commentsService.createComment(productId, comment).pipe(
+              tap((created) => {
+                patchState(store, {
+                  comments: mapAndSortComments([created, ...store.comments()]),
+                  total: store.total() + 1,
+                  isSubmitting: false,
+                })
+              }),
+              catchError((error: HttpErrorResponse) => {
+                handleHttpError(error)
+                return EMPTY
+              })
+            )
           )
         )
-      )
-    ),
+      ),
 
-    /**
-     * Создать комментарий
-     */
-    createComment: rxMethod<{ productId: string; comment: CommentCreateInterface }>(
-      pipe(
-        tap(() => patchState(store, { isLoading: true, error: null })),
-        switchMap(({ productId, comment }) =>
-          commentsService.createComment(productId, comment).pipe(
-            tap((response: CommentResponse) => {
-              const comment: CommentResponse = {
-                ...response,
-                likesCount: 0,
-                isLiked: false,
-              }
-              patchState(store, {
-                comments: [comment, ...store.comments()],
-                isLoading: false,
+      /**
+       * Удалить комментарий
+       */
+      deleteComment: rxMethod<string>(
+        pipe(
+          tap(() => setLoading(true)),
+          exhaustMap((commentId) =>
+            commentsService.deleteComment(commentId).pipe(
+              tap(() => {
+                patchState(store, {
+                  comments: store.comments().filter((c) => c._id !== commentId),
+                  total: store.total() - 1,
+                  isSubmitting: false,
+                })
+              }),
+              catchError((error: HttpErrorResponse) => {
+                handleHttpError(error)
+                return EMPTY
               })
-            }),
-            catchError((error: HttpErrorResponse) => {
-              patchState(store, {
-                error:
-                  (error?.error as { message?: string }).message ?? 'Ошибка создания комментария',
-                isLoading: false,
-              })
-              return of(null)
-            })
+            )
           )
         )
-      )
-    ),
-
-    /**
-     * Обновить комментарий
-     */
-    updateComment: rxMethod<{ commentId: string; upComment: CommentCreateInterface }>(
-      pipe(
-        tap(() => patchState(store, { isLoading: true, error: null })),
-        switchMap(({ commentId, upComment }) =>
-          commentsService.updateComment(commentId, upComment).pipe(
-            tap((response: CommentResponse) => {
-              const comments = store
-                .comments()
-                .map((c) =>
-                  c.id === commentId
-                    ? { ...c, text: response.text, updatedAt: response.updatedAt }
-                    : c
-                )
-              patchState(store, { comments, isLoading: false })
-            }),
-            catchError((error: HttpErrorResponse) => {
-              patchState(store, {
-                error:
-                  (error?.error as { message?: string }).message ?? 'Ошибка обновления комментария',
-                isLoading: false,
+      ),
+      /**
+       * Лайкнуть/убрать лайк
+       */
+      toggleLike: rxMethod<string>(
+        pipe(
+          exhaustMap((commentId) =>
+            commentsService.toggleLike(commentId).pipe(
+              map(mapCommentToEntity),
+              tap((updated) => {
+                patchState(store, {
+                  comments: store.comments().map((c) => (c._id === updated._id ? updated : c)),
+                })
+              }),
+              catchError((error: HttpErrorResponse) => {
+                handleHttpError(error)
+                return EMPTY
               })
-              return of(null)
-            })
+            )
           )
         )
-      )
-    ),
+      ),
 
-    /**
-     * Удалить комментарий
-     */
-    deleteComment: rxMethod<string>(
-      pipe(
-        tap(() => patchState(store, { isLoading: true, error: null })),
-        switchMap((commentId) =>
-          commentsService.deleteComment(commentId).pipe(
-            tap(() => {
-              const comments = store.comments().filter((c) => c.id !== commentId)
-              patchState(store, { comments, isLoading: false })
-            }),
-            catchError((error: HttpErrorResponse) => {
-              patchState(store, {
-                error:
-                  (error?.error as { message?: string }).message ?? 'Ошибка удаления комментария',
-                isLoading: false,
-              })
-              return of(null)
-            })
-          )
-        )
-      )
-    ),
-
-    /**
-     * Лайкнуть/убрать лайк
-     */
-    toggleLike: rxMethod<string>(
-      pipe(
-        switchMap((commentId) =>
-          commentsService.toggleLike(commentId).pipe(
-            tap((response: CommentResponse) => {
-              const comments = store.comments().map((c) => (c.id === commentId ? response : c))
-              patchState(store, { comments })
-            }),
-            catchError((error: HttpErrorResponse) => {
-              patchState(store, {
-                error:
-                  (error?.error as { message?: string }).message ?? 'Ошибка при лайке комментария',
-              })
-              return of(null)
-            })
-          )
-        )
-      )
-    ),
-
-    /**
-     * Очистить состояние
-     */
-    reset: () => patchState(store, initialState),
-  }))
+      reset: () => patchState(store, initialState),
+      clearError: () => patchState(store, { error: null }),
+    }
+  })
 )

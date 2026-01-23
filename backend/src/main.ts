@@ -62,6 +62,7 @@ async function bootstrap() {
   // Запускаем сервер на порту из .env или 3000 по умолчанию
   const port = process.env.PORT || 3000;
   await app.listen(port);
+  app.setGlobalPrefix('api')
 
   console.log(`
   🚀 Сервер успешно запущен!
