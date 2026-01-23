@@ -46,6 +46,10 @@ export class CommentItem {
     }
 
     // Иначе отправляем событие лайка
-    this.like.emit(this.comment()._id)
+    this.like.emit(this.comment().id)
+  }
+
+  onDeleteClick(): void {
+    this.delete.emit(this.comment().id)
   }
 }

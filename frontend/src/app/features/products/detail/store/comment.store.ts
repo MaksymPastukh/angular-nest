@@ -83,6 +83,47 @@ export const CommentStore = signalStore(
       })
     }
 
+    const toggleLikeOptimistic = (commentId: string, userId: string) => {
+      patchState(store, {
+        comments: store.comments().map((itemC) => {
+          if (itemC.id !== commentId) return itemC
+
+          // Используем isLiked вместо likedBy (так как likedBy не приходит с сервера)
+          const currentIsLiked = itemC.isLiked ?? false
+
+          return {
+            ...itemC,
+            isLiked: !currentIsLiked,
+            likesCount: currentIsLiked ? (itemC.likesCount ?? 0) - 1 : (itemC.likesCount ?? 0) + 1,
+          }
+        }),
+      })
+    }
+
+    const toggleLikeRx = rxMethod<string>(
+      pipe(
+        exhaustMap((commentId) =>
+          commentsService.toggleLike(commentId).pipe(
+            map(mapCommentToEntity),
+            tap((updated) => {
+              patchState(store, {
+                comments: store.comments().map((c) => (c.id === updated.id ? updated : c)),
+              })
+            }),
+            catchError((error: HttpErrorResponse) => {
+              handleHttpError(error)
+              return EMPTY
+            })
+          )
+        )
+      )
+    )
+
+    const toggleLike = (commentId: string, userId: string) => {
+      toggleLikeOptimistic(commentId, userId)
+      toggleLikeRx(commentId)
+    }
+
     return {
       loadComments: rxMethod<{ productId: string }>(
         pipe(
@@ -160,17 +201,23 @@ export const CommentStore = signalStore(
        */
       deleteComment: rxMethod<string>(
         pipe(
-          tap(() => setLoading(true)),
+          tap((commentId) => {
+            console.log('🗑️ Store deleteComment called with:', commentId)
+            setLoading(true)
+          }),
           exhaustMap((commentId) =>
             commentsService.deleteComment(commentId).pipe(
               tap(() => {
+                console.log('✅ Comment deleted successfully, updating state')
                 patchState(store, {
-                  comments: store.comments().filter((c) => c._id !== commentId),
+                  comments: store.comments().filter((c) => c.id !== commentId),
                   total: store.total() - 1,
-                  isSubmitting: false,
                 })
+                setLoading(false)
+                setSubmitting(false)
               }),
               catchError((error: HttpErrorResponse) => {
+                console.error('❌ Delete comment error:', error)
                 handleHttpError(error)
                 return EMPTY
               })
@@ -178,28 +225,7 @@ export const CommentStore = signalStore(
           )
         )
       ),
-      /**
-       * Лайкнуть/убрать лайк
-       */
-      toggleLike: rxMethod<string>(
-        pipe(
-          exhaustMap((commentId) =>
-            commentsService.toggleLike(commentId).pipe(
-              map(mapCommentToEntity),
-              tap((updated) => {
-                patchState(store, {
-                  comments: store.comments().map((c) => (c._id === updated._id ? updated : c)),
-                })
-              }),
-              catchError((error: HttpErrorResponse) => {
-                handleHttpError(error)
-                return EMPTY
-              })
-            )
-          )
-        )
-      ),
-
+      toggleLike,
       reset: () => patchState(store, initialState),
       clearError: () => patchState(store, { error: null }),
     }

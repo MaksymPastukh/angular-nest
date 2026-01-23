@@ -20,6 +20,13 @@ export type CommentDocument = HydratedDocument<Comment>;
       return ret;
     },
   },
+  toObject: {
+    transform: (_doc, ret: any) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      return ret;
+    },
+  },
 })
 export class Comment {
   /**

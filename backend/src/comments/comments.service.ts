@@ -32,7 +32,7 @@ export class CommentsService {
     userId: string,
     userName: string,
     createCommentDto: CreateCommentDto,
-  ): Promise<CommentDocument> {
+  ): Promise<any> {
     const newComment = new this.commentModel({
       productId,
       userId,
@@ -41,7 +41,16 @@ export class CommentsService {
       likedBy: [],
     });
 
-    return await newComment.save();
+    const savedComment = await newComment.save();
+    
+    // Преобразуем в plain object с трансформацией _id -> id
+    const commentObj = savedComment.toObject();
+    
+    return {
+      ...commentObj,
+      likesCount: 0,
+      isLiked: false,
+    };
   }
 
   /**
@@ -84,6 +93,7 @@ export class CommentsService {
     pageSize: number = 20,
     userId?: string,
   ): Promise<{ items: any[]; total: number }> {
+    console.log('🔍 findByProductIdWithPagination called with userId:', userId);
     const skip = (page - 1) * pageSize;
 
     const [comments, total] = await Promise.all([
@@ -99,7 +109,10 @@ export class CommentsService {
     // Добавляем поле isLiked для каждого комментария
     const items = comments.map((comment) => {
       const commentObj = comment.toObject();
-      const isLiked = userId ? commentObj.likedBy.includes(userId) : false;
+      // Преобразуем все элементы likedBy в строки для сравнения
+      const likedByStrings = commentObj.likedBy.map((id: any) => id.toString());
+      const isLiked = userId ? likedByStrings.includes(userId) : false;
+      console.log(`💙 Comment ${(commentObj as any).id}: likedBy=${JSON.stringify(likedByStrings)}, userId=${userId}, isLiked=${isLiked}`);
       const { likedBy, ...rest } = commentObj;
 
       return {
@@ -160,8 +173,19 @@ export class CommentsService {
   public async remove(id: string, userId: string, isAdmin: boolean = false): Promise<CommentDocument> {
     const comment = await this.findOne(id);
 
+    console.log('🔍 Delete attempt:', {
+      commentId: id,
+      commentUserId: comment.userId,
+      commentUserIdType: typeof comment.userId,
+      requestUserId: userId,
+      requestUserIdType: typeof userId,
+      isAdmin,
+      areEqual: comment.userId === userId,
+      areEqualString: String(comment.userId) === String(userId),
+    });
+
     // Проверяем права: либо автор комментария, либо администратор
-    if (comment.userId !== userId && !isAdmin) {
+    if (String(comment.userId) !== String(userId) && !isAdmin) {
       throw new ForbiddenException('Вы можете удалять только свои комментарии');
     }
 
@@ -173,12 +197,14 @@ export class CommentsService {
    * Переключение лайка комментария
    * @param id - ID комментария
    * @param userId - ID пользователя
-   * @returns Обновленный комментарий
+   * @returns Обновленный комментарий с полями isLiked и likesCount
    */
-  public async toggleLike(id: string, userId: string): Promise<CommentDocument> {
+  public async toggleLike(id: string, userId: string): Promise<any> {
     const comment = await this.findOne(id);
 
-    const likedIndex = comment.likedBy.indexOf(userId);
+    // Преобразуем все элементы likedBy в строки для корректного сравнения
+    const likedByStrings = comment.likedBy.map((id: any) => id.toString());
+    const likedIndex = likedByStrings.indexOf(userId);
 
     if (likedIndex === -1) {
       // Добавляем лайк
@@ -188,7 +214,19 @@ export class CommentsService {
       comment.likedBy.splice(likedIndex, 1);
     }
 
-    return await comment.save();
+    const savedComment = await comment.save();
+    
+    // Преобразуем в тот же формат что и при загрузке комментариев
+    const commentObj = savedComment.toObject();
+    const likedByStringsAfter = commentObj.likedBy.map((id: any) => id.toString());
+    const isLiked = likedByStringsAfter.includes(userId);
+    const { likedBy, ...rest } = commentObj;
+
+    return {
+      ...rest,
+      likesCount: likedBy.length,
+      isLiked,
+    };
   }
 
   /**

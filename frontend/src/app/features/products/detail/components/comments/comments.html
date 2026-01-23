@@ -48,7 +48,7 @@
   <!-- Список комментариев -->
   @if (store.hasComments()) {
     <div class="space-y-6">
-      @for (comment of store.comments(); track comment._id) {
+      @for (comment of store.comments(); track comment.id) {
         <app-comment-item
           [comment]="comment"
           [currentUserId]="authStore.user()?.user?.id ?? null"

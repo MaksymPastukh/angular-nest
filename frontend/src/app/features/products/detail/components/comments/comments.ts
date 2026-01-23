@@ -49,7 +49,7 @@ export class CommentsComponent {
   }
 
   onEditComment(comment: CommentEntity) {
-    this.editingCommentId.set(comment._id)
+    this.editingCommentId.set(comment.id)
     this.editCommentText.set(comment.text)
   }
 
@@ -59,10 +59,17 @@ export class CommentsComponent {
   }
 
   onDeleteComment(commentId: string) {
+    if (!this.authStore.isAuthenticated()) {
+      return
+    }
+
     this.store.deleteComment(commentId)
   }
 
   onToggleLike(commentId: string) {
-    this.store.toggleLike(commentId)
+    const userId: string | null = this.authStore.userId()
+
+    if (!userId) return
+    this.store.toggleLike(commentId, userId)
   }
 }

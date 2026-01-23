@@ -1,18 +1,19 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Param,
-    Patch,
-    Post,
-    Query,
-    Request,
-    UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { FilterCommentDto } from './dto/filter-comment.dto';
@@ -41,7 +42,7 @@ export class CommentsController {
     @Param('productId') productId: string,
     @Body() createCommentDto: CreateCommentDto,
     @Request() req: any,
-  ): Promise<CommentDocument> {
+  ): Promise<any> {
     const userId = req.user.id as string;
     const userName = (req.user.firstName ?? req.user.email) as string;
     return await this.commentsService.create(productId, userId, userName, createCommentDto);
@@ -55,12 +56,15 @@ export class CommentsController {
    * @returns Объект с массивом комментариев и общим количеством
    */
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   public async findByProduct(
     @Query() filterDto: FilterCommentDto,
     @Request() req?: any,
   ): Promise<{ items: any[]; total: number }> {
     const userId = req?.user?.id as string | undefined;
+    console.log('📥 GET /comments - req.user:', req?.user);
+    console.log('👤 Extracted userId:', userId);
     const page = parseInt(filterDto.page || '1', 10);
     const pageSize = parseInt(filterDto.pageSize || '20', 10);
 
@@ -139,12 +143,12 @@ export class CommentsController {
    * POST /comments/:id/like
    * @param id - ID комментария
    * @param req - Запрос с данными пользователя
-   * @returns Обновленный комментарий
+   * @returns Обновленный комментарий с полями isLiked и likesCount
    */
   @Post(':id/like')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  public async toggleLike(@Param('id') id: string, @Request() req: any): Promise<CommentDocument> {
+  public async toggleLike(@Param('id') id: string, @Request() req: any): Promise<any> {
     const userId = req.user.id as string;
     return await this.commentsService.toggleLike(id, userId);
   }

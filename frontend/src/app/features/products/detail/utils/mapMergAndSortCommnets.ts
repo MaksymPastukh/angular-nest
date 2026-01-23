@@ -10,11 +10,11 @@ export const mergeComments = (
   const map = new Map<string, CommentEntity>()
 
   for (const comment of current) {
-    map.set(comment._id, comment)
+    map.set(comment.id, comment)
   }
 
   for (const comment of incoming.map(mapCommentToEntity)) {
-    map.set(comment._id, comment)
+    map.set(comment.id, comment)
   }
 
   return Array.from(map.values()).sort((a, b) => b.createdAtTs - a.createdAtTs)

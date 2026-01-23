@@ -20,21 +20,18 @@ export const ProductDetailStore = signalStore(
   withMethods((store, productService = inject(ProductService)) => {
     const loadProduct = rxMethod<string>(
       pipe(
-        tap((id) => {
-          console.log('📦 ProductDetailStore: loading product', id)
+        tap(() => {
           patchState(store, { isLoading: true, error: null })
         }),
         switchMap((id) => {
           return productService.getProductById(id).pipe(
             tap((product: ProductType) => {
-              console.log('✅ ProductDetailStore: product loaded', product.title)
               patchState(store, {
                 product,
                 isLoading: false,
               })
             }),
             catchError((error: HttpErrorResponse): Observable<null> => {
-              console.error('❌ ProductDetailStore: error loading product', error)
               patchState(store, {
                 product: null,
                 isLoading: false,
