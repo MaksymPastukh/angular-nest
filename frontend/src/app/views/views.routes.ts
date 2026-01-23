@@ -7,7 +7,6 @@ export default [
   },
   {
     path: 'product/:id',
-    loadComponent: () =>
-      import('./products/detail/detail').then((c) => c.ProductDetail),
+    loadComponent: () => import('./products/detail/detail').then((c) => c.ProductDetail),
   },
 ] as Routes

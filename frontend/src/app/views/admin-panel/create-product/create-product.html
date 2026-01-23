@@ -73,7 +73,7 @@
         </div>
 
         <div class="space-y-1">
-          <label class="label">Рейтинг</label>
+          <div class="label">Рейтинг</div>
           <div class="flex items-center gap-3">
             <p-rating [field]="productForm.rating" [stars]="5" />
             <span class="hint-text">От 0 до 5</span>
@@ -89,7 +89,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-1">
-            <label class="label">Категория *</label>
+            <div class="label">Категория *</div>
             <p-select
               [options]="store.options().categories"
               [field]="productForm.category"
@@ -105,7 +105,7 @@
           </div>
 
           <div class="space-y-1">
-            <label class="label">Тип продукта *</label>
+            <div class="label">Тип продукта *</div>
             <p-select
               [options]="store.options().productTypes"
               [field]="productForm.productType"
@@ -118,7 +118,7 @@
           </div>
 
           <div class="space-y-1">
-            <label class="label">Стиль *</label>
+            <div class="label">Стиль *</div>
             <p-select
               [options]="store.options().dressStyles"
               [field]="productForm.dressStyle"
@@ -131,7 +131,7 @@
           </div>
 
           <div class="space-y-1">
-            <label class="label">Цвет *</label>
+            <div class="label">Цвет *</div>
             <p-select
               [options]="store.options().colors"
               [field]="productForm.color"
@@ -144,7 +144,7 @@
           </div>
 
           <div class="md:col-span-2 space-y-1">
-            <label class="label">Размеры *</label>
+            <div class="label">Размеры *</div>
             <p-multiselect
               [options]="store.options().sizes"
               [field]="productForm.size"
@@ -166,7 +166,7 @@
         </div>
 
         <div class="space-y-1">
-          <label class="label">Краткое описание *</label>
+          <div class="label">Краткое описание *</div>
           <input
             type="text"
             placeholder="Короткое описание"
@@ -177,7 +177,7 @@
         </div>
 
         <div class="space-y-1">
-          <label class="label">Полное описание *</label>
+          <div class="label">Полное описание *</div>
           <textarea
             rows="6"
             placeholder="Подробное описание продукта..."
@@ -191,7 +191,7 @@
         </div>
 
         <div class="space-y-2">
-          <label class="label">Изображение *</label>
+          <div class="label">Изображение *</div>
 
           @if (!model().image) {
             <p-fileUpload

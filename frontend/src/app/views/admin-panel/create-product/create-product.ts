@@ -91,7 +91,7 @@ export class CreateProduct {
   /**
    * Обработчик выбора изображения (не загружает на сервер сразу)
    */
-  protected onImageSelect(event: any): void {
+  protected onImageSelect(event: { files: File[] }): void {
     const file = event.files[0]
     if (!file) return
 
@@ -110,7 +110,7 @@ export class CreateProduct {
     this.model.update((m) => ({ ...m, image: '' }))
   }
 
-  protected async onSubmit(event: Event): Promise<void> {
+  protected onSubmit(event: Event): void {
     event.preventDefault()
 
     submit(this.productForm, async () => {
