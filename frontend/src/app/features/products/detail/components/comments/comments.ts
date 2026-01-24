@@ -70,6 +70,6 @@ export class CommentsComponent {
     const userId: string | null = this.authStore.userId()
 
     if (!userId) return
-    this.store.toggleLike(commentId, userId)
+    this.store.toggleLike(commentId)
   }
 }

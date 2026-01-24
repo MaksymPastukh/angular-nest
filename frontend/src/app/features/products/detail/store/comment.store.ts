@@ -83,7 +83,7 @@ export const CommentStore = signalStore(
       })
     }
 
-    const toggleLikeOptimistic = (commentId: string, userId: string) => {
+    const toggleLikeOptimistic = (commentId: string) => {
       patchState(store, {
         comments: store.comments().map((itemC) => {
           if (itemC.id !== commentId) return itemC
@@ -119,8 +119,8 @@ export const CommentStore = signalStore(
       )
     )
 
-    const toggleLike = (commentId: string, userId: string) => {
-      toggleLikeOptimistic(commentId, userId)
+    const toggleLike = (commentId: string) => {
+      toggleLikeOptimistic(commentId)
       toggleLikeRx(commentId)
     }
 
@@ -201,14 +201,10 @@ export const CommentStore = signalStore(
        */
       deleteComment: rxMethod<string>(
         pipe(
-          tap((commentId) => {
-            console.log('🗑️ Store deleteComment called with:', commentId)
-            setLoading(true)
-          }),
+          tap(() => setLoading(true)),
           exhaustMap((commentId) =>
             commentsService.deleteComment(commentId).pipe(
               tap(() => {
-                console.log('✅ Comment deleted successfully, updating state')
                 patchState(store, {
                   comments: store.comments().filter((c) => c.id !== commentId),
                   total: store.total() - 1,
@@ -217,7 +213,6 @@ export const CommentStore = signalStore(
                 setSubmitting(false)
               }),
               catchError((error: HttpErrorResponse) => {
-                console.error('❌ Delete comment error:', error)
                 handleHttpError(error)
                 return EMPTY
               })

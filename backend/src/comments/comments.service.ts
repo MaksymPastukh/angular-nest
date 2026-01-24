@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentResponse, CommentsPaginatedResponse } from './interfaces/comment-response.interface';
 import { Comment, CommentDocument } from './schemas/comment.schema';
 
 /**
@@ -32,7 +33,7 @@ export class CommentsService {
     userId: string,
     userName: string,
     createCommentDto: CreateCommentDto,
-  ): Promise<any> {
+  ): Promise<CommentResponse> {
     const newComment = new this.commentModel({
       productId,
       userId,
@@ -44,13 +45,19 @@ export class CommentsService {
     const savedComment = await newComment.save();
     
     // Преобразуем в plain object с трансформацией _id -> id
-    const commentObj = savedComment.toObject();
+    const commentObj = savedComment.toObject() as any;
     
     return {
-      ...commentObj,
+      id: commentObj.id,
+      productId: commentObj.productId,
+      userId: commentObj.userId,
+      userName: commentObj.userName,
+      text: commentObj.text,
+      createdAt: commentObj.createdAt,
+      updatedAt: commentObj.updatedAt,
       likesCount: 0,
       isLiked: false,
-    };
+    } as CommentResponse;
   }
 
   /**
@@ -59,7 +66,7 @@ export class CommentsService {
    * @param userId - ID текущего пользователя (для определения isLiked)
    * @returns Список комментариев
    */
-  public async findByProductId(productId: string, userId?: string): Promise<any[]> {
+  public async findByProductId(productId: string, userId?: string): Promise<CommentResponse[]> {
     const comments = await this.commentModel
       .find({ productId })
       .sort({ createdAt: -1 })
@@ -67,15 +74,21 @@ export class CommentsService {
 
     // Добавляем поле isLiked для каждого комментария
     return comments.map((comment) => {
-      const commentObj = comment.toObject();
-      const isLiked = userId ? commentObj.likedBy.includes(userId) : false;
-      const { likedBy, ...rest } = commentObj;
+      const commentObj = comment.toObject() as any;
+      const likedByStrings = commentObj.likedBy?.map((id: any) => id.toString()) ?? [];
+      const isLiked = userId ? likedByStrings.includes(userId) : false;
 
       return {
-        ...rest,
-        likesCount: likedBy.length,
+        id: commentObj.id,
+        productId: commentObj.productId,
+        userId: commentObj.userId,
+        userName: commentObj.userName,
+        text: commentObj.text,
+        createdAt: commentObj.createdAt,
+        updatedAt: commentObj.updatedAt,
+        likesCount: likedByStrings.length,
         isLiked,
-      };
+      } as CommentResponse;
     });
   }
 
@@ -92,8 +105,7 @@ export class CommentsService {
     page: number = 1,
     pageSize: number = 20,
     userId?: string,
-  ): Promise<{ items: any[]; total: number }> {
-    console.log('🔍 findByProductIdWithPagination called with userId:', userId);
+  ): Promise<CommentsPaginatedResponse> {
     const skip = (page - 1) * pageSize;
 
     const [comments, total] = await Promise.all([
@@ -107,17 +119,21 @@ export class CommentsService {
     ]);
 
     // Добавляем поле isLiked для каждого комментария
-    const items = comments.map((comment) => {
-      const commentObj = comment.toObject();
+    const items: CommentResponse[] = comments.map((comment) => {
+      const commentObj = comment.toObject() as any;
       // Преобразуем все элементы likedBy в строки для сравнения
-      const likedByStrings = commentObj.likedBy.map((id: any) => id.toString());
+      const likedByStrings = commentObj.likedBy?.map((id: any) => id.toString()) ?? [];
       const isLiked = userId ? likedByStrings.includes(userId) : false;
-      console.log(`💙 Comment ${(commentObj as any).id}: likedBy=${JSON.stringify(likedByStrings)}, userId=${userId}, isLiked=${isLiked}`);
-      const { likedBy, ...rest } = commentObj;
 
       return {
-        ...rest,
-        likesCount: likedBy.length,
+        id: commentObj.id,
+        productId: commentObj.productId,
+        userId: commentObj.userId,
+        userName: commentObj.userName,
+        text: commentObj.text,
+        createdAt: commentObj.createdAt,
+        updatedAt: commentObj.updatedAt,
+        likesCount: likedByStrings.length,
         isLiked,
       };
     });
@@ -173,17 +189,6 @@ export class CommentsService {
   public async remove(id: string, userId: string, isAdmin: boolean = false): Promise<CommentDocument> {
     const comment = await this.findOne(id);
 
-    console.log('🔍 Delete attempt:', {
-      commentId: id,
-      commentUserId: comment.userId,
-      commentUserIdType: typeof comment.userId,
-      requestUserId: userId,
-      requestUserIdType: typeof userId,
-      isAdmin,
-      areEqual: comment.userId === userId,
-      areEqualString: String(comment.userId) === String(userId),
-    });
-
     // Проверяем права: либо автор комментария, либо администратор
     if (String(comment.userId) !== String(userId) && !isAdmin) {
       throw new ForbiddenException('Вы можете удалять только свои комментарии');
@@ -199,11 +204,11 @@ export class CommentsService {
    * @param userId - ID пользователя
    * @returns Обновленный комментарий с полями isLiked и likesCount
    */
-  public async toggleLike(id: string, userId: string): Promise<any> {
+  public async toggleLike(id: string, userId: string): Promise<CommentResponse> {
     const comment = await this.findOne(id);
 
     // Преобразуем все элементы likedBy в строки для корректного сравнения
-    const likedByStrings = comment.likedBy.map((id: any) => id.toString());
+    const likedByStrings = comment.likedBy.map((id) => id.toString());
     const likedIndex = likedByStrings.indexOf(userId);
 
     if (likedIndex === -1) {
@@ -217,14 +222,19 @@ export class CommentsService {
     const savedComment = await comment.save();
     
     // Преобразуем в тот же формат что и при загрузке комментариев
-    const commentObj = savedComment.toObject();
-    const likedByStringsAfter = commentObj.likedBy.map((id: any) => id.toString());
+    const commentObj = savedComment.toObject() as any;
+    const likedByStringsAfter = commentObj.likedBy?.map((id: any) => id.toString()) ?? [];
     const isLiked = likedByStringsAfter.includes(userId);
-    const { likedBy, ...rest } = commentObj;
 
     return {
-      ...rest,
-      likesCount: likedBy.length,
+      id: commentObj.id,
+      productId: commentObj.productId,
+      userId: commentObj.userId,
+      userName: commentObj.userName,
+      text: commentObj.text,
+      createdAt: commentObj.createdAt,
+      updatedAt: commentObj.updatedAt,
+      likesCount: likedByStringsAfter.length,
       isLiked,
     };
   }
