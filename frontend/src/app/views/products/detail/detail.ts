@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { MenuItem } from 'primeng/api'
@@ -38,7 +47,8 @@ export class ProductDetail {
   private readonly route = inject(ActivatedRoute)
   readonly store = inject(ProductDetailStore)
   readonly commentStore = inject(CommentStore)
-
+  private readonly commentsSection = viewChild<ElementRef<HTMLDivElement>>('commentsSection')
+  private readonly shouldScrollToComments = signal(false)
   readonly selectedImageIndex = signal(0)
   private readonly imageErrorHandled = signal(false)
   readonly selectedSize = signal<string | null>(null)
@@ -50,6 +60,13 @@ export class ProductDetail {
     if (!product) return false
 
     return this.selectedSize() !== null && this.selectedColor() !== null
+  })
+
+  readonly hasMultipleColors = computed(() => {
+    const product = this.store.product()
+
+    if (!product) return false
+    return product && Array.isArray(product.color) ? product.color.length > 1 : false
   })
 
   readonly tabss = computed<TabsInterface[]>((): TabsInterface[] => {
@@ -82,6 +99,15 @@ export class ProductDetail {
         this.resetState()
       }
     })
+
+    effect(() => {
+      const product = this.store.product()
+      if (!product) return
+      if (!this.hasMultipleColors()) {
+        const singleColor: string = Array.isArray(product.color) ? product.color[0] : product.color
+        this.selectedColor.set(singleColor)
+      }
+    })
   }
 
   private resetState(): void {
@@ -89,6 +115,21 @@ export class ProductDetail {
     this.imageErrorHandled.set(false)
     this.selectedSize.set(null)
     this.selectedColor.set(null)
+  }
+
+  protected scrollToComments(): void {
+    this.onTabChange(1)
+    setTimeout(() => {
+      const elem = this.commentsSection()?.nativeElement
+      console.log(elem)
+
+      if (elem) {
+        elem.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      }
+    }, 300)
   }
 
   readonly breadcrumbItems = computed<MenuItem[]>(() => {
@@ -143,28 +184,20 @@ export class ProductDetail {
   }
 
   addToCart(): void {
+    if (!this.canAddToCart()) {
+      return
+    }
+
+    // Логика добавления в корзину
     const product = this.store.product()
-    const size = this.selectedSize()
-    const color = this.selectedColor()
-
-    // Кнопка disabled, но дополнительная проверка не помешает
-    if (!product || !size || !color) return
-
-    // Формируем данные для корзины
-    // const cartItem = {
-    //   productId: product.id,
-    //   title: product.title,
-    //   price: product.price,
-    //   size,
-    //   color,
-    //   image: product.image,
-    //   quantity: 1,
-    // }
-
-    // TODO: Здесь будет логика добавления в CartStore
-    // this.cartStore.addItem(cartItem);
-
-    // Временное уведомление
+    if (product) {
+      console.warn('Adding to cart:', {
+        product: product,
+        size: this.selectedSize(),
+        color: this.selectedColor(),
+      })
+      // TODO: Вызов сервиса добавления в корзину
+    }
   }
 
   previousImage(): void {
