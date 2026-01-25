@@ -47,12 +47,13 @@ export class ProductDetail {
   readonly store = inject(ProductDetailStore)
   readonly commentStore = inject(CommentStore)
   private readonly commentsSection = viewChild<ElementRef<HTMLDivElement>>('commentsSection')
-  private readonly shouldScrollToComments = signal(false)
   readonly selectedImageIndex = signal(0)
   private readonly imageErrorHandled = signal(false)
   readonly selectedSize = signal<string | null>(null)
   readonly selectedColor = signal<string | null>(null)
   readonly activeTabIndex = signal(0)
+  readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
+  readonly galleryImages = computed(() => this.store.galleryImages())
 
   readonly canAddToCart = computed(() => {
     const product = this.store.product()
@@ -63,7 +64,6 @@ export class ProductDetail {
 
   readonly hasMultipleColors = computed(() => {
     const product = this.store.product()
-
     if (!product) return false
     return product && Array.isArray(product.color) ? product.color.length > 1 : false
   })
@@ -85,10 +85,6 @@ export class ProductDetail {
       },
     ]
   })
-
-  readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
-
-  readonly galleryImages = computed(() => this.store.galleryImages())
 
   constructor() {
     effect(() => {
@@ -172,8 +168,8 @@ export class ProductDetail {
     this.selectedSize.set(size)
   }
 
-  selectColor(color: string): void {
-    this.selectedColor.set(color)
+  selectColor(color: string | string[]): void {
+    this.selectedColor.set(color as string)
   }
 
   onTabChange(value: string | number | undefined): void {
@@ -214,10 +210,9 @@ export class ProductDetail {
   }
 
   onImageError(event: Event): void {
-    if (this.imageErrorHandled()) return // Предотвращаем бесконечный цикл
+    if (this.imageErrorHandled()) return
 
     const img = event.target as HTMLImageElement
-    // Серый placeholder как data URI (1x1 серый квадрат SVG)
     img.src =
       'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="24" fill="%239ca3af"%3ENo Image%3C/text%3E%3C/svg%3E'
     this.imageErrorHandled.set(true)

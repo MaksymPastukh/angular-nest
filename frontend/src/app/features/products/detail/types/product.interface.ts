@@ -15,7 +15,7 @@ export interface ProductType {
   fit: string
   neck: string
   sleeve: string
-  color: string
+  color: string | string[]
   size: string[]
   description: string
   isLiked: boolean
