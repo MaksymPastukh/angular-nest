@@ -197,5 +197,37 @@
     "other": true,
     "comments": false,
     "strings": true
-  }
+  },
+
+  // ========================================
+  // НАСТРОЙКИ GITHUB COPILOT
+  // ========================================
+
+  // Включить GitHub Copilot
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": true,
+    "markdown": true,
+    "typescript": true,
+    "javascript": true,
+    "html": true,
+    "scss": true,
+    "json": true
+  },
+
+  // Включить inline suggestions
+  "editor.inlineSuggest.enabled": true,
+
+  // Показывать предложения автоматически
+  "editor.suggest.preview": true,
+
+  // Принимать предложения по Tab
+  "editor.tabCompletion": "on",
+
+  // Включить Copilot Chat
+  "github.copilot.chat.enabled": true,
+
+  // Включить Copilot для всех языков
+  "github.copilot.advanced": {}
 }

@@ -1,10 +1,13 @@
-import { CommentInterface } from './comment.interface'
+import { CommentEntity } from './comment.interface'
 
 export interface CommentStateInterface {
-  comments: CommentInterface[]
+  comments: CommentEntity[]
   productId: string | null
   isLoading: boolean
-  isSubmitting: boolean
   error: string | null
+  page: number
+  pageSize: number
   total: number
+  hasMore: boolean
+  isSubmitting: boolean
 }

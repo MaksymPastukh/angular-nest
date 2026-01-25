@@ -7,26 +7,25 @@
   <p-accordion-panel value="0">
     <p-accordion-header>Filter</p-accordion-header>
     <p-accordion-content>
-      <!-- Индикатор загрузки -->
       @if (filterStore.isLoading()) {
         <div class="text-center py-4 text-[#8a8989]">
           <p>Loading filters...</p>
         </div>
       }
 
-      <!-- Ошибка загрузки -->
       @if (filterStore.error()) {
         <div class="text-center py-4 text-red-500">
           <p>{{ filterStore.error() }}</p>
-          <button (click)="reloadFilterData()" class="mt-2 text-purple-600 hover:text-purple-800">
+          <button
+            (click)="reloadFilterData()"
+            class="mt-2 cursor-pointer text-purple-600 hover:text-purple-800"
+          >
             Retry
           </button>
         </div>
       }
 
-      <!-- Меню категорий -->
       @if (!filterStore.isLoading() && !filterStore.error()) {
-        <!-- TieredMenu с брендами (только бренды, без категорий) -->
         <p-tieredMenu
           #mainMenu
           [model]="filterStore.brandsMenuForCurrentCategory()"
@@ -113,6 +112,18 @@
   <p-accordion-panel value="2">
     <p-accordion-header>Colors</p-accordion-header>
     <p-accordion-content>
+      @if (filterStore.isLoading()) {
+        <div class="text-center py-4 text-[#8a8989]">
+          <p>Loading filters...</p>
+        </div>
+      }
+
+      @if (filterStore.error()) {
+        <div class="text-center py-4 text-red-500">
+          <p>{{ filterStore.error() }}</p>
+        </div>
+      }
+
       <div class="grid grid-cols-4 gap-4 mt-[20px] mb-[20px] w-full">
         @for (color of filterStore.colors(); track color.name) {
           <button
@@ -169,6 +180,18 @@
   <p-accordion-panel value="3">
     <p-accordion-header>Size</p-accordion-header>
     <p-accordion-content>
+      @if (filterStore.isLoading()) {
+        <div class="text-center py-4 text-[#8a8989]">
+          <p>Loading filters...</p>
+        </div>
+      }
+
+      @if (filterStore.error()) {
+        <div class="text-center py-4 text-red-500">
+          <p>{{ filterStore.error() }}</p>
+        </div>
+      }
+
       <div class="grid grid-cols-3 mt-[20px] mb-[20px] gap-5 w-full">
         @for (size of filterStore.sizes(); track $index) {
           <button
@@ -192,10 +215,19 @@
   <p-accordion-panel value="4">
     <p-accordion-header>Dress Style</p-accordion-header>
     <p-accordion-content>
-      <!-- TieredMenu с брендами (только бренды, без стилей) -->
+      @if (filterStore.isLoading()) {
+        <div class="text-center py-4 text-[#8a8989]">
+          <p>Loading filters...</p>
+        </div>
+      }
+
+      @if (filterStore.error()) {
+        <div class="text-center py-4 text-red-500">
+          <p>{{ filterStore.error() }}</p>
+        </div>
+      }
       <p-tieredMenu #styleMenu [model]="filterStore.brandsMenuForCurrentStyle()" [popup]="true" />
 
-      <!-- Кнопки стилей -->
       @for (styleName of filterStore.styleNames(); track $index) {
         <button
           type="button"

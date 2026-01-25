@@ -1,53 +1,71 @@
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpParams } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
-import { ProductType } from '../types/product.interface'
-import { CommentCreateInterface } from '../types/comments-create.interface'
+import { CommentCreateInterface } from '../types/comment-create.interface'
+import { CommentsPaginatedResponse } from '../types/comments-paginated-response.interface'
+import { CommentInterface } from '../types/comment.interface'
 
 @Injectable({
   providedIn: 'root',
 })
 export class CommentService {
   private readonly http = inject(HttpClient)
-  private readonly apiUrl = `${environment.api}products`
+  private readonly apiUrl = `${environment.api}comments`
 
   /**
    * Получить комментарии продукта
    * @param productId - ID продукта
+   * @param comment - Комментарий
    */
-  getComments(productId: string): Observable<ProductType> {
-    return this.http.get<ProductType>(`${this.apiUrl}/${productId}`)
+  createComment(productId: string, comment: CommentCreateInterface): Observable<CommentInterface> {
+    return this.http.post<CommentInterface>(`${this.apiUrl}/product/${productId}`, comment)
   }
 
   /**
-   * Добавить комментарий к продукту
-   * @param productId - ID продукта
-   * @param comment - Данные комментария
+   * Получить все комментарии продукта с пагинацией
    */
-  addComment(productId: string, comment: CommentCreateInterface): Observable<ProductType> {
-    return this.http.post<ProductType>(`${this.apiUrl}/${productId}/comments`, comment).pipe(
-      catchError((error) => {
-        throw error
-      })
-    )
+  getProductComments(
+    productId: string | null,
+    page: number = 1,
+    pageSize: number = 20
+  ): Observable<CommentsPaginatedResponse> {
+    const params = new HttpParams()
+      .set('productId', productId as string)
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString())
+
+    return this.http.get<CommentsPaginatedResponse>(this.apiUrl, { params })
+  }
+
+  /**
+   * Получить комментарий по ID
+   */
+  getCommentById(commentId: string): Observable<CommentInterface> {
+    return this.http.get<CommentInterface>(`${this.apiUrl}/${commentId}`)
+  }
+
+  /**
+   * Обновить комментарий
+   */
+  updateComment(
+    commentId: string,
+    upComment: CommentCreateInterface
+  ): Observable<CommentInterface> {
+    return this.http.patch<CommentInterface>(`${this.apiUrl}/${commentId}`, upComment)
   }
 
   /**
    * Удалить комментарий
-   * @param productId - ID продукта
-   * @param commentId - ID комментария
    */
-  deleteComment(productId: string, commentId: string): Observable<ProductType> {
-    return this.http.delete<ProductType>(`${this.apiUrl}/${productId}/comments/${commentId}`)
+  deleteComment(commentId: string): Observable<CommentInterface> {
+    return this.http.delete<CommentInterface>(`${this.apiUrl}/${commentId}`)
   }
 
   /**
-   * Лайкнуть/дизлайкнуть комментарий
-   * @param productId - ID продукта
-   * @param commentId - ID комментария
+   * Лайкнуть/убрать лайк с комментария
    */
-  toggleLikeComment(productId: string, commentId: string): Observable<ProductType> {
-    return this.http.post<ProductType>(`${this.apiUrl}/${productId}/comments/${commentId}/like`, {})
+  toggleLike(commentId: string): Observable<CommentInterface> {
+    return this.http.post<CommentInterface>(`${this.apiUrl}/${commentId}/like`, {})
   }
 }

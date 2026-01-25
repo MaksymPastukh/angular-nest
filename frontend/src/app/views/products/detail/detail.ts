@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { MenuItem } from 'primeng/api'
@@ -8,6 +17,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ProductDetailStore } from '../../../features/products/catalog/store/product-detail.store'
 import { CommentsComponent } from '../../../features/products/detail/components/comments/comments'
+import { CommentStore } from '../../../features/products/detail/store/comment.store'
 import { ProductType } from '../../../features/products/detail/types/product.interface'
 import { TabsInterface } from '../../../features/products/detail/types/tabs-info.interface'
 import { RatingComponent } from '../../../shared/components/rating/rating'
@@ -30,18 +40,20 @@ import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
   ],
   templateUrl: './detail.html',
   styleUrl: './detail.scss',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetail {
   private readonly route = inject(ActivatedRoute)
   readonly store = inject(ProductDetailStore)
-
+  readonly commentStore = inject(CommentStore)
+  private readonly commentsSection = viewChild<ElementRef<HTMLDivElement>>('commentsSection')
   readonly selectedImageIndex = signal(0)
   private readonly imageErrorHandled = signal(false)
   readonly selectedSize = signal<string | null>(null)
   readonly selectedColor = signal<string | null>(null)
   readonly activeTabIndex = signal(0)
+  readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
+  readonly galleryImages = computed(() => this.store.galleryImages())
 
   readonly canAddToCart = computed(() => {
     const product = this.store.product()
@@ -50,31 +62,29 @@ export class ProductDetail {
     return this.selectedSize() !== null && this.selectedColor() !== null
   })
 
+  readonly hasMultipleColors = computed(() => {
+    const product = this.store.product()
+    if (!product) return false
+    return product && Array.isArray(product.color) ? product.color.length > 1 : false
+  })
+
   readonly tabss = computed<TabsInterface[]>((): TabsInterface[] => {
     const product = this.store.product()
+    const commentsCount = this.commentStore.commentsCount()
 
     return [
       {
         title: 'Description',
         value: 0,
-        content: product?.description as string,
+        content: product?.description ?? '',
       },
       {
         title: 'User Comments',
         value: 1,
-        content: product?.userComments as string,
-      },
-      {
-        title: 'Question & Answer',
-        value: 2,
-        content: product?.questionsAnswers as string,
+        content: commentsCount,
       },
     ]
   })
-
-  readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
-
-  readonly galleryImages = computed(() => this.store.galleryImages())
 
   constructor() {
     effect(() => {
@@ -84,6 +94,15 @@ export class ProductDetail {
         this.resetState()
       }
     })
+
+    effect(() => {
+      const product = this.store.product()
+      if (!product) return
+      if (!this.hasMultipleColors()) {
+        const singleColor: string = Array.isArray(product.color) ? product.color[0] : product.color
+        this.selectedColor.set(singleColor)
+      }
+    })
   }
 
   private resetState(): void {
@@ -91,6 +110,20 @@ export class ProductDetail {
     this.imageErrorHandled.set(false)
     this.selectedSize.set(null)
     this.selectedColor.set(null)
+  }
+
+  protected scrollToComments(): void {
+    this.onTabChange(1)
+    setTimeout(() => {
+      const elem = this.commentsSection()?.nativeElement
+
+      if (elem) {
+        elem.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      }
+    }, 100)
   }
 
   readonly breadcrumbItems = computed<MenuItem[]>(() => {
@@ -115,6 +148,7 @@ export class ProductDetail {
     if (product.productType) {
       items.push({
         label: product.productType,
+        styleClass: 'active-breadcrumb',
         routerLink: '/products',
         queryParams: {
           category: product.category,
@@ -134,8 +168,8 @@ export class ProductDetail {
     this.selectedSize.set(size)
   }
 
-  selectColor(color: string): void {
-    this.selectedColor.set(color)
+  selectColor(color: string | string[]): void {
+    this.selectedColor.set(color as string)
   }
 
   onTabChange(value: string | number | undefined): void {
@@ -145,28 +179,20 @@ export class ProductDetail {
   }
 
   addToCart(): void {
+    if (!this.canAddToCart()) {
+      return
+    }
+
+    // Логика добавления в корзину
     const product = this.store.product()
-    const size = this.selectedSize()
-    const color = this.selectedColor()
-
-    // Кнопка disabled, но дополнительная проверка не помешает
-    if (!product || !size || !color) return
-
-    // Формируем данные для корзины
-    // const cartItem = {
-    //   productId: product.id,
-    //   title: product.title,
-    //   price: product.price,
-    //   size,
-    //   color,
-    //   image: product.image,
-    //   quantity: 1,
-    // }
-
-    // TODO: Здесь будет логика добавления в CartStore
-    // this.cartStore.addItem(cartItem);
-
-    // Временное уведомление
+    if (product) {
+      console.warn('Adding to cart:', {
+        product: product,
+        size: this.selectedSize(),
+        color: this.selectedColor(),
+      })
+      // TODO: Вызов сервиса добавления в корзину
+    }
   }
 
   previousImage(): void {
@@ -184,10 +210,9 @@ export class ProductDetail {
   }
 
   onImageError(event: Event): void {
-    if (this.imageErrorHandled()) return // Предотвращаем бесконечный цикл
+    if (this.imageErrorHandled()) return
 
     const img = event.target as HTMLImageElement
-    // Серый placeholder как data URI (1x1 серый квадрат SVG)
     img.src =
       'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="24" fill="%239ca3af"%3ENo Image%3C/text%3E%3C/svg%3E'
     this.imageErrorHandled.set(true)

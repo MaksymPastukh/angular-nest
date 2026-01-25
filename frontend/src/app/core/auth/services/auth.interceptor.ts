@@ -11,10 +11,12 @@ import { AuthStore } from '../store/auth.store'
 import { CurrentUserResponseInterface } from '../types/current-user.interface'
 import { GetTokensInterface } from '../types/get-tokens.interface'
 import { AuthService } from './auth.service'
+import { TokenRefreshService } from './token-refresh.service'
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService)
   const authStore = inject(AuthStore)
+  const tokenRefreshService = inject(TokenRefreshService)
 
   const tokens: GetTokensInterface = authService.getTokens()
 
@@ -33,8 +35,6 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(modifiedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Обрабатываем 401 ошибку только для защищенных маршрутов
-      // НЕ обрабатываем для login/register/refresh
       const shouldRefreshToken =
         error.status === 401 &&
         !req.url.includes('/login') &&
@@ -42,10 +42,9 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
         !req.url.includes('/refresh')
 
       if (shouldRefreshToken) {
-        return handle401Error(req, next, authService, authStore)
+        return handle401Error(req, next, authService, authStore, tokenRefreshService)
       }
 
-      // Для всех остальных ошибок (включая 401 при login/register) просто пробрасываем дальше
       return throwError(() => error)
     })
   )
@@ -55,9 +54,10 @@ function handle401Error(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
   authService: AuthService,
-  authStore: InstanceType<typeof AuthStore>
+  authStore: InstanceType<typeof AuthStore>,
+  tokenRefreshService: TokenRefreshService
 ): Observable<HttpEvent<unknown>> {
-  return authService.refreshToken().pipe(
+  return tokenRefreshService.refreshToken(authService).pipe(
     switchMap((result: CurrentUserResponseInterface) => {
       authStore.updateAfterRefresh(result)
 
@@ -70,6 +70,7 @@ function handle401Error(
       return next(clonedReq)
     }),
     catchError((err: HttpErrorResponse) => {
+      tokenRefreshService.reset()
       authStore.logout()
       return throwError(() => err)
     })

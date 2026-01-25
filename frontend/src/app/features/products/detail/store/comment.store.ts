@@ -2,20 +2,38 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, of, pipe, switchMap, tap } from 'rxjs'
+import {
+  catchError,
+  concatMap,
+  EMPTY,
+  exhaustMap,
+  filter,
+  map,
+  Observable,
+  pipe,
+  switchMap,
+  tap,
+} from 'rxjs'
 import { CommentService } from '../services/comment.service'
+import { CommentCreateInterface } from '../types/comment-create.interface'
 import { CommentStateInterface } from '../types/comment-state.interface'
-import { CommentInterface } from '../types/comment.interface'
-import { CommentCreateInterface } from '../types/comments-create.interface'
-import { ProductType } from '../types/product.interface'
+import { CommentEntity, CommentInterface } from '../types/comment.interface'
+import {
+  mapAndSortComments,
+  mapCommentToEntity,
+  mergeComments,
+} from '../utils/mapMergAndSortCommnets'
 
 const initialState: CommentStateInterface = {
   comments: [],
   productId: null,
+  page: 1,
+  pageSize: 20,
+  total: 0,
+  hasMore: true,
   isLoading: false,
   isSubmitting: false,
   error: null,
-  total: 0,
 }
 
 export const CommentStore = signalStore(
@@ -24,149 +42,199 @@ export const CommentStore = signalStore(
   withState(initialState),
 
   withComputed((store) => ({
-    /** Есть ли комментарии */
     hasComments: computed(() => store.comments().length > 0),
-
-    /** Количество комментариев */
     commentsCount: computed(() => store.comments().length),
-
-    /** Отсортированные комментарии (новые сверху) */
-    sortedComments: computed(() => {
-      return [...store.comments()].sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
-        return dateB - dateA
-      })
-    }),
   })),
-
-  withMethods((store, commentService = inject(CommentService)) => {
-    /* ---------- HELPERS ---------- */
-
-    /**
-     * Установить состояние загрузки
-     */
-    const setLoading = (isLoading: boolean) => {
+  withMethods((store, commentsService = inject(CommentService)) => {
+    const setLoading = (isLoading: boolean) =>
       patchState(store, { isLoading, error: isLoading ? null : store.error() })
-    }
 
-    /**
-     * Установить состояние отправки
-     */
-    const setSubmitting = (isSubmitting: boolean) => {
+    const setSubmitting = (isSubmitting: boolean) =>
       patchState(store, { isSubmitting, error: isSubmitting ? null : store.error() })
-    }
 
-    /**
-     * Установить ошибку
-     */
-    const setError = (error: string) => {
-      patchState(store, { isLoading: false, isSubmitting: false, error })
-    }
-
-    /**
-     * Обработка успешного получения комментариев из продукта
-     */
-    const handleProductSuccess = (product: ProductType) => {
-      const comments = (product.userComments ?? []) as unknown as CommentInterface[]
+    const setError = (error: string) =>
       patchState(store, {
-        comments,
-        total: comments.length,
         isLoading: false,
         isSubmitting: false,
+        error,
+      })
+
+    const handleHttpError = (error: HttpErrorResponse) => {
+      const message =
+        (error.error as { message?: string })?.message ?? error.message ?? 'Произошла ошибка'
+
+      setError(String(message))
+    }
+
+    const handleInitialLoad = (items: CommentInterface[], total: number) => {
+      const comments: CommentEntity[] = mapAndSortComments(items)
+
+      patchState(store, {
+        comments,
+        total,
+        page: 1,
+        hasMore: comments.length < total,
+        isLoading: false,
         error: null,
       })
     }
 
-    /**
-     * Обработка ошибки HTTP
-     */
-    function handleError(error: HttpErrorResponse) {
-      const errorMessage = error.error as { message?: string } | undefined
-      const message = String(errorMessage?.message ?? error.message ?? 'Произошла ошибка')
-      setError(message)
+    const handleNextPage = (items: CommentInterface[], total: number) => {
+      const merged: CommentEntity[] = mergeComments(store.comments(), items)
+
+      patchState(store, {
+        comments: merged,
+        total,
+        page: store.page() + 1,
+        hasMore: merged.length < total,
+        isLoading: false,
+      })
     }
 
-    /* ---------- PUBLIC METHODS ---------- */
+    const toggleLikeOptimistic = (commentId: string) => {
+      patchState(store, {
+        comments: store.comments().map((itemC) => {
+          if (itemC.id !== commentId) return itemC
+
+          const currentIsLiked = itemC.isLiked ?? false
+
+          return {
+            ...itemC,
+            isLiked: !currentIsLiked,
+            likesCount: currentIsLiked ? (itemC.likesCount ?? 0) - 1 : (itemC.likesCount ?? 0) + 1,
+          }
+        }),
+      })
+    }
+
+    const toggleLikeRollback = (commentId: string) => {
+      patchState(store, {
+        comments: store.comments().map((itemC) => {
+          if (itemC.id !== commentId) return itemC
+
+          const currentIsLiked = itemC.isLiked ?? false
+
+          return {
+            ...itemC,
+            isLiked: !currentIsLiked,
+            likesCount: currentIsLiked ? (itemC.likesCount ?? 0) - 1 : (itemC.likesCount ?? 0) + 1,
+          }
+        }),
+      })
+    }
+
+    const toggleLikeRx = rxMethod<string>(
+      pipe(
+        exhaustMap((commentId) =>
+          commentsService.toggleLike(commentId).pipe(
+            map(mapCommentToEntity),
+            tap((updated) => {
+              patchState(store, {
+                comments: store.comments().map((c) => (c.id === updated.id ? updated : c)),
+              })
+            }),
+            catchError((error: HttpErrorResponse): Observable<never> => {
+              toggleLikeRollback(commentId)
+              handleHttpError(error)
+              return EMPTY
+            })
+          )
+        )
+      )
+    )
+
+    const toggleLike = (commentId: string) => {
+      toggleLikeOptimistic(commentId)
+      toggleLikeRx(commentId)
+    }
 
     return {
-      loadComments: rxMethod<string>(
+      loadComments: rxMethod<{ productId: string }>(
         pipe(
-          tap((productId) => {
+          tap(({ productId }) => {
+            patchState(store, {
+              ...initialState,
+              productId,
+            })
             setLoading(true)
-            patchState(store, { productId })
           }),
-          switchMap((productId: string) =>
-            commentService.getComments(productId).pipe(
-              tap((product: ProductType) => {
-                handleProductSuccess(product)
+          switchMap(({ productId }) => {
+            return commentsService.getProductComments(productId, 1, store.pageSize()).pipe(
+              tap(({ items, total }) => {
+                handleInitialLoad(items, total)
               }),
-              catchError((error: HttpErrorResponse) => {
-                handleError(error)
-                return of(null)
+              catchError((error: HttpErrorResponse): Observable<never> => {
+                handleHttpError(error)
+                return EMPTY
               })
             )
-          )
+          })
         )
       ),
-
-      addComment: rxMethod<{ productId: string; comment: CommentCreateInterface }>(
+      loadNextPage: rxMethod<void>(
+        pipe(
+          filter(() => store.hasMore() && !store.isLoading()),
+          tap(() => setLoading(true)),
+          switchMap(() => {
+            const nextPage = store.page() + 1
+            return commentsService
+              .getProductComments(store.productId(), nextPage, store.pageSize())
+              .pipe(
+                tap(({ items, total }) => {
+                  handleNextPage(items, total)
+                }),
+                catchError((error: HttpErrorResponse): Observable<never> => {
+                  handleHttpError(error)
+                  return EMPTY
+                })
+              )
+          })
+        )
+      ),
+      createComment: rxMethod<{ productId: string; comment: CommentCreateInterface }>(
         pipe(
           tap(() => setSubmitting(true)),
-          switchMap(({ productId, comment }) =>
-            commentService.addComment(productId, comment).pipe(
-              tap((product) => {
-                handleProductSuccess(product)
+          concatMap(({ productId, comment }) =>
+            commentsService.createComment(productId, comment).pipe(
+              tap((created) => {
+                patchState(store, {
+                  comments: mapAndSortComments([created, ...store.comments()]),
+                  total: store.total() + 1,
+                  isSubmitting: false,
+                })
               }),
-              catchError((error: HttpErrorResponse) => {
-                handleError(error)
-                return of(null)
+              catchError((error: HttpErrorResponse): Observable<never> => {
+                handleHttpError(error)
+                return EMPTY
               })
             )
           )
         )
       ),
-
-      deleteComment: rxMethod<{ productId: string; commentId: string }>(
+      deleteComment: rxMethod<{ commentId: string }>(
         pipe(
-          tap(() => setSubmitting(true)),
-          switchMap(({ productId, commentId }) =>
-            commentService.deleteComment(productId, commentId).pipe(
-              tap((product) => {
-                handleProductSuccess(product)
+          tap(() => setLoading(true)),
+          exhaustMap(({ commentId }) =>
+            commentsService.deleteComment(commentId).pipe(
+              tap(() => {
+                patchState(store, {
+                  comments: store.comments().filter((c) => c.id !== commentId),
+                  total: store.total() - 1,
+                })
+                setLoading(false)
+                setSubmitting(false)
               }),
-              catchError((error: HttpErrorResponse) => {
-                handleError(error)
-                return of(null)
+              catchError((error: HttpErrorResponse): Observable<never> => {
+                handleHttpError(error)
+                return EMPTY
               })
             )
           )
         )
       ),
-
-      toggleLikeComment: rxMethod<{ productId: string; commentId: string }>(
-        pipe(
-          switchMap(({ productId, commentId }) =>
-            commentService.toggleLikeComment(productId, commentId).pipe(
-              tap((product) => {
-                handleProductSuccess(product)
-              }),
-              catchError((error: HttpErrorResponse) => {
-                handleError(error)
-                return of(null)
-              })
-            )
-          )
-        )
-      ),
-
-      reset: () => {
-        patchState(store, initialState)
-      },
-
-      clearError: () => {
-        patchState(store, { error: null })
-      },
+      toggleLike,
+      reset: () => patchState(store, initialState),
+      clearError: () => patchState(store, { error: null }),
     }
   })
 )

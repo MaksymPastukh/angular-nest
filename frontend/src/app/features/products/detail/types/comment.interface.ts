@@ -1,28 +1,15 @@
-/**
- * Интерфейс комментария к продукту
- */
 export interface CommentInterface {
-  /** ID комментария */
-  _id?: string
-
-  /** ID пользователя */
+  id: string
+  productId: string
   userId: string
-
-  /** Имя пользователя */
   userName: string
-
-  /** Текст комментария */
   text: string
+  likesCount: number
+  isLiked: boolean
+  createdAt: string
+  updatedAt: string
+}
 
-  /** Рейтинг (0-5) */
-  rating: number
-
-  /** Массив ID пользователей, которые лайкнули комментарий */
-  likedBy?: string[]
-
-  /** Дата создания */
-  createdAt?: Date
-
-  /** Дата обновления */
-  updatedAt?: Date
+export type CommentEntity = CommentInterface & {
+  createdAtTs: number
 }

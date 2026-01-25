@@ -1,16 +1,16 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
+import { Router } from '@angular/router'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { pipe, tap, switchMap, catchError, of, Observable } from 'rxjs'
+import { catchError, Observable, of, pipe, switchMap, tap } from 'rxjs'
 import { AuthService } from '../services/auth.service'
-import { RegisterDataInterface } from '../types/registerData.interface'
-import { CurrentUserResponseInterface } from '../types/current-user.interface'
-import { Router } from '@angular/router'
+import { AuthEventInterface } from '../types/auth-event.interface'
 import { AuthState } from '../types/auth-state.interface'
 import { AUTHORIZATION_STATE } from '../types/authorization.constants'
+import { CurrentUserResponseInterface } from '../types/current-user.interface'
 import { LoginDataInterface } from '../types/loginData.interface'
-import { HttpErrorResponse } from '@angular/common/http'
-import { AuthEventInterface } from '../types/auth-event.interface'
+import { RegisterDataInterface } from '../types/registerData.interface'
 import { UserRole } from '../types/user-role.enum'
 
 const initialState: AuthState = {
@@ -66,6 +66,7 @@ export const AuthStore = signalStore(
 
     // Проверка является ли пользователь обычным пользователем
     isUser: computed(() => store.user()?.user?.role === UserRole.USER),
+    userId: computed(() => store.user()?.user?.id ?? null),
   })),
 
   /**

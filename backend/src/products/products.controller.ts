@@ -18,9 +18,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { AddAnswerDto } from './dto/add-answer.dto';
-import { AddCommentDto } from './dto/add-comment.dto';
-import { AddQuestionDto } from './dto/add-question.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -234,112 +231,6 @@ export class ProductsController {
   public async remove(@Param('id') id: string): Promise<ProductDocument> {
     return await this.productsService.remove(id);
   }
-
-  /**
-   * Добавление комментария к продукту
-   * POST /products/:id/comments
-   * @param id - ID продукта
-   * @param addCommentDto - Данные комментария
-   * @param req - Запрос с данными пользователя
-   * @returns Обновленный продукт
-   */
-  @Post(':id/comments')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
-  public async addComment(
-    @Param('id') id: string,
-    @Body() addCommentDto: AddCommentDto,
-    @Request() req: any,
-  ): Promise<ProductDocument> {
-    const userId = req.user.id as string;
-    const userName = (req.user.firstName ?? req.user.email) as string;
-    return await this.productsService.addComment(id, userId, userName, addCommentDto);
-  }
-
-  /**
-   * Удаление комментария
-   * DELETE /products/:id/comments/:commentId
-   * @param id - ID продукта
-   * @param commentId - ID комментария
-   * @param req - Запрос с данными пользователя
-   * @returns Обновленный продукт
-   */
-  @Delete(':id/comments/:commentId')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  public async deleteComment(
-    @Param('id') id: string,
-    @Param('commentId') commentId: string,
-    @Request() req: any,
-  ): Promise<ProductDocument> {
-    const userId = req.user.id as string;
-    return await this.productsService.deleteComment(id, commentId, userId);
-  }
-
-  /**
-   * Лайк/дизлайк комментария
-   * POST /products/:id/comments/:commentId/like
-   * @param id - ID продукта
-   * @param commentId - ID комментария
-   * @param req - Запрос с данными пользователя
-   * @returns Обновленный продукт
-   */
-  @Post(':id/comments/:commentId/like')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  public async toggleLikeComment(
-    @Param('id') id: string,
-    @Param('commentId') commentId: string,
-    @Request() req: any,
-  ): Promise<ProductDocument> {
-    const userId = req.user.id as string;
-    return await this.productsService.toggleLikeComment(id, commentId, userId);
-  }
-
-  /**
-   * Добавление вопроса к продукту
-   * POST /products/:id/questions
-   * @param id - ID продукта
-   * @param addQuestionDto - Данные вопроса
-   * @param req - Запрос с данными пользователя
-   * @returns Обновленный продукт
-   */
-  @Post(':id/questions')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
-  public async addQuestion(
-    @Param('id') id: string,
-    @Body() addQuestionDto: AddQuestionDto,
-    @Request() req: any,
-  ): Promise<ProductDocument> {
-    const userId = req.user.id as string;
-    const userName = (req.user.firstName ?? req.user.email) as string;
-    return await this.productsService.addQuestion(id, userId, userName, addQuestionDto);
-  }
-
-  /**
-   * Добавление ответа на вопрос
-   * POST /products/:id/questions/:questionId/answers
-   * @param id - ID продукта
-   * @param questionId - ID вопроса
-   * @param addAnswerDto - Данные ответа
-   * @param req - Запрос с данными пользователя
-   * @returns Обновленный продукт
-   */
-  @Post(':id/questions/:questionId/answers')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
-  public async addAnswer(
-    @Param('id') id: string,
-    @Param('questionId') questionId: string,
-    @Body() addAnswerDto: AddAnswerDto,
-    @Request() req: any,
-  ): Promise<ProductDocument> {
-    const userId = req.user.id as string;
-    const userName = (req.user.firstName ?? req.user.email) as string;
-    return await this.productsService.addAnswer(id, questionId, userId, userName, addAnswerDto);
-  }
-
   /**
    * Добавление/удаление продукта из избранного
    * POST /products/:id/like
