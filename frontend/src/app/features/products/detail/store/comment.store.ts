@@ -150,8 +150,8 @@ export const CommentStore = signalStore(
             patchState(store, {
               ...initialState,
               productId,
-              isLoading: true,
             })
+            setLoading(true)
           }),
           switchMap(({ productId }) => {
             return commentsService.getProductComments(productId, 1, store.pageSize()).pipe(
@@ -159,7 +159,6 @@ export const CommentStore = signalStore(
                 handleInitialLoad(items, total)
               }),
               catchError((error: HttpErrorResponse) => {
-                console.error('❌ API Error:', error)
                 handleHttpError(error)
                 return EMPTY
               })
