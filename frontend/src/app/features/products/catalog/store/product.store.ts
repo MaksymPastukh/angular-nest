@@ -11,7 +11,6 @@ import {
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, switchMap, tap } from 'rxjs'
 import { ProductFilterParams } from '../../detail/types/product-filter-params.interface'
-import { ProductType } from '../../detail/types/product.interface'
 import { ProductsResponse } from '../../detail/types/products-response.interface'
 import { ProductService } from '../services/product.service'
 import { ProductState } from '../types/product-state.interface'
