@@ -40,7 +40,6 @@ import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
   ],
   templateUrl: './detail.html',
   styleUrl: './detail.scss',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetail {
@@ -121,7 +120,6 @@ export class ProductDetail {
     this.onTabChange(1)
     setTimeout(() => {
       const elem = this.commentsSection()?.nativeElement
-      console.log(elem)
 
       if (elem) {
         elem.scrollIntoView({
@@ -129,7 +127,7 @@ export class ProductDetail {
           block: 'start',
         })
       }
-    }, 300)
+    }, 100)
   }
 
   readonly breadcrumbItems = computed<MenuItem[]>(() => {
@@ -154,6 +152,7 @@ export class ProductDetail {
     if (product.productType) {
       items.push({
         label: product.productType,
+        styleClass: 'active-breadcrumb',
         routerLink: '/products',
         queryParams: {
           category: product.category,

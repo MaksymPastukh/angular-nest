@@ -147,7 +147,32 @@
           </div>
 
           <div>
-            <p class="font-causten font-bold text-lg mb-2">Select Size</p>
+            <div class="flex items-center">
+              <div
+                class="flex items-center gap-4 mb-2 text-lg font-family font-medium color-text-gray"
+              >
+                <span>Select Size</span>
+                <a
+                  routerLink="size-guide"
+                  class="inline-flex items-center gap-1 font-medium text-gray-600 hover:text-gray-900 transition-colors group"
+                >
+                  <span>Size Guide</span>
+                  <svg
+                    class="w-4 h-4 transition-transform group-hover:translate-x-0.5"
+                    viewBox="0 0 16 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M0.9 6.9H13.9M8.9 0.9L14.1929 6.19289C14.5834 6.58342 14.5834 7.21658 14.1929 7.60711L8.9 12.9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </div>
             <div class="flex gap-2 flex-wrap">
               @for (size of prod.size; track $index) {
                 <button
