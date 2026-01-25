@@ -1,3 +1,5 @@
+import { parseUrlParams } from '@/shared/utils/filters'
+import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import type { Params } from '@angular/router'
 import {
@@ -10,12 +12,12 @@ import {
 } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { MenuItem } from 'primeng/api'
-import { parseUrlParams } from '@/shared/utils/filters'
-import { catchError, forkJoin, of, switchMap, tap } from 'rxjs'
+import { catchError, EMPTY, forkJoin, Observable, switchMap, tap } from 'rxjs'
+import { COLOR_MAP, generateColorHex } from '../../detail/utils/generateColorHex'
 import { ProductService } from '../services/product.service'
+import { ParsedUrlParams } from '../types/parsed-url-params.type'
 import { FilterState } from '../types/product-filter-state.interface'
 import { SelectedFilters } from '../types/product-selected-filters.interface'
-import { ParsedUrlParams } from '../types/parsed-url-params.type'
 
 const PRICE_DEFAULT = { min: 70, max: 270 } as const
 type CompositeFilterKey = 'selectedCategories' | 'selectedStyles'
@@ -40,15 +42,15 @@ const initialState: FilterState = {
   initialized: false,
 }
 
-function toggle(list: string[], value: string): string[] {
+const toggle = (list: string[], value: string): string[] => {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value]
 }
 
-function buildMenu(
+const buildMenu = (
   items: string[],
   brands: string[],
   onSelect: (item: string, brand: string) => void
-): MenuItem[] {
+): MenuItem[] => {
   return items.map((item) => ({
     label: item,
     items: brands.map((brand) => ({
@@ -62,12 +64,12 @@ function buildMenu(
  * Универсальная функция для toggle category/style
  * Избегаем дублирования логики
  */
-function createCompositeToggle(
+const createCompositeToggle = (
   key: CompositeFilterKey,
   value: string,
   resetKey: CompositeFilterKey,
   currentState: SelectedFilters
-): SelectedFilters {
+): SelectedFilters => {
   const prefix = value.split(':')[0]
   const existing = currentState[key].find((item) => item.startsWith(`${prefix}:`))
 
@@ -93,149 +95,91 @@ export const ProductFilterStore = signalStore(
 
   withState(initialState),
 
-  /* =======================
-     METHODS
-  ======================= */
-
   withMethods((store, productService = inject(ProductService)) => {
-    /* ---------- API ---------- */
+    const setLoading = (isLoading: boolean) =>
+      patchState(store, { isLoading, error: isLoading ? null : store.error() })
 
-    const loadFilterData = rxMethod<void>((source$) =>
-      source$.pipe(
-        tap(() => patchState(store, { isLoading: true, error: null })),
-        switchMap(() =>
-          forkJoin({
-            categories: productService.getCategories(),
-            productTypes: productService.getProductTypes(),
-            dressStyles: productService.getDressStyles(),
-            brands: productService.getBrands(),
-            colors: productService.getColors(),
-            sizes: productService.getSizes(),
-          }).pipe(
-            tap((data) =>
-              patchState(store, {
-                filterData: data,
-                isLoading: false,
-                initialized: true,
-              })
-            ),
-            catchError((error) => {
-              // Логируем ошибку для отладки/мониторинга
-              console.error('[ProductFilterStore] Failed to load filter data:', error)
+    const setError = (error: string) =>
+      patchState(store, {
+        isLoading: false,
+        error,
+      })
 
-              patchState(store, {
-                isLoading: false,
-                error: 'Не удалось загрузить фильтры',
-              })
+    const handleHttpError = (error: HttpErrorResponse) => {
+      const message =
+        (error.error as { message?: string })?.message ?? error.message ?? 'Произошла ошибка'
 
-              // Возвращаем null чтобы не прерывать stream
-              return of(null)
-            })
-          )
-        )
-      )
-    )
+      setError(String(message))
+    }
 
-    /* ---------- GENERIC FILTER UPDATE ---------- */
-
-    function updateSelected(updater: (current: SelectedFilters) => SelectedFilters) {
+    const updateSelected = (updater: (current: SelectedFilters) => SelectedFilters) => {
       patchState(store, {
         selected: updater(store.selected()),
       })
     }
 
-    /* ---------- FILTER ACTIONS ---------- */
-
-    function setPriceRange(priceRange: number[]) {
+    const setPriceRange = (priceRange: number[]) => {
       updateSelected((f) => ({ ...f, priceRange }))
     }
 
-    /**
-     * Универсальная функция для toggle полей-массивов
-     */
-    function toggleArrayField<K extends keyof SelectedFilters>(key: K, value: string) {
+    const toggleArrayField = <K extends keyof SelectedFilters>(key: K, value: string) => {
       updateSelected((f) => ({
         ...f,
         [key]: toggle(f[key] as string[], value),
       }))
     }
 
-    function toggleSize(size: string) {
+    const toggleSize = (size: string) => {
       toggleArrayField('selectedSizes', size)
     }
 
-    function toggleColor(color: string) {
+    const toggleColor = (color: string) => {
       toggleArrayField('selectedColors', color)
     }
 
-    /**
-     * Устанавливает основную категорию (Men, Women, Combos, Joggers)
-     * Сбрасывает подкатегории и стили при изменении
-     */
-    function setCategory(category: string | null) {
+    const setCategory = (category: string | null) => {
       updateSelected((f) => ({
         ...f,
         selectedCategory: category,
-        selectedCategories: [], // Сбрасываем подкатегории
-        selectedStyles: [], // Сбрасываем стили
+        selectedCategories: [],
+        selectedStyles: [],
       }))
     }
 
-    /**
-     * Toggle категории (подкатегория товара, убрана дублированная логика)
-     */
-    function toggleCategory(category: string, brand: string) {
+    const toggleCategory = (category: string, brand: string) => {
       const key = `${category}:${brand}`
       updateSelected((f) => createCompositeToggle('selectedCategories', key, 'selectedStyles', f))
     }
 
-    /**
-     * Toggle стиля (убрана дублированная логика)
-     */
-    function toggleStyle(style: string, brand: string) {
+    const toggleStyle = (style: string, brand: string) => {
       const key = `${style}:${brand}`
       updateSelected((f) => createCompositeToggle('selectedStyles', key, 'selectedCategories', f))
     }
 
-    /**
-     * Устанавливает поисковый запрос
-     */
-    function setSearchQuery(query: string) {
+    const setSearchQuery = (query: string) => {
       updateSelected((f) => ({ ...f, searchQuery: query }))
     }
 
-    function resetFilters() {
+    const resetFilters = () => {
       patchState(store, {
         selected: initialState.selected,
         ui: initialState.ui,
       })
     }
 
-    /**
-     * Устанавливает текущую категорию для UI (показ меню брендов)
-     * Это временное состояние для popup меню, не влияет на фильтрацию
-     */
-    function setCurrentCategory(category: string | null) {
+    const setCurrentCategory = (category: string | null) => {
       patchState(store, {
         ui: { ...store.ui(), currentCategory: category },
       })
     }
 
-    /**
-     * Устанавливает текущий стиль для UI (показ меню брендов)
-     * Это временное состояние для popup меню, не влияет на фильтрацию
-     */
-    function setCurrentStyle(style: string | null) {
+    const setCurrentStyle = (style: string | null) => {
       patchState(store, {
         ui: { ...store.ui(), currentStyle: style },
       })
     }
 
-    /**
-     * Восстанавливает фильтры из URL параметров
-     * Детерминированно, без side-effects - один patchState
-     */
-    function restoreFromQueryParams(params: Params) {
+    const restoreFromQueryParams = (params: Params) => {
       const parsed: ParsedUrlParams = parseUrlParams(params)
 
       // Формируем полное состояние фильтров
@@ -263,8 +207,33 @@ export const ProductFilterStore = signalStore(
     }
 
     return {
-      loadFilterData,
-
+      loadFilterData: rxMethod<void>((source$) =>
+        source$.pipe(
+          tap(() => setLoading(true)),
+          switchMap(() =>
+            forkJoin({
+              categories: productService.getCategories(),
+              productTypes: productService.getProductTypes(),
+              dressStyles: productService.getDressStyles(),
+              brands: productService.getBrands(),
+              colors: productService.getColors(),
+              sizes: productService.getSizes(),
+            }).pipe(
+              tap((data) =>
+                patchState(store, {
+                  filterData: data,
+                  isLoading: false,
+                  initialized: true,
+                })
+              ),
+              catchError((error: HttpErrorResponse): Observable<never> => {
+                handleHttpError(error)
+                return EMPTY
+              })
+            )
+          )
+        )
+      ),
       setPriceRange,
       toggleSize,
       toggleColor,
@@ -280,12 +249,7 @@ export const ProductFilterStore = signalStore(
     }
   }),
 
-  /* =======================
-     COMPUTED (после методов, чтобы использовать их)
-  ======================= */
-
   withComputed((store) => {
-    // Выносим методы в переменные - чище чем (store as any)
     const { toggleCategory } = store
     const { toggleStyle } = store
 
@@ -299,14 +263,10 @@ export const ProductFilterStore = signalStore(
         }))
       ),
 
-      // Имена категорий для кнопок в фильтре
       categoryNames: computed(() => store.filterData()?.productTypes ?? []),
 
-      // Имена стилей для кнопок в фильтре
       styleNames: computed(() => store.filterData()?.dressStyles ?? []),
 
-      // Меню брендов для текущей категории (выбранной для показа popup)
-      // Использует ui.currentCategory - временное состояние при клике на кнопку
       brandsMenuForCurrentCategory: computed<MenuItem[]>(() => {
         const data = store.filterData()
         const { currentCategory } = store.ui()
@@ -319,8 +279,6 @@ export const ProductFilterStore = signalStore(
         }))
       }),
 
-      // Меню брендов для текущего стиля (выбранного для показа popup)
-      // Использует ui.currentStyle - временное состояние при клике на кнопку
       brandsMenuForCurrentStyle: computed<MenuItem[]>(() => {
         const data = store.filterData()
         const { currentStyle } = store.ui()
@@ -333,21 +291,18 @@ export const ProductFilterStore = signalStore(
         }))
       }),
 
-      // Вычисляемые значения - что сейчас выбрано в фильтрах
       currentCategory: computed(
         () => store.selected().selectedCategories[0]?.split(':')[0] ?? null
       ),
 
       currentStyle: computed(() => store.selected().selectedStyles[0]?.split(':')[0] ?? null),
 
-      // Модель для TieredMenu по категориям: productType -> brands
       subCategoryMenu: computed<MenuItem[]>(() => {
         const data = store.filterData()
         if (!data) return []
         return buildMenu(data.productTypes, data.brands, toggleCategory)
       }),
 
-      // Удобный доступ к selected-фильтрам в шаблоне
       selectedFilters: computed(() => store.selected()),
     }
   }),
@@ -358,38 +313,3 @@ export const ProductFilterStore = signalStore(
     },
   })
 )
-
-const COLOR_MAP: Record<string, string> = {
-  Purple: '#8e44ad',
-  Black: '#000000',
-  Red: '#e74c3c',
-  Orange: '#e67e22',
-  Navy: '#2980b9',
-  Blue: '#00bcd4',
-  White: '#ffffff',
-  Brown: '#d35400',
-  Broom: '#d35400',
-  Green: '#2ecc71',
-  Yellow: '#f1c40f',
-  Grey: '#bdc3c7',
-  Gray: '#bdc3c7',
-  Pink: '#e91e63',
-  Beige: '#f5f5dc',
-  Indigo: '#4b0082',
-  Violet: '#8b00ff',
-  Cyan: '#00ffff',
-  Magenta: '#ff00ff',
-  Lime: '#00ff00',
-  Maroon: '#800000',
-  Olive: '#808000',
-  Teal: '#008080',
-}
-
-function generateColorHex(name: string): string {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  const color = (hash & 0x00ffffff).toString(16).toUpperCase()
-  return `#${'00000'.substring(0, 6 - color.length)}${color}`
-}

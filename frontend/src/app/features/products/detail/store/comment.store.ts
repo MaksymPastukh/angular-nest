@@ -2,7 +2,18 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, concatMap, EMPTY, exhaustMap, filter, map, pipe, switchMap, tap } from 'rxjs'
+import {
+  catchError,
+  concatMap,
+  EMPTY,
+  exhaustMap,
+  filter,
+  map,
+  Observable,
+  pipe,
+  switchMap,
+  tap,
+} from 'rxjs'
 import { CommentService } from '../services/comment.service'
 import { CommentCreateInterface } from '../types/comment-create.interface'
 import { CommentStateInterface } from '../types/comment-state.interface'
@@ -31,10 +42,7 @@ export const CommentStore = signalStore(
   withState(initialState),
 
   withComputed((store) => ({
-    /** Есть ли комментарии */
     hasComments: computed(() => store.comments().length > 0),
-
-    /** Количество комментариев */
     commentsCount: computed(() => store.comments().length),
   })),
   withMethods((store, commentsService = inject(CommentService)) => {
@@ -88,7 +96,6 @@ export const CommentStore = signalStore(
         comments: store.comments().map((itemC) => {
           if (itemC.id !== commentId) return itemC
 
-          // Используем isLiked вместо likedBy (так как likedBy не приходит с сервера)
           const currentIsLiked = itemC.isLiked ?? false
 
           return {
@@ -101,7 +108,6 @@ export const CommentStore = signalStore(
     }
 
     const toggleLikeRollback = (commentId: string) => {
-      // Откатываем оптимистичное обновление при ошибке
       patchState(store, {
         comments: store.comments().map((itemC) => {
           if (itemC.id !== commentId) return itemC
@@ -127,8 +133,7 @@ export const CommentStore = signalStore(
                 comments: store.comments().map((c) => (c.id === updated.id ? updated : c)),
               })
             }),
-            catchError((error: HttpErrorResponse) => {
-              // Откатываем оптимистичное обновление
+            catchError((error: HttpErrorResponse): Observable<never> => {
               toggleLikeRollback(commentId)
               handleHttpError(error)
               return EMPTY
@@ -158,7 +163,7 @@ export const CommentStore = signalStore(
               tap(({ items, total }) => {
                 handleInitialLoad(items, total)
               }),
-              catchError((error: HttpErrorResponse) => {
+              catchError((error: HttpErrorResponse): Observable<never> => {
                 handleHttpError(error)
                 return EMPTY
               })
@@ -166,9 +171,6 @@ export const CommentStore = signalStore(
           })
         )
       ),
-      /**
-       * Загрузить следующую страницу комментариев
-       */
       loadNextPage: rxMethod<void>(
         pipe(
           filter(() => store.hasMore() && !store.isLoading()),
@@ -181,7 +183,7 @@ export const CommentStore = signalStore(
                 tap(({ items, total }) => {
                   handleNextPage(items, total)
                 }),
-                catchError((error: HttpErrorResponse) => {
+                catchError((error: HttpErrorResponse): Observable<never> => {
                   handleHttpError(error)
                   return EMPTY
                 })
@@ -189,10 +191,6 @@ export const CommentStore = signalStore(
           })
         )
       ),
-
-      /**
-       * Создать комментарий
-       */
       createComment: rxMethod<{ productId: string; comment: CommentCreateInterface }>(
         pipe(
           tap(() => setSubmitting(true)),
@@ -205,7 +203,7 @@ export const CommentStore = signalStore(
                   isSubmitting: false,
                 })
               }),
-              catchError((error: HttpErrorResponse) => {
+              catchError((error: HttpErrorResponse): Observable<never> => {
                 handleHttpError(error)
                 return EMPTY
               })
@@ -213,14 +211,10 @@ export const CommentStore = signalStore(
           )
         )
       ),
-
-      /**
-       * Удалить комментарий
-       */
-      deleteComment: rxMethod<string>(
+      deleteComment: rxMethod<{ commentId: string }>(
         pipe(
           tap(() => setLoading(true)),
-          exhaustMap((commentId) =>
+          exhaustMap(({ commentId }) =>
             commentsService.deleteComment(commentId).pipe(
               tap(() => {
                 patchState(store, {
@@ -230,7 +224,7 @@ export const CommentStore = signalStore(
                 setLoading(false)
                 setSubmitting(false)
               }),
-              catchError((error: HttpErrorResponse) => {
+              catchError((error: HttpErrorResponse): Observable<never> => {
                 handleHttpError(error)
                 return EMPTY
               })

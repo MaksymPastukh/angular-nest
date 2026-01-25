@@ -58,28 +58,30 @@ export class CommentsComponent {
     this.editCommentText.set('')
   }
 
-  onDeleteComment(commentId: string) {
+  onDeleteComment(id: string) {
     if (!this.authStore.isAuthenticated()) {
       return
     }
 
-    this.store.deleteComment(commentId)
+    if (id) {
+      this.store.deleteComment({ commentId: id })
+    }
   }
 
   onToggleLike(commentId: string) {
     // Проверяем аутентификацию перед отправкой запроса
     if (!this.authStore.isAuthenticated()) {
-      console.warn('⚠️ User not authenticated, cannot toggle like')
       return
     }
 
     const userId: string | null = this.authStore.userId()
 
     if (!userId) {
-      console.warn('⚠️ User ID not found, cannot toggle like')
       return
     }
 
-    this.store.toggleLike(commentId)
+    if (commentId) {
+      this.store.toggleLike(commentId)
+    }
   }
 }
