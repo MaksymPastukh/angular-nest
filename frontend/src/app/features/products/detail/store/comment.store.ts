@@ -100,6 +100,23 @@ export const CommentStore = signalStore(
       })
     }
 
+    const toggleLikeRollback = (commentId: string) => {
+      // Откатываем оптимистичное обновление при ошибке
+      patchState(store, {
+        comments: store.comments().map((itemC) => {
+          if (itemC.id !== commentId) return itemC
+
+          const currentIsLiked = itemC.isLiked ?? false
+
+          return {
+            ...itemC,
+            isLiked: !currentIsLiked,
+            likesCount: currentIsLiked ? (itemC.likesCount ?? 0) - 1 : (itemC.likesCount ?? 0) + 1,
+          }
+        }),
+      })
+    }
+
     const toggleLikeRx = rxMethod<string>(
       pipe(
         exhaustMap((commentId) =>
@@ -111,6 +128,8 @@ export const CommentStore = signalStore(
               })
             }),
             catchError((error: HttpErrorResponse) => {
+              // Откатываем оптимистичное обновление
+              toggleLikeRollback(commentId)
               handleHttpError(error)
               return EMPTY
             })

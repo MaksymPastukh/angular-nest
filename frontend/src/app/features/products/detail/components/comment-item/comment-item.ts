@@ -41,6 +41,7 @@ export class CommentItem {
 
     // Если пользователь не авторизован, редиректим на логин
     if (!userId) {
+      console.warn('⚠️ User not authenticated, redirecting to login')
       void this.router.navigate(['/login'])
       return
     }

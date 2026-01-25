@@ -67,9 +67,19 @@ export class CommentsComponent {
   }
 
   onToggleLike(commentId: string) {
+    // Проверяем аутентификацию перед отправкой запроса
+    if (!this.authStore.isAuthenticated()) {
+      console.warn('⚠️ User not authenticated, cannot toggle like')
+      return
+    }
+
     const userId: string | null = this.authStore.userId()
 
-    if (!userId) return
+    if (!userId) {
+      console.warn('⚠️ User ID not found, cannot toggle like')
+      return
+    }
+
     this.store.toggleLike(commentId)
   }
 }
