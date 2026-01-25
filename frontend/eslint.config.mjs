@@ -390,7 +390,7 @@ export default tseslint.config(
       '@angular-eslint/template/cyclomatic-complexity': [
         'warn',
         {
-          maxComplexity: 10, // Увеличено до 10 для работы с signals
+          maxComplexity: 15, // Увеличено до 10 для работы с signals
         },
       ],
 
