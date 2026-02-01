@@ -4,14 +4,6 @@ import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'pr
 import { Slider } from 'primeng/slider'
 import { TieredMenu } from 'primeng/tieredmenu'
 import { ProductFilterStore } from '../../store/catalog-filter.store'
-
-/**
- * Компонент фильтрации продуктов
- *
- * Работает только с ProductFilterStore (NgRx Signal Store) и НЕ знает о HTTP/API.
- * Любое изменение фильтров → обновляет состояние стора, а дальше ProductsPageFacade
- * мапит SelectedFilters в API фильтры и триггерит загрузку продуктов.
- */
 @Component({
   selector: 'app-catalog-filter',
   imports: [

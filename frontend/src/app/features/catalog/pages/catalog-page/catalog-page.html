@@ -5,17 +5,17 @@
     <h2 class="font-bold text-2xl font-family color-active">{{ titleCategory }} Clothing</h2>
 
     <div class="flex flex-wrap mt-10 gap-x-[20px] gap-y-[24px]">
-      @if (productStore.isLoading()) {
+      @if (facade.isLoading()) {
         <div class="w-full text-center py-8">
           <p class="text-lg text-gray-600">Загружаем продукты...</p>
         </div>
-      } @else if (products().length === 0) {
+      } @else if (facade.products().length === 0) {
         <div class="w-full text-center py-8">
           <p class="text-lg text-gray-600">Продукты не найдены</p>
           <p class="text-sm text-gray-500 mt-2">Попробуйте изменить фильтры или сбросить их</p>
         </div>
       } @else {
-        @for (product of products(); track product.id || product._id) {
+        @for (product of facade.products(); track product.id || product._id) {
           <app-product-card [productIn]="product" />
         }
       }

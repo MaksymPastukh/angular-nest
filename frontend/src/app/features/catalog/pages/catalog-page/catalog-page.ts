@@ -1,20 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnDestroy,
-  OnInit,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { Subscription } from 'rxjs'
-import { ProductStore } from '../../../products/store/products.store'
+import { ProductsPageFacade } from '../../../products/store/products.facade'
 import { ProductCardComponent } from '../../../products/ui/product-card/product-card'
 import { TableBestPriceInterface } from '../../domain/interfaces/table-best-price.interface'
-import { ProductFilterStore } from '../../store/catalog-filter.store'
 import { CatalogFilterComponent } from '../../ui/catalog-filter/catalog-filter'
 import { TableBestPrice } from '../../ui/table-best-price/table-best-price'
-import { mapToApiFilters } from '../../utils/mapToApiFilters.util'
+import { Subscription } from 'rxjs'
+import { ProductInterface } from '../../../products/domain/interfaces/product.interface'
 
 @Component({
   selector: 'app-catalog',
@@ -24,26 +16,14 @@ import { mapToApiFilters } from '../../utils/mapToApiFilters.util'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogPage implements OnInit, OnDestroy {
-  /** Стор UI фільтрів */
-  readonly filterStore = inject(ProductFilterStore)
-
-  /** Стор продуктів */
-  readonly productStore = inject(ProductStore)
+   /** Фасад страницы продуктов (продукты + фильтры + пагинация) */
+  readonly facade = inject(ProductsPageFacade)
 
   /** Route для получения query params при инициализации */
   private readonly route = inject(ActivatedRoute)
 
   /** Subscription на query params для корректной отписки */
   private queryParamsSubscription?: Subscription
-
-  /** Computed: фільтри для відображення */
-  readonly filters = computed(() => this.filterStore.selectedFilters())
-
-  /** Computed: продукти для відображення */
-  readonly products = computed(() => this.productStore.products())
-
-  /** Computed: пагінація */
-  readonly pagination = computed(() => this.productStore.pagination())
 
   /** Данные для таблицы лучших цен */
   readonly itemsTableBestPrice: TableBestPriceInterface[] = [
@@ -84,14 +64,10 @@ export class CatalogPage implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       if (Object.keys(params).length > 0) {
         // Есть параметры в URL → восстанавливаем фильтры
-        this.filterStore.restoreFromQueryParams(params)
-        // Конвертируем UI фильтры в API фильтры и загружаем продукты
-        const selectedFilters = this.filterStore.selectedFilters()
-        const apiFilters = mapToApiFilters(selectedFilters)
-        this.productStore.setFilters(apiFilters)
+        this.facade.restoreFiltersFromUrl(params)
       } else {
         // Нет параметров → сбрасываем фильтры (показываем все продукты)
-        this.filterStore.resetFilters()
+        this.facade.resetFilters()
       }
     })
   }
@@ -101,12 +77,12 @@ export class CatalogPage implements OnInit, OnDestroy {
     this.queryParamsSubscription?.unsubscribe()
 
     // Сбрасываем фильтры при уходе со страницы
-    this.filterStore.resetFilters()
+    this.facade.resetFilters()
   }
 
-  /** Геттер для заголовка категории на основе активных фільтров */
+  /** Геттер для заголовка категории на основе активных фильтров */
   get titleCategory(): string {
-    const selected = this.filterStore.selectedFilters()
+    const selected = this.facade.filters()
 
     // Приоритет 1: Основная категория (Men, Women, Combos, Joggers)
     if (selected.selectedCategory) {
@@ -117,16 +93,21 @@ export class CatalogPage implements OnInit, OnDestroy {
     if (selected.selectedCategories.length > 0) {
       const [raw] = selected.selectedCategories
       const [productType] = raw.split(':')
-      return productType ?? 'All'
+      return productType || 'All'
     }
 
     // Приоритет 3: Стиль
     if (selected.selectedStyles.length > 0) {
       const [raw] = selected.selectedStyles
       const [style] = raw.split(':')
-      return style ?? 'All'
+      return style || 'All'
     }
 
     return 'All'
+  }
+
+  /** Публичный геттер для продуктов */
+  get products(): ProductInterface[] {
+    return this.facade.products()
   }
 }
