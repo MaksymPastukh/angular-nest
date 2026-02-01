@@ -1,15 +1,16 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
-import { AuthStore } from './core/auth/store/auth.store'
-import { CreateProductStore } from './features/personal/admin/shop/store/create-product.store'
+import { CreateProductStore } from './features/admin/store/create.store'
+import { AuthStore } from './features/auth/store/auth.store'
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, Toast],
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
   protected readonly authStore = inject(AuthStore)
@@ -21,7 +22,6 @@ export class App implements OnInit {
     // Effect для обработки событий аутентификации
     effect(() => {
       const event = this.authStore.event()
-      console.log('Auth Event:', event)
       if (!event) return
 
       switch (event.type) {
@@ -59,7 +59,6 @@ export class App implements OnInit {
     // Effect для обработки событий создания продукта
     effect(() => {
       const event = this.productStore.event()
-      console.log('Product Event:', event)
       if (!event) return
 
       switch (event.type) {
