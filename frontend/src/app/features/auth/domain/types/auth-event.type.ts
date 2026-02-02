@@ -4,3 +4,6 @@ export type AuthEvent =
   | { type: 'loginError'; message: string }
   | { type: 'registerError'; message: string }
   | { type: 'logout' }
+
+export type AuthSuccessType = 'loginSuccess' | 'registerSuccess'
+export type AuthErrorType = 'loginError' | 'registerError'

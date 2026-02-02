@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core'
 import { Observable, throwError } from 'rxjs'
 import { catchError, finalize, shareReplay, tap } from 'rxjs/operators'
 import { CurrentUserResponseInterface } from '../domain/interfaces/current-user.interface'
-import { AuthService } from './auth.service'
+import { AuthService } from './auth.api'
 
 @Injectable({
   providedIn: 'root',

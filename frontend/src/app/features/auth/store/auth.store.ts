@@ -1,17 +1,22 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
-import { Router } from '@angular/router'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, Observable, pipe, switchMap, tap } from 'rxjs'
-import { AuthService } from '../data-access/auth.service'
-import { AUTHORIZATION_STATE } from '../domain/constants/authorization.constants'
+import { AuthService } from '../data-access/auth.api'
+
+import {
+  AuthEventConstantsMessages,
+  AuthEventConstantsType,
+} from '../domain/constants/auth-event.constants'
 import { UserRole } from '../domain/enums/user-role.enum'
 import { AuthEventInterface } from '../domain/interfaces/auth-event.interface'
 import { AuthState } from '../domain/interfaces/auth-state.interface'
-import { CurrentUserResponseInterface, User } from '../domain/interfaces/current-user.interface'
+import { CurrentUserResponseInterface } from '../domain/interfaces/current-user.interface'
 import { LoginDataInterface } from '../domain/interfaces/loginData.interface'
 import { RegisterDataInterface } from '../domain/interfaces/registerData.interface'
+import { AuthErrorType, AuthSuccessType } from '../domain/types/auth-event.type'
+import { DefaultResponseInterface } from '../domain/interfaces/default-response.interface'
 
 const initialState: AuthState = {
   user: null,
@@ -21,200 +26,120 @@ const initialState: AuthState = {
   event: null,
 }
 
+const successEvent = (
+  type: AuthSuccessType,
+  message: string,
+  userName: string
+): AuthEventInterface => ({
+  type,
+  message,
+  userName,
+})
+
+const errorEvent = (type: AuthErrorType, message: string): AuthEventInterface => ({
+  type,
+  message,
+})
+
 export const AuthStore = signalStore(
-  { providedIn: 'root' },
-
   withState(initialState),
-  withComputed((store) => ({
-    userName: computed(() => {
-      const currentUser: CurrentUserResponseInterface | null = store.user()
-      return currentUser?.user?.firstName ?? 'Guest'
-    }),
+  withComputed((store) => {
+    const user = computed(() => store.user()?.user ?? null)
 
-    // Получаем роль пользователя
-    userRole: computed(() => store.user()?.user?.role ?? UserRole.GUEST),
-
-    // Проверка является ли пользователь администратором
-    isAdmin: computed(() => store.user()?.user?.role === UserRole.ADMIN),
-
-    // Проверка является ли пользователь обычным пользователем
-    isUser: computed(() => store.user()?.user?.role === UserRole.USER),
-    userId: computed(() => store.user()?.user?.id ?? null),
-  })),
+    return {
+      userName: computed(() => user()?.firstName ?? UserRole.GUEST),
+      userRole: computed(() => user()?.role ?? UserRole.GUEST),
+      isAdmin: computed(() => user()?.role === UserRole.ADMIN),
+      isUser: computed(() => user()?.role === UserRole.USER),
+      userId: computed(() => user()?.id ?? null),
+    }
+  }),
 
   withMethods((store) => {
     const authService = inject(AuthService)
-    const router = inject(Router)
 
-    /**
-     * Вспомогательная функция для обработки успешной аутентификации
-     * Убирает дублирование кода между register и login
-     */
-    const handleAuthSuccess = (
+    const setPending = () => {
+      patchState(store, { isLoading: true, error: null, event: null })
+    }
+
+    const setAuthSuccess = (
       response: CurrentUserResponseInterface,
       message: string,
-      type: 'loginSuccess' | 'registerSuccess'
+      type: AuthSuccessType
     ) => {
-      localStorage.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
-      localStorage.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
-      authService.setItem(AUTHORIZATION_STATE.currentUserKey, response.user)
-
       patchState(store, {
         user: response,
         isAuthenticated: true,
         isLoading: false,
         error: null,
-        event: {
-          type,
-          userName: response.user.firstName,
-        } as AuthEventInterface,
+        event: successEvent(type, message, response.user.firstName),
       })
-
-      void router.navigate(['/'])
     }
 
-    return {
-      rehydrate: () => {
-        const accessToken = localStorage.getItem(AUTHORIZATION_STATE.authAccessTokenKey)
-        const refreshToken = localStorage.getItem(AUTHORIZATION_STATE.authRefreshTokenKey)
-        const userJson = localStorage.getItem(AUTHORIZATION_STATE.currentUserKey)
+    const setAuthFailure = (message: string, type: AuthErrorType) => {
+      patchState(store, {
+        error: { message },
+        isLoading: false,
+        isAuthenticated: false,
+        user: null,
+        event: errorEvent(type, message),
+      })
+    }
 
-        if (!accessToken || !refreshToken || !userJson) {
-          return
-        }
+    const getErrorMessage = (error: unknown): string => {
+      if (!(error instanceof HttpErrorResponse)) return `An unknown error occurred.`
 
-        try {
-          const user: User = JSON.parse(userJson) as User
+      const apiMessage = (error.error as DefaultResponseInterface)?.message
 
-          patchState(store, {
-            user: {
-              access_token: accessToken,
-              refresh_token: refreshToken,
-              user,
-            },
-            isAuthenticated: true,
-          })
-        } catch {
-          localStorage.removeItem(AUTHORIZATION_STATE.authAccessTokenKey)
-          localStorage.removeItem(AUTHORIZATION_STATE.authRefreshTokenKey)
-          localStorage.removeItem(AUTHORIZATION_STATE.currentUserKey)
-          patchState(store, initialState)
-        }
-      },
+      if (typeof apiMessage === 'string') return apiMessage
+      if (Array.isArray(apiMessage)) return apiMessage.join(' ')
 
-      hasRole: (role: UserRole | string): boolean => {
-        return store.userRole() === role
-      },
+      return error.message ?? `Request failed with status ${error.status}.`
+    }
 
-      register: rxMethod<RegisterDataInterface>(
-        pipe(
-          tap(() => {
-            patchState(store, {
-              isLoading: true,
-              error: null,
+    const authCommand = <InP>(
+      request: (data: InP) => Observable<CurrentUserResponseInterface>,
+      success: { type: AuthSuccessType; message: string },
+      failure: { type: AuthErrorType }
+    ) =>
+      pipe(
+        tap<InP>(() => setPending()),
+        switchMap((data: InP) =>
+          request(data).pipe(
+            tap((response) => setAuthSuccess(response, success.message, success.type)),
+            catchError((error) => {
+              setAuthFailure(getErrorMessage(error), failure.type)
+              return EMPTY
             })
-          }),
-          switchMap(
-            (
-              registerData: RegisterDataInterface
-            ): Observable<CurrentUserResponseInterface | null> =>
-              authService.register(registerData).pipe(
-                tap((response) =>
-                  handleAuthSuccess(response, 'Registration Successful', 'registerSuccess')
-                ),
-
-                catchError((error: HttpErrorResponse): Observable<null> => {
-                  const message =
-                    (error.error as { message?: string })?.message ??
-                    error.message ??
-                    'Произошла ошибка'
-
-                  patchState(store, {
-                    error: { message },
-                    isLoading: false,
-                    isAuthenticated: false,
-                    user: null,
-                    event: {
-                      type: 'registerError',
-                      message,
-                    } as AuthEventInterface,
-                  })
-
-                  return EMPTY
-                })
-              )
           )
+        )
+      )
+
+    return {
+      register: rxMethod<RegisterDataInterface>(
+        authCommand<RegisterDataInterface>(
+          (registerData: RegisterDataInterface) => authService.register(registerData),
+          {
+            type: AuthEventConstantsType.REGISTER_SUCCESS,
+            message: AuthEventConstantsMessages.REGISTER_SUCCESS_MESSAGE,
+          },
+          { type: AuthEventConstantsType.REGISTER_ERROR }
         )
       ),
 
       login: rxMethod<LoginDataInterface>(
-        pipe(
-          tap(() => {
-            patchState(store, {
-              isLoading: true,
-              error: null,
-            })
-          }),
-          switchMap(
-            (loginData: LoginDataInterface): Observable<CurrentUserResponseInterface | null> =>
-              authService.login(loginData).pipe(
-                tap((response) => handleAuthSuccess(response, 'Login Successful', 'loginSuccess')),
-                catchError((error: HttpErrorResponse): Observable<null> => {
-                  const message =
-                    (error.error as { message?: string })?.message ??
-                    error.message ??
-                    'Произошла ошибка'
-
-                  patchState(store, {
-                    error: { message },
-                    isLoading: false,
-                    isAuthenticated: false,
-                    user: null,
-                    event: {
-                      type: 'loginError',
-                      message,
-                    } as AuthEventInterface,
-                  })
-
-                  return EMPTY
-                })
-              )
-          )
+        authCommand<LoginDataInterface>(
+          (loginData: LoginDataInterface) => authService.login(loginData),
+          {
+            type: AuthEventConstantsType.LOGIN_SUCCESS,
+            message: AuthEventConstantsMessages.LOGIN_SUCCESS_MESSAGE,
+          },
+          { type: AuthEventConstantsType.LOGIN_ERROR }
         )
       ),
-
-      logout: () => {
-        localStorage.removeItem(AUTHORIZATION_STATE.authAccessTokenKey)
-        localStorage.removeItem(AUTHORIZATION_STATE.authRefreshTokenKey)
-        localStorage.removeItem(AUTHORIZATION_STATE.currentUserKey)
-
-        patchState(store, {
-          ...initialState,
-          event: { type: 'logout' },
-        })
-
-        void router.navigate(['/login'])
+      resetState: () => {
+        patchState(store, initialState)
       },
-
-      clearError: () => {
-        patchState(store, { error: null })
-      },
-
-      updateAfterRefresh: (response: CurrentUserResponseInterface) => {
-        // Сохраняем токены напрямую (они строки)
-        localStorage.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
-        localStorage.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
-        // User объект через setItem (он сделает stringify один раз)
-        authService.setItem(AUTHORIZATION_STATE.currentUserKey, response.user)
-
-        // Обновляем state с новыми данными
-        patchState(store, {
-          user: response,
-          isAuthenticated: true,
-          error: null,
-        })
-      },
-
       clearEvent: () => {
         patchState(store, { event: null })
       },

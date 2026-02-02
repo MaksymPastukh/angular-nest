@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router'
 
-export default [
+export const CATALOG_ROUTES: Routes = [
   {
     path: 'products',
     loadComponent: () =>
       import('../catalog/pages/catalog-page/catalog-page').then((c) => c.CatalogPage),
   },
-] as Routes
+]

@@ -1,3 +1,3 @@
 export interface DefaultResponseInterface {
-  message: string
+  message: string | string[]
 }

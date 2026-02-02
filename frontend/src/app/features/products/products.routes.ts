@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router'
 
-export default [
+export const PRODUCTS_ROUTES: Routes = [
   {
     path: 'product/:id',
     loadComponent: () =>
@@ -11,4 +11,4 @@ export default [
     loadComponent: () =>
       import('./pages/size-guide-page/size-guide-page').then((c) => c.SizeGuidePage),
   },
-] as Routes
+]
