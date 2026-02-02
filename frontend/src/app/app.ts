@@ -13,7 +13,6 @@ import { AuthStore } from './features/auth/store/auth.store'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly authStore = inject(AuthStore)
   protected readonly productStore = inject(CreateProductStore)
   protected readonly title = signal('Euphoria')
   private readonly messageService = inject(MessageService)

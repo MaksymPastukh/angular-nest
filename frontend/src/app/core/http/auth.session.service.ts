@@ -54,7 +54,8 @@ export class AuthSessionService {
   }
 
   hasRole(role: UserRole | string): boolean {
-    return this.getUser()?.role === role
+    const userRole = this.getUser()?.role
+    return userRole !== undefined && userRole === (role as UserRole)
   }
 
   loadSession(): LoadSessionInterface | null {

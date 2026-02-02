@@ -33,7 +33,7 @@
         </svg>
       </a>
 
-      @if (authStore.isAuthenticated()) {
+      @if (authState.isAuthenticated()) {
         <nav class="hidden xl:block">
           <ul
             class="flex items-center gap-6 lg:gap-8 xl:gap-10 text-base font-medium text-gray-800"
@@ -124,7 +124,7 @@
         </p-autocomplete>
       </div>
 
-      @if (authStore.isAuthenticated()) {
+      @if (authState.isAuthenticated()) {
         <div class="flex items-center gap-2 sm:gap-3">
           <!-- Wishlist -->
           <a
@@ -200,7 +200,7 @@
         </div>
       }
 
-      @if (!authStore.isAuthenticated()) {
+      @if (!authState.isAuthenticated()) {
         <div class="sm:w-[100px] flex-shrink-0">
           <p-select
             [(ngModel)]="selectedLanguage"
@@ -215,14 +215,14 @@
           <!-- Auth buttons -->
           <div class="flex items-center gap-3 sm:gap-6">
             <a
-              [routerLink]="['/login']"
+              [routerLink]="['/auth/login']"
               routerLinkActive="active"
               class="px-12 text-center text-lg font-medium h-[46px] flex items-center justify-center rounded-lg border border-[#3c4242] text-[#8a33fd] hover:bg-[#8a33fd] hover:text-white hover:border-transparent transition-all [&.active]:bg-[#8a33fd] [&.active]:text-white [&.active]:border-transparent leading-none"
             >
               Login
             </a>
             <a
-              [routerLink]="['/register']"
+              [routerLink]="['/auth/register']"
               routerLinkActive="active"
               class="px-12 text-center text-lg font-medium h-[46px] flex items-center justify-center rounded-lg border border-[#3c4242] text-[#8a33fd] hover:bg-[#8a33fd] hover:text-white hover:border-transparent transition-all [&.active]:bg-[#8a33fd] [&.active]:text-white [&.active]:border-transparent leading-none"
             >

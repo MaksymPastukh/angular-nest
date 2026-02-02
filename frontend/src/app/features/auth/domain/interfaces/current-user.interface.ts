@@ -10,5 +10,5 @@ export interface User {
   id: string
   firstName: string
   email: string
-  role: UserRole | string // поддерживаем как enum, так и string для совместимости
+  role: UserRole
 }

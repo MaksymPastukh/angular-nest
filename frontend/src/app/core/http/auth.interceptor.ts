@@ -5,12 +5,14 @@ import { catchError, switchMap, throwError } from 'rxjs'
 import { CurrentUserResponseInterface } from '../../features/auth/domain/interfaces/current-user.interface'
 import { AuthSessionService } from './auth.session.service'
 import { AuthService } from '../../features/auth/data-access/auth.api'
+import { AuthStateService } from './auth-state.service'
 
 const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/refresh'] as const
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const session = inject(AuthSessionService)
   const authService = inject(AuthService)
+  const authState = inject(AuthStateService)
   const router = inject(Router)
 
   const isAuthEndpoint = AUTH_ENDPOINTS.some((endpoint) => req.url.includes(endpoint))
@@ -37,6 +39,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       return authService.refresh().pipe(
         switchMap((response: CurrentUserResponseInterface) => {
           session.saveAuthResponse(response)
+          authState.applyAuthResponse(response)
           const retryReq = req.clone({
             setHeaders: {
               Authorization: `Bearer ${response.access_token}`,

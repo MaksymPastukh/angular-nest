@@ -7,11 +7,11 @@ import { PrimeTemplate } from 'primeng/api'
 import { AutoComplete, AutoCompleteSelectEvent } from 'primeng/autocomplete'
 import { Select } from 'primeng/select'
 import { catchError, debounceTime, of, pipe, switchMap, tap } from 'rxjs'
-import { AuthFacade } from '../../../features/auth/store/auth.facade'
 import { ProductsService } from '../../../features/products/data-access/products.service'
 import { ProductInterface } from '../../../features/products/domain/interfaces/product.interface'
 import { ProductsResponseInterface } from '../../../features/products/domain/interfaces/products-response.interface'
 import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
+import { AuthStateService } from '../../http/auth-state.service'
 
 @Component({
   selector: 'app-header',
@@ -30,8 +30,7 @@ import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  readonly AuthFacade = inject(AuthFacade)
-  readonly authStore = inject(AuthFacade) // Alias for template
+  readonly authState = inject(AuthStateService)
   private readonly router = inject(Router)
   private readonly productsService = inject(ProductsService)
 

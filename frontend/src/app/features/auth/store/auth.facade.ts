@@ -1,6 +1,7 @@
-import { computed, effect, inject, Injectable } from '@angular/core'
+import { effect, inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { MessageService } from 'primeng/api'
+import { AuthStateService } from '../../../core/http/auth-state.service'
 import { AuthSessionService } from '../../../core/http/auth.session.service'
 import { AUTH_MESSAGES } from '../domain/constants/auth-event-messages.constants'
 import { AuthEventInterface } from '../domain/interfaces/auth-event.interface'
@@ -14,25 +15,20 @@ export class AuthFacade {
   private readonly router = inject(Router)
   private readonly messageService = inject(MessageService)
   private readonly session = inject(AuthSessionService)
+  private readonly authState = inject(AuthStateService)
 
-  readonly isAuthenticated = this.store.isAuthenticated
   readonly currentUser = this.store.user
   readonly isLoading = this.store.isLoading
   readonly error = this.store.error
-  readonly authEvent = this.store.event
-
-  readonly user = computed(() => this.currentUser()?.user ?? null)
-  readonly userEmail = computed(() => this.user()?.email ?? null)
-  readonly userName = this.store.userName
-  readonly userRole = this.store.userRole
-  readonly isAdmin = this.store.isAdmin
-  readonly isUser = this.store.isUser
-  readonly isGuest = computed(() => !this.isAuthenticated())
-  readonly hasError = computed(() => this.error() !== null)
 
   constructor() {
-    this.bootstrap()
-    this.setupAuthEventEffects()
+    effect(() => {
+      const event = this.store.event()
+      if (!event) return
+
+      this.handleAuthEvent(event)
+      this.store.clearEvent()
+    })
   }
 
   register(data: RegisterDataInterface): void {
@@ -43,34 +39,6 @@ export class AuthFacade {
     this.store.login(data)
   }
 
-  logout(): void {
-    this.session.clear()
-    this.store.resetState()
-
-    this.messageService.add({
-      severity: 'info',
-      summary: AUTH_MESSAGES.logout.summary,
-      detail: AUTH_MESSAGES.logout.detail,
-    })
-
-    void this.router.navigate(['/auth/login'])
-  }
-
-  clearEvent(): void {
-    this.store.clearEvent()
-  }
-
-  private setupAuthEventEffects(): void {
-    effect(() => {
-      const event = this.authEvent()
-      if (!event) return
-
-      this.handleAuthEvent(event)
-
-      this.store.clearEvent()
-    })
-  }
-
   private handleAuthEvent(event: AuthEventInterface): void {
     switch (event.type) {
       case 'loginSuccess':
@@ -78,6 +46,7 @@ export class AuthFacade {
         const response = this.currentUser()
         if (response) {
           this.session.saveAuthResponse(response)
+          this.authState.applyAuthResponse(response)
         }
         this.messageService.add({
           severity: 'success',
@@ -110,11 +79,5 @@ export class AuthFacade {
       case 'logout':
         break
     }
-  }
-
-  bootstrap(): void {
-    const session = this.session.loadSession()
-    if (!session) return
-    this.store.hydrateSession(session)
   }
 }
