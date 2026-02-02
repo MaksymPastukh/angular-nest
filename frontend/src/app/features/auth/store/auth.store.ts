@@ -13,10 +13,11 @@ import { UserRole } from '../domain/enums/user-role.enum'
 import { AuthEventInterface } from '../domain/interfaces/auth-event.interface'
 import { AuthState } from '../domain/interfaces/auth-state.interface'
 import { CurrentUserResponseInterface } from '../domain/interfaces/current-user.interface'
+import { DefaultResponseInterface } from '../domain/interfaces/default-response.interface'
+import { LoadSessionInterface } from '../domain/interfaces/get-tokens.interface'
 import { LoginDataInterface } from '../domain/interfaces/loginData.interface'
 import { RegisterDataInterface } from '../domain/interfaces/registerData.interface'
 import { AuthErrorType, AuthSuccessType } from '../domain/types/auth-event.type'
-import { DefaultResponseInterface } from '../domain/interfaces/default-response.interface'
 
 const initialState: AuthState = {
   user: null,
@@ -137,6 +138,19 @@ export const AuthStore = signalStore(
           { type: AuthEventConstantsType.LOGIN_ERROR }
         )
       ),
+      hydrateSession: (session: LoadSessionInterface) => {
+        patchState(store, {
+          user: {
+            access_token: session.accessToken as string,
+            refresh_token: session.refreshToken as string,
+            user: session.user,
+          },
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+          event: null,
+        })
+      },
       resetState: () => {
         patchState(store, initialState)
       },

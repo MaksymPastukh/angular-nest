@@ -1,6 +1,7 @@
 import { computed, effect, inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { MessageService } from 'primeng/api'
+import { AuthSessionService } from '../../../core/http/auth.session.service'
 import { AUTH_MESSAGES } from '../domain/constants/auth-event-messages.constants'
 import { AuthEventInterface } from '../domain/interfaces/auth-event.interface'
 import { LoginDataInterface } from '../domain/interfaces/loginData.interface'
@@ -12,6 +13,7 @@ export class AuthFacade {
   private readonly store = inject(AuthStore)
   private readonly router = inject(Router)
   private readonly messageService = inject(MessageService)
+  private readonly session = inject(AuthSessionService)
 
   readonly isAuthenticated = this.store.isAuthenticated
   readonly currentUser = this.store.user
@@ -29,6 +31,7 @@ export class AuthFacade {
   readonly hasError = computed(() => this.error() !== null)
 
   constructor() {
+    this.bootstrap()
     this.setupAuthEventEffects()
   }
 
@@ -41,6 +44,7 @@ export class AuthFacade {
   }
 
   logout(): void {
+    this.session.clear()
     this.store.resetState()
 
     this.messageService.add({
@@ -70,7 +74,11 @@ export class AuthFacade {
   private handleAuthEvent(event: AuthEventInterface): void {
     switch (event.type) {
       case 'loginSuccess':
-      case 'registerSuccess':
+      case 'registerSuccess': {
+        const response = this.currentUser()
+        if (response) {
+          this.session.saveAuthResponse(response)
+        }
         this.messageService.add({
           severity: 'success',
           summary:
@@ -84,6 +92,7 @@ export class AuthFacade {
         })
         void this.router.navigate(['/'])
         break
+      }
       case 'loginError':
       case 'registerError':
         this.messageService.add({
@@ -101,5 +110,11 @@ export class AuthFacade {
       case 'logout':
         break
     }
+  }
+
+  bootstrap(): void {
+    const session = this.session.loadSession()
+    if (!session) return
+    this.store.hydrateSession(session)
   }
 }
