@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { Subscription } from 'rxjs'
+import { ProductInterface } from '../../../products/domain/interfaces/product.interface'
 import { ProductsPageFacade } from '../../../products/store/products.facade'
 import { ProductCardComponent } from '../../../products/ui/product-card/product-card'
 import { TableBestPriceInterface } from '../../domain/interfaces/table-best-price.interface'
 import { CatalogFilterComponent } from '../../ui/catalog-filter/catalog-filter'
 import { TableBestPrice } from '../../ui/table-best-price/table-best-price'
-import { Subscription } from 'rxjs'
-import { ProductInterface } from '../../../products/domain/interfaces/product.interface'
 
 @Component({
   selector: 'app-catalog',
@@ -16,7 +16,7 @@ import { ProductInterface } from '../../../products/domain/interfaces/product.in
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogPage implements OnInit, OnDestroy {
-   /** Фасад страницы продуктов (продукты + фильтры + пагинация) */
+  /** Фасад страницы продуктов (продукты + фильтры + пагинация) */
   readonly facade = inject(ProductsPageFacade)
 
   /** Route для получения query params при инициализации */

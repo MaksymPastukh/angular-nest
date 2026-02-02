@@ -3,5 +3,3 @@ export const AUTHORIZATION_STATE = {
   authRefreshTokenKey: 'refreshToken',
   currentUserKey: 'currentUser',
 } as const
-
-export type AuthorizationStateValue = (typeof AUTHORIZATION_STATE)[keyof typeof AUTHORIZATION_STATE]
