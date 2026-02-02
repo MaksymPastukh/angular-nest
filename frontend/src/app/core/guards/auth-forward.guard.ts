@@ -1,16 +1,10 @@
-import { Location } from '@angular/common'
 import { inject } from '@angular/core'
-import { CanActivateFn } from '@angular/router'
-import { AuthFacade } from '../../features/auth/store/auth.facade'
+import { CanActivateFn, Router } from '@angular/router'
+import { AuthSessionService } from '../http/auth.session.service'
 
-export const authForwardGuard: CanActivateFn = (route, state) => {
-  const authFacade = inject(AuthFacade)
-  const location = inject(Location)
+export const authForwardGuard: CanActivateFn = () => {
+  const authSession = inject(AuthSessionService)
+  const router = inject(Router)
 
-  if (authFacade.isAuthenticated()) {
-    location.back()
-    return false
-  }
-
-  return true
+  return authSession.isAuthenticated() ? router.createUrlTree(['/']) : true
 }

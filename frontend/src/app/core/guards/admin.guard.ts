@@ -1,20 +1,15 @@
 import { inject } from '@angular/core'
 import { CanActivateFn, Router } from '@angular/router'
-import { AuthFacade } from '../../features/auth/store/auth.facade'
+import { UserRole } from '../../features/auth/domain/enums/user-role.enum'
+import { AuthSessionService } from '../http/auth.session.service'
 
 export const adminGuard: CanActivateFn = (route, state) => {
-  const authFacade = inject(AuthFacade)
+  const authSession = inject(AuthSessionService)
   const router = inject(Router)
 
-  if (!authFacade.canManageUsers()) {
-    return router.createUrlTree(['/login'], {
-      queryParams: { returnUrl: state.url },
-    })
+  if (!authSession.isAuthenticated()) {
+    return router.createUrlTree(['/auth/login'], { queryParams: { returnUrl: state.url } })
   }
 
-  if (authFacade.isAdmin()) {
-    return true
-  }
-
-  return router.createUrlTree(['/'])
+  return authSession.hasRole(UserRole.ADMIN) ? true : router.createUrlTree(['/'])
 }
