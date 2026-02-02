@@ -1,5 +1,4 @@
-import { inject, Injectable } from '@angular/core'
-import { AuthService } from '../../features/auth/data-access/auth.api'
+import { Injectable } from '@angular/core'
 import { AUTHORIZATION_STATE } from '../../features/auth/domain/constants/authorization.constants'
 import { UserRole } from '../../features/auth/domain/enums/user-role.enum'
 import {
@@ -12,11 +11,18 @@ import { LoadSessionInterface } from '../../features/auth/domain/interfaces/get-
   providedIn: 'root',
 })
 export class AuthSessionService {
-  readonly authService = inject(AuthService)
+  setItem(key: string, value: unknown): void {
+    try {
+      localStorage.setItem(key, JSON.stringify(value))
+    } catch (e) {
+      console.error('Error saving to localStorage', e)
+    }
+  }
+
   saveAuthResponse(response: CurrentUserResponseInterface): void {
     localStorage.setItem(AUTHORIZATION_STATE.authAccessTokenKey, response.access_token)
     localStorage.setItem(AUTHORIZATION_STATE.authRefreshTokenKey, response.refresh_token)
-    this.authService.setItem(AUTHORIZATION_STATE.currentUserKey, response.user)
+    this.setItem(AUTHORIZATION_STATE.currentUserKey, response.user)
   }
 
   clear(): void {

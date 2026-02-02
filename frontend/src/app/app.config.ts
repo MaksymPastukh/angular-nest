@@ -7,7 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config'
 import { MessageService } from 'primeng/api'
 import { AuraLight } from '../assets/theme/aura-light'
-import { AuthInterceptor } from './core/http/auth.interceptor'
+import { authInterceptor } from './core/http/auth.interceptor'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
       })
     ),
-    provideHttpClient(withInterceptors([AuthInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
       overlayAppendTo: 'body',
