@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { Select } from 'primeng/select'
@@ -24,4 +24,10 @@ export class HeaderComponent {
   ]
 
   selectedLanguage = 'en-US'
+
+  constructor() {
+    effect(() => {
+      this.authState.bootstrap()
+    })
+  }
 }

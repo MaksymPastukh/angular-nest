@@ -4,12 +4,12 @@ import { AuthSessionService } from '../http/auth.session.service'
 import { UserRole } from '../../features/auth/domain/enums/user-role.enum'
 
 export const adminGuard: CanActivateFn = (route, state) => {
-  const authSession = inject(AuthSessionService)
+  const session = inject(AuthSessionService)
   const router = inject(Router)
 
-  if (!authSession.isAuthenticated()) {
+  if (!session.isAuthenticated()) {
     return router.createUrlTree(['/auth/login'], { queryParams: { returnUrl: state.url } })
   }
 
-  return authSession.hasRole(UserRole.ADMIN) ? true : router.createUrlTree(['/'])
+  return session.hasRole(UserRole.ADMIN) ? true : router.createUrlTree(['/'])
 }

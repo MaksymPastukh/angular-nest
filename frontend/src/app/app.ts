@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
 import { CreateProductStore } from './features/admin/store/create.store'
-import { AuthStore } from './features/auth/store/auth.store'
 
 @Component({
   selector: 'app-root',

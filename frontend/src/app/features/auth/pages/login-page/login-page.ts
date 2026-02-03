@@ -5,10 +5,11 @@ import { RouterLink } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { LoginDataInterface } from '../../domain/interfaces/loginData.interface'
 import { AuthStore } from '../../store/auth.store'
+import { Toast } from 'primeng/toast'
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, NgOptimizedImage, RouterLink, Field],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, Field, Toast],
   providers: [MessageService],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',
