@@ -63,6 +63,12 @@
     "editor.formatOnSave": true
   },
 
+  // Использовать Prettier для форматирования CSS
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
   // Использовать Prettier для форматирования JSON
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -102,8 +108,6 @@
   // Включить строгие проверки null
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 
-  // Включить строгие проверки null
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 
   // ========================================
   // НАСТРОЙКИ ANGULAR (Angular 21+ Support)

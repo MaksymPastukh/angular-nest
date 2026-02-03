@@ -30,7 +30,7 @@ export const routes: Routes = [
           import('./features/products/products.routes').then((m) => m.PRODUCTS_ROUTES),
       },
       {
-        path: 'personal',
+        path: '',
         loadChildren: () =>
           import('./features/personal/personal.routes').then((m) => m.PERSONAL_ROUTES),
       },

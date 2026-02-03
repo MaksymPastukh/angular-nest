@@ -125,76 +125,83 @@
       </div>
 
       @if (authState.isAuthenticated()) {
-        <div class="flex items-center gap-2 sm:gap-3">
+        <div
+          class="flex items-center gap-2 sm:gap-3 [&>a]:flex-shrink-0 [&>a]:transition-transform [&>a]:duration-150 [&>a:active]:scale-90 [&>a.active]:scale-90 [&>a>svg>rect]:fill-[#F6F6F6] [&>a>svg>path]:stroke-[var(--color-text-gray)] [&>a.active>svg>rect]:fill-[#8a33fd] [&>a.active>svg>path]:stroke-[#fff]"
+        >
           <!-- Wishlist -->
           <a
-            [routerLink]="['/']"
-            class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+            routerLink="/wishlist"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
           >
             <svg
+              class="w-9 h-9 sm:w-11 sm:h-11"
               width="44"
               height="44"
               viewBox="0 0 44 44"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              class="w-9 h-9 sm:w-11 sm:h-11"
             >
-              <rect width="44" height="44" rx="8" fill="#F6F6F6" />
+              <rect width="44" height="44" rx="8" fill="currentColor" />
               <path
                 fill-rule="evenodd"
                 clip-rule="evenodd"
                 d="M21.9949 16.9301C20.4953 15.1826 17.9948 14.7125 16.116 16.3127C14.2372 17.9129 13.9727 20.5884 15.4481 22.481C16.6749 24.0545 20.3873 27.3732 21.6041 28.4474C21.7402 28.5675 21.8083 28.6276 21.8877 28.6512C21.957 28.6718 22.0328 28.6718 22.1021 28.6512C22.1815 28.6276 22.2495 28.5675 22.3857 28.4474C23.6024 27.3732 27.3149 24.0545 28.5416 22.481C30.017 20.5884 29.7848 17.8961 27.8737 16.3127C25.9626 14.7294 23.4944 15.1826 21.9949 16.9301Z"
-                stroke="#807D7E"
+                stroke="currentColor"
                 stroke-width="1.5"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                vector-effect="non-scaling-stroke"
               />
             </svg>
           </a>
 
           <!-- Profile -->
           <a
-            [routerLink]="['/personal/info']"
-            routerLinkActive="text-purple-600"
-            class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+            routerLink="/account/info"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
           >
             <svg
+              class="w-9 h-9 sm:w-11 sm:h-11"
               width="44"
               height="44"
               viewBox="0 0 44 44"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              class="w-9 h-9 sm:w-11 sm:h-11"
             >
-              <rect width="44" height="44" rx="8" fill="#F6F6F6" />
+              <rect width="44" height="44" rx="8" fill="currentColor" />
               <path
                 d="M21.9999 23.6667C24.3011 23.6667 26.1666 21.8012 26.1666 19.5C26.1666 17.1988 24.3011 15.3333 21.9999 15.3333C19.6987 15.3333 17.8333 17.1988 17.8333 19.5C17.8333 21.8012 19.6987 23.6667 21.9999 23.6667ZM21.9999 23.6667C18.318 23.6667 15.3333 25.9053 15.3333 28.6667M21.9999 23.6667C25.6818 23.6667 28.6666 25.9053 28.6666 28.6667"
-                stroke="#807D7E"
+                stroke="currentColor"
                 stroke-width="1.5"
                 stroke-linecap="round"
+                vector-effect="non-scaling-stroke"
               />
             </svg>
           </a>
 
           <!-- Cart -->
           <a
-            [routerLink]="['/']"
-            class="flex-shrink-0 transition-transform duration-150 ease-in-out hover:scale-95 active:scale-90 [&.active]:scale-90"
+            routerLink="/cart"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
           >
             <svg
+              class="w-9 h-9 sm:w-11 sm:h-11"
               width="44"
               height="44"
               viewBox="0 0 44 44"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              class="w-9 h-9 sm:w-11 sm:h-11"
             >
-              <rect width="44" height="44" rx="8" fill="#F6F6F6" />
+              <rect width="44" height="44" rx="8" fill="currentColor" />
               <path
                 d="M14.5 15.3333H15.0053C15.8558 15.3333 16.5699 15.9738 16.6621 16.8193L17.3379 23.0141C17.4301 23.8596 18.1442 24.5 18.9947 24.5H26.205C26.9669 24.5 27.6317 23.9834 27.82 23.2452L28.9699 18.7359C29.2387 17.6821 28.4425 16.6574 27.355 16.6574H17.5M17.5206 27.5208H18.1456M17.5206 28.1458H18.1456M26.6873 27.5208H27.3123M26.6873 28.1458H27.3123M18.6667 27.8333C18.6667 28.2936 18.2936 28.6667 17.8333 28.6667C17.3731 28.6667 17 28.2936 17 27.8333C17 27.3731 17.3731 27 17.8333 27C18.2936 27 18.6667 27.3731 18.6667 27.8333ZM27.8333 27.8333C27.8333 28.2936 27.4602 28.6667 27 28.6667C26.5398 28.6667 26.1667 28.2936 26.1667 27.8333C26.1667 27.3731 26.5398 27 27 27C27.4602 27 27.8333 27.3731 27.8333 27.8333Z"
-                stroke="#807D7E"
+                stroke="currentColor"
                 stroke-width="1.5"
                 stroke-linecap="round"
+                vector-effect="non-scaling-stroke"
               />
             </svg>
           </a>
