@@ -31,7 +31,6 @@ export class ProductCardComponent {
   private readonly imageErrorHandled = signal(false)
 
   constructor() {
-    // Синхронизируем состояние лайка с данными продукта
     effect(() => {
       this.isLiked.set(this.productIn().isLiked || false)
     })

@@ -2,10 +2,10 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { Router } from '@angular/router'
 import { catchError, switchMap, throwError } from 'rxjs'
-import { CurrentUserResponseInterface } from '../../features/auth/domain/interfaces/current-user.interface'
-import { AuthSessionService } from './auth.session.service'
-import { AuthService } from '../../features/auth/data-access/auth.api'
+import { AuthService } from '../../../features/auth/data-access/auth.api'
+import { CurrentUserResponseInterface } from '../../../features/auth/domain/interfaces/current-user.interface'
 import { AuthStateService } from './auth-state.service'
+import { AuthSessionService } from './auth.session.service'
 
 const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/refresh'] as const
 

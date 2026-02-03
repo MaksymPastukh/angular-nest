@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { FormsModule } from '@angular/forms'
 import { Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { Select } from 'primeng/select'
-import { AuthStateService } from '../../http/auth-state.service'
+import { AuthStateService } from '../../auth/http/auth-state.service'
 
 @Component({
   selector: 'app-header',

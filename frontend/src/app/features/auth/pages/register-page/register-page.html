@@ -288,10 +288,10 @@
 
       <button
         type="submit"
-        [disabled]="registerForm().invalid() || authStore.isLoading()"
+        [disabled]="registerForm().invalid() || authFacade.isLoading()"
         class="authResponseButton mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        @if (authStore.isLoading()) {
+        @if (authFacade.isLoading()) {
           <div class="flex items-center justify-center gap-2">
             <svg
               class="animate-spin h-5 w-5"

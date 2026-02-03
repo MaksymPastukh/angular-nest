@@ -1,8 +1,8 @@
 import { effect, inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { MessageService } from 'primeng/api'
-import { AuthStateService } from '../../../core/http/auth-state.service'
-import { AuthSessionService } from '../../../core/http/auth.session.service'
+import { AuthStateService } from '../../../core/auth/http/auth-state.service'
+import { AuthSessionService } from '../../../core/auth/http/auth.session.service'
 import { AUTH_MESSAGES } from '../domain/constants/auth-event-messages.constants'
 import { AuthEventInterface } from '../domain/interfaces/auth-event.interface'
 import { LoginDataInterface } from '../domain/interfaces/loginData.interface'
@@ -36,6 +36,8 @@ export class AuthFacade {
   }
 
   login(data: LoginDataInterface): void {
+    console.log('test')
+
     this.store.login(data)
   }
 

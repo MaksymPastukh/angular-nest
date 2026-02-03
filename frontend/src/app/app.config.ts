@@ -1,13 +1,13 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core'
 import { provideRouter, withInMemoryScrolling } from '@angular/router'
 
-import { routes } from './app.routes'
 import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
-import { providePrimeNG } from 'primeng/config'
 import { MessageService } from 'primeng/api'
+import { providePrimeNG } from 'primeng/config'
 import { AuraLight } from '../assets/theme/aura-light'
-import { authInterceptor } from './core/http/auth.interceptor'
+import { routes } from './app.routes'
+import { authInterceptor } from './core/auth/http/auth.interceptor'
 
 export const appConfig: ApplicationConfig = {
   providers: [

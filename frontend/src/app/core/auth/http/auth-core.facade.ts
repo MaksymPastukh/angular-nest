@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core'
 import { Router } from '@angular/router'
 import { MessageService } from 'primeng/api'
-import { AuthSessionService } from '../http/auth.session.service'
+import { AUTH_MESSAGES } from '../../../features/auth/domain/constants/auth-event-messages.constants'
 import { AuthStateService } from './auth-state.service'
-import { AUTH_MESSAGES } from '../../features/auth/domain/constants/auth-event-messages.constants'
+import { AuthSessionService } from './auth.session.service'
 
 @Injectable({ providedIn: 'root' })
 export class AuthCoreFacade {

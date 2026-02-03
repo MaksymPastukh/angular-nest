@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router'
-import { authForwardGuard } from './core/guards/auth-forward.guard'
+import { authForwardGuard } from './core/auth/guards/auth-forward.guard'
 import { LayoutComponent } from './core/layout/layout'
 import { MainComponent } from './features/main/main'
 
@@ -25,9 +25,14 @@ export const routes: Routes = [
         loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
       },
       {
-        path: 'products',
+        path: 'product',
         loadChildren: () =>
           import('./features/products/products.routes').then((m) => m.PRODUCTS_ROUTES),
+      },
+      {
+        path: 'personal',
+        loadChildren: () =>
+          import('./features/personal/personal.routes').then((m) => m.PERSONAL_ROUTES),
       },
     ],
   },

@@ -1,12 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core'
-import { UserRoleConstants } from '../../features/auth/domain/constants/user-role.constants'
+import { UserRole } from '../../../features/auth/domain/enums/user-role.enum'
 import {
   CurrentUserResponseInterface,
   User,
-} from '../../features/auth/domain/interfaces/current-user.interface'
-import { LoadSessionInterface } from '../../features/auth/domain/interfaces/get-tokens.interface'
+} from '../../../features/auth/domain/interfaces/current-user.interface'
+import { LoadSessionInterface } from '../../../features/auth/domain/interfaces/get-tokens.interface'
 import { AuthSessionService } from './auth.session.service'
-import { UserRole } from '../../features/auth/domain/enums/user-role.enum'
 
 @Injectable({
   providedIn: 'root',

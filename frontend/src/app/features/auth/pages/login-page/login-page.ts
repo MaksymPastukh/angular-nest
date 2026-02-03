@@ -3,9 +3,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { email, Field, form, required, submit } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
 import { MessageService } from 'primeng/api'
-import { LoginDataInterface } from '../../domain/interfaces/loginData.interface'
-import { AuthStore } from '../../store/auth.store'
 import { Toast } from 'primeng/toast'
+import { LoginDataInterface } from '../../domain/interfaces/loginData.interface'
+import { AuthFacade } from '../../store/auth.facade'
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ import { Toast } from 'primeng/toast'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {
-  private readonly authStore = inject(AuthStore)
+  private readonly authFacade = inject(AuthFacade)
 
   loginModel = signal<LoginDataInterface>({
     email: '',
@@ -41,7 +41,7 @@ export class LoginPage {
         password: formModel.password,
       }
 
-      this.authStore.login(loginData)
+      this.authFacade.login(loginData)
 
       return Promise.resolve(undefined)
     }).catch(console.error)

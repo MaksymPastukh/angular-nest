@@ -13,9 +13,9 @@ import {
   validate,
 } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
-import { RegisterDataInterface } from '../../domain/interfaces/registerData.interface'
-import { AuthStore } from '../../store/auth.store'
 import { Toast } from 'primeng/toast'
+import { RegisterDataInterface } from '../../domain/interfaces/registerData.interface'
+import { AuthFacade } from '../../store/auth.facade'
 
 @Component({
   selector: 'app-register',
@@ -25,7 +25,7 @@ import { Toast } from 'primeng/toast'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterPage {
-  readonly authStore = inject(AuthStore)
+  readonly authFacade = inject(AuthFacade)
 
   readonly isPasswordVisible = signal(false)
   readonly isConfirmPasswordVisible = signal(false)
@@ -85,7 +85,7 @@ export class RegisterPage {
         subscribeToNewsletter: formModel.subscribeToNewsletter,
       }
 
-      this.authStore.register(registerData)
+      this.authFacade.register(registerData)
 
       return Promise.resolve(undefined)
     }).catch(console.error)
