@@ -93,7 +93,7 @@
       }
 
       <div class="hidden sm:block flex-1 md:max-w-xs lg:max-w-sm xl:max-w-md">
-        <p-autocomplete
+        <!-- <p-autocomplete
           [(ngModel)]="searchQuery"
           [suggestions]="searchSuggestions()"
           (completeMethod)="searchProducts($event)"
@@ -121,7 +121,7 @@
               <div class="font-bold text-purple-600 flex-shrink-0">${{ product.price }}</div>
             </div>
           </ng-template>
-        </p-autocomplete>
+        </p-autocomplete> -->
       </div>
 
       @if (authState.isAuthenticated()) {
@@ -235,7 +235,7 @@
 
     <!-- Mobile search - показывается только на мобильных -->
     <div class="block sm:hidden mt-3">
-      <p-autocomplete
+      <!-- <p-autocomplete
         [(ngModel)]="searchQuery"
         [suggestions]="searchSuggestions()"
         (completeMethod)="searchProducts($event)"
@@ -263,7 +263,7 @@
             <div class="font-bold text-purple-600 flex-shrink-0">${{ product.price }}</div>
           </div>
         </ng-template>
-      </p-autocomplete>
+      </p-autocomplete> -->
     </div>
   </div>
 </header>

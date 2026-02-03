@@ -2,29 +2,12 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router, RouterLink, RouterLinkActive } from '@angular/router'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { PrimeTemplate } from 'primeng/api'
-import { AutoComplete, AutoCompleteSelectEvent } from 'primeng/autocomplete'
 import { Select } from 'primeng/select'
-import { catchError, debounceTime, of, pipe, switchMap, tap } from 'rxjs'
-import { ProductsService } from '../../../features/products/data-access/products.service'
-import { ProductInterface } from '../../../features/products/domain/interfaces/product.interface'
-import { ProductsResponseInterface } from '../../../features/products/domain/interfaces/products-response.interface'
-import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe'
 import { AuthStateService } from '../../http/auth-state.service'
 
 @Component({
   selector: 'app-header',
-  imports: [
-    CommonModule,
-    RouterLink,
-    AutoComplete,
-    FormsModule,
-    RouterLinkActive,
-    Select,
-    PrimeTemplate,
-    ImageUrlPipe,
-  ],
+  imports: [CommonModule, RouterLink, FormsModule, RouterLinkActive, Select],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,12 +15,8 @@ import { AuthStateService } from '../../http/auth-state.service'
 export class HeaderComponent {
   readonly authState = inject(AuthStateService)
   private readonly router = inject(Router)
-  private readonly productsService = inject(ProductsService)
 
-  // Signals для реактивного состояния
   readonly searchQuery = signal<string>('')
-  readonly searchSuggestions = signal<ProductInterface[]>([])
-  readonly isSearching = signal<boolean>(false)
 
   languages = [
     { label: 'English (United States)', value: 'en-US' },
@@ -45,71 +24,4 @@ export class HeaderComponent {
   ]
 
   selectedLanguage = 'en-US'
-
-  /**
-   * Реактивный метод поиска с использованием rxMethod
-   * Автоматически управляет subscriptions и debounce
-   */
-  private readonly performSearch = rxMethod<string>(
-    pipe(
-      // Debounce для уменьшения количества запросов
-      debounceTime(300),
-      tap(() => this.isSearching.set(true)),
-      switchMap((query) => {
-        // Проверка минимальной длины
-        if (!query || query.length < 2) {
-          this.searchSuggestions.set([])
-          this.isSearching.set(false)
-          return of(null)
-        }
-
-        // API запрос
-        return this.productsService
-          .getFilteredProducts({
-            search: query,
-            limit: 10,
-            page: 1,
-          })
-          .pipe(
-            tap((response: ProductsResponseInterface) => {
-              this.searchSuggestions.set(response.products)
-              this.isSearching.set(false)
-            }),
-            catchError((error) => {
-              console.error('[HeaderSearch] Error:', error)
-              this.searchSuggestions.set([])
-              this.isSearching.set(false)
-              return of(null)
-            })
-          )
-      })
-    )
-  )
-
-  /**
-   * Метод поиска продуктов для autocomplete
-   * Вызывается при вводе текста (минимум 2 символа)
-   */
-  searchProducts(event: { query: string }): void {
-    const query = event.query.trim()
-    // Используем rxMethod для реактивного поиска
-    this.performSearch(query)
-  }
-
-  /**
-   * Обработчик выбора продукта из dropdown
-   * Навигирует на страницу конкретного продукта
-   */
-  onProductSelect(event: AutoCompleteSelectEvent): void {
-    const product = event.value as ProductInterface
-
-    if (product?.id) {
-      // Навигация на страницу продукта
-      void this.router.navigate(['/product', product.id])
-
-      // Очищаем поле поиска после выбора
-      this.searchQuery.set('')
-      this.searchSuggestions.set([])
-    }
-  }
 }
