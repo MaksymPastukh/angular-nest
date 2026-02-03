@@ -34,6 +34,15 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/personal/personal.routes').then((m) => m.PERSONAL_ROUTES),
       },
+      {
+        path: 'cart',
+        loadChildren: () => import('./features/cart/cart.routes').then((m) => m.CART_ROUTES),
+      },
+      {
+        path: 'wishlist',
+        loadChildren: () =>
+          import('./features/wishlist/wishlist.routes').then((m) => m.WISHLIST_ROUTES),
+      },
     ],
   },
 ]
