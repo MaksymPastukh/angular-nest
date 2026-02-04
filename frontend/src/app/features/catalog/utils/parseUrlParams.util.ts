@@ -1,61 +1,44 @@
 import type { Params } from '@angular/router'
 import { ParsedUrlParamsInterface } from '../domain/interfaces/parsed-url-params.interface'
 
+function toIntOrUndef(v: unknown): number | undefined {
+  if (typeof v !== 'string') return undefined
+  const n = Number.parseInt(v, 10)
+  return Number.isFinite(n) ? n : undefined
+}
+
+function toStringArray(v: unknown): string[] {
+  if (typeof v === 'string') return [v]
+  if (Array.isArray(v)) return v.filter((x): x is string => typeof x === 'string')
+  return []
+}
+
 export function parseUrlParams(params: Params): ParsedUrlParamsInterface {
   return {
     // Цена
-    minPrice:
-      params['minPrice'] && typeof params['minPrice'] === 'string'
-        ? parseInt(params['minPrice'])
-        : undefined,
-    maxPrice:
-      params['maxPrice'] && typeof params['maxPrice'] === 'string'
-        ? parseInt(params['maxPrice'])
-        : undefined,
+    minPrice: toIntOrUndef(params['minPrice']),
+    maxPrice: toIntOrUndef(params['maxPrice']),
 
-    // Размеры (может быть строка или массив)
-    sizes:
-      params['size'] && typeof params['size'] === 'string'
-        ? Array.isArray(params['size'])
-          ? params['size']
-          : [params['size']]
-        : [],
+    // Размеры / Цвета
+    sizes: toStringArray(params['size']),
+    colors: toStringArray(params['color']),
 
-    // Цвета (может быть строка или массив)
-    colors:
-      params['color'] && typeof params['color'] === 'string'
-        ? Array.isArray(params['color'])
-          ? params['color']
-          : [params['color']]
-        : [],
+    // Категория
+    category: typeof params['category'] === 'string' ? params['category'] : undefined,
 
-    // Категория (Men, Women, Combos, Joggers)
-    category:
-      params['category'] && typeof params['category'] === 'string' ? params['category'] : undefined,
-
-    // Подкатегория + Бренд
-    productType:
-      params['productType'] && typeof params['productType'] === 'string'
-        ? params['productType']
-        : undefined,
-    dressStyle:
-      params['dressStyle'] && typeof params['dressStyle'] === 'string'
-        ? params['dressStyle']
-        : undefined,
-    brand: params['brand'] && typeof params['brand'] === 'string' ? params['brand'] : undefined,
+    // Подкатегория / Стиль / Бренд
+    productType: typeof params['productType'] === 'string' ? params['productType'] : undefined,
+    dressStyle: typeof params['dressStyle'] === 'string' ? params['dressStyle'] : undefined,
+    brand: typeof params['brand'] === 'string' ? params['brand'] : undefined,
 
     // Поиск
-    search: params['search'] && typeof params['search'] === 'string' ? params['search'] : undefined,
+    search: typeof params['search'] === 'string' ? params['search'] : undefined,
 
     // Пагинация
-    page:
-      params['page'] && typeof params['page'] === 'string' ? parseInt(params['page']) : undefined,
-    limit:
-      params['limit'] && typeof params['limit'] === 'string'
-        ? parseInt(params['limit'])
-        : undefined,
+    page: toIntOrUndef(params['page']),
+    limit: toIntOrUndef(params['limit']),
 
-    // Сортировка (с type assertion для строгих типов)
+    // Сортировка
     sortBy: params['sortBy'] as 'price' | 'rating' | 'title' | 'createdAt' | undefined,
     order: params['order'] as 'asc' | 'desc' | undefined,
   }

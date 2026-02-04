@@ -201,5 +201,3 @@ export const ProductStore = signalStore(
     },
   })
 )
-
-export type ProductStoreType = InstanceType<typeof ProductStore>
