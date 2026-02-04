@@ -9,7 +9,7 @@ import {
   withState,
 } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, forkJoin, Observable, switchMap, tap } from 'rxjs'
+import { catchError, EMPTY, forkJoin, switchMap, tap } from 'rxjs'
 import { ProductsService } from '../../products/data-access/products.service'
 import { CatalogFilterState } from '../domain/interfaces/catalog-filter-state.interface'
 import { CatalogSelectedFiltersInterface } from '../domain/interfaces/catalog-selected-filters.interface'
@@ -79,10 +79,9 @@ export const ProductFilterStore = signalStore(
         error,
       })
 
-    const handleHttpError = (error: HttpErrorResponse) => {
-      const message =
-        (error.error as { message?: string })?.message ?? error.message ?? 'Произошла ошибка'
-
+    const handleHttpError = (error: unknown) => {
+      const e = error as HttpErrorResponse
+      const message = (e.error as { message?: string })?.message ?? e.message ?? 'Произошла ошибка'
       setError(String(message))
     }
 
@@ -180,7 +179,7 @@ export const ProductFilterStore = signalStore(
                 initialized: true,
               })
             ),
-            catchError((error: HttpErrorResponse): Observable<never> => {
+            catchError((error) => {
               handleHttpError(error)
               return EMPTY
             })

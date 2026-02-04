@@ -1,5 +1,6 @@
 import { CatalogFilterParamsInterface } from '../../../catalog/domain/interfaces/catalog-filter-params.interface'
 import { ProductInterface } from './product.interface'
+import { ProductsFacets } from './products-response.interface'
 
 export interface ShopStateInterface {
   products: ProductInterface[]
@@ -8,4 +9,5 @@ export interface ShopStateInterface {
   error: string | null
   total: number
   totalPages: number
+  facets: ProductsFacets | null
 }

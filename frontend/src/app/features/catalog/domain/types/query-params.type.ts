@@ -13,6 +13,5 @@ export interface QueryParamsInterface {
   page?: number
   limit?: number
   search?: string
+  [key: string]: string | string[] | number | undefined
 }
-
-export type QueryParams = QueryParamsInterface

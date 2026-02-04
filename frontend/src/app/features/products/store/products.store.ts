@@ -27,6 +27,7 @@ const initialState: ShopStateInterface = {
   error: null,
   total: 0,
   totalPages: 0,
+  facets: null,
 }
 
 export const ProductStore = signalStore(
@@ -47,6 +48,23 @@ export const ProductStore = signalStore(
       hasNext: (store.filters().page ?? 1) < store.totalPages(),
       hasPrev: (store.filters().page ?? 1) > 1,
     })),
+
+    facets: computed(() => store.facets()),
+
+    facetsBrands: computed(() => store.facets()?.brands ?? []),
+    facetsProductTypes: computed(() => store.facets()?.productTypes ?? []),
+    facetsDressStyles: computed(() => store.facets()?.dressStyles ?? []),
+    facetsSizes: computed(() => store.facets()?.sizes ?? []),
+    facetsColors: computed(() => store.facets()?.colors ?? []),
+
+    // Если где-то нужны только строки:
+    facetsBrandValues: computed(() => (store.facets()?.brands ?? []).map((x) => x.value)),
+    facetsProductTypeValues: computed(() =>
+      (store.facets()?.productTypes ?? []).map((x) => x.value)
+    ),
+    facetsDressStyleValues: computed(() => (store.facets()?.dressStyles ?? []).map((x) => x.value)),
+    facetsSizeValues: computed(() => (store.facets()?.sizes ?? []).map((x) => x.value)),
+    facetsColorValues: computed(() => (store.facets()?.colors ?? []).map((x) => x.value)),
   })),
 
   withMethods((store, productService = inject(ProductsService)) => {
@@ -154,6 +172,7 @@ export const ProductStore = signalStore(
                   products: response?.products,
                   total: response.total,
                   totalPages: response.totalPages,
+                  facets: response.facets ?? null,
                   isLoading: false,
                 })
               }),

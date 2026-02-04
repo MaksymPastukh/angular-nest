@@ -21,13 +21,15 @@ import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
 })
 export class CatalogFilterComponent implements OnInit {
   readonly filterFacade = inject(CatalogFilterFacade)
-
+  private readonly lastHoverKey: string | null = null
   readonly MIN_PRICE = 0
   readonly MAX_PRICE = 400
   min = this.MIN_PRICE
   max = this.MAX_PRICE
   priceRangeValues: [number, number] = [70, 270]
   openedPanels: string[] = ['0', '1', '2', '3', '4']
+  private closeTimer: ReturnType<typeof setTimeout> | null = null
+  private readonly AUTO_CLOSE_DELAY = 5000
 
   ngOnInit(): void {
     this.filterFacade.ensureLoaded()
@@ -104,14 +106,31 @@ export class CatalogFilterComponent implements OnInit {
     this.filterFacade.toggleColor(color)
   }
 
-  onCategoryClick(categoryName: string, event: Event, menu: any): void {
+  onCategoryClick(categoryName: string, event: Event, menu: TieredMenu): void {
     this.filterFacade.setActiveCategory(categoryName)
     menu.toggle(event)
+    this.startAutoClose(menu)
   }
 
-  onStyleClick(styleName: string, event: Event, menu: any): void {
+  onStyleClick(styleName: string, event: Event, menu: TieredMenu): void {
     this.filterFacade.setActiveStyle(styleName)
     menu.toggle(event)
+    this.startAutoClose(menu)
+  }
+
+  startAutoClose(menu: TieredMenu): void {
+    this.clearAutoClose()
+
+    this.closeTimer = setTimeout(() => {
+      menu.hide()
+    }, this.AUTO_CLOSE_DELAY)
+  }
+
+  clearAutoClose(): void {
+    if (this.closeTimer) {
+      clearTimeout(this.closeTimer)
+      this.closeTimer = null
+    }
   }
 
   resetFilters(): void {

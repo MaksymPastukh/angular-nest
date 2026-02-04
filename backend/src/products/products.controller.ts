@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { IProductFacets } from './interfaces/facet.interface';
 import { IProductsResponse } from './interfaces/product.interface';
 import { ProductsService } from './products.service';
 import { ProductDocument } from './schemas/product.schema';
@@ -157,6 +158,20 @@ export class ProductsController {
   @HttpCode(HttpStatus.OK)
   public async getDressStyles(): Promise<string[]> {
     return await this.productsService.getDressStyles();
+  }
+
+  /**
+   * Получение фасетов для фильтрации продуктов
+   * GET /products/facets
+   * Используется для получения актуальных фильтров с количеством продуктов
+   * Полезно для preview при наведении на фильтры
+   * @param filterDto - Параметры фильтрации (опционально)
+   * @returns Объект с фасетами для всех полей фильтрации
+   */
+  @Get('facets')
+  @HttpCode(HttpStatus.OK)
+  public async getFacets(@Query() filterDto: FilterProductDto): Promise<IProductFacets> {
+    return await this.productsService.getFacets(filterDto);
   }
 
   /**

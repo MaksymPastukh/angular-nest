@@ -15,6 +15,12 @@ export class ProductsPageFacade {
   private readonly isRestoringFromUrl = signal(false)
   private readonly lastQueryString = signal<string>('')
 
+  readonly facetsBrands = this.productStore.facetsBrands
+  readonly facetsProductTypes = this.productStore.facetsProductTypes
+  readonly facetsDressStyles = this.productStore.facetsDressStyles
+  readonly facetsSizes = this.productStore.facetsSizes
+  readonly facetsColors = this.productStore.facetsColors
+
   constructor() {
     effect(() => {
       const uiFilters: CatalogSelectedFiltersInterface = this.filterStore.selected()

@@ -26,7 +26,12 @@
       }
 
       @if (!filterFacade.isLoading() && !filterFacade.error()) {
-        <p-tieredMenu #mainMenu [model]="filterFacade.categoryBrandsMenu()" [popup]="true" />
+        <p-tieredMenu
+          #mainMenu
+          [model]="filterFacade.categoryBrandsMenu()"
+          [popup]="true"
+          appendTo="body"
+        />
 
         <!-- Кнопки категорий -->
         @for (categoryName of filterFacade.productTypes(); track $index) {
@@ -220,7 +225,12 @@
           <p>{{ filterFacade.error() }}</p>
         </div>
       }
-      <p-tieredMenu #styleMenu [model]="filterFacade.styleBrandsMenu()" [popup]="true" />
+      <p-tieredMenu
+        #styleMenu
+        [model]="filterFacade.styleBrandsMenu()"
+        [popup]="true"
+        appendTo="body"
+      />
 
       @for (styleName of filterFacade.dressStyles(); track $index) {
         <button

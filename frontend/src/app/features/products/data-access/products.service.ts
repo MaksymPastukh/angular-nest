@@ -2,9 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment'
+import { FacetsResponseInterface } from '../../catalog/domain/interfaces/catalog-facets.interface'
 import { CatalogFilterParamsInterface } from '../../catalog/domain/interfaces/catalog-filter-params.interface'
 import { ProductInterface } from '../domain/interfaces/product.interface'
 import { ProductsResponseInterface } from '../domain/interfaces/products-response.interface'
+import { toHttpParams } from '../utils/to-http-params.util'
+import { QueryParamsFacets } from '../../catalog/domain/types/facets-preview-request.type'
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +18,12 @@ export class ProductsService {
 
   getAllProducts(): Observable<ProductsResponseInterface> {
     return this.http.get<ProductsResponseInterface>(this.apiUrl)
+  }
+
+  getFacets(params: QueryParamsFacets) {
+    return this.http.get<FacetsResponseInterface>(`${this.apiUrl}/facets`, {
+      params: toHttpParams(params),
+    })
   }
 
   getFilteredProducts(

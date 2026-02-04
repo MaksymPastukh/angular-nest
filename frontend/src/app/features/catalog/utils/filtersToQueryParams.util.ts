@@ -1,5 +1,5 @@
 import { CatalogFilterParamsInterface } from '../domain/interfaces/catalog-filter-params.interface'
-import type { QueryParams } from '../domain/types/query-params.type'
+import type { QueryParamsInterface } from '../domain/types/query-params.type'
 
 type ProductFilterParams = CatalogFilterParamsInterface
 
@@ -7,8 +7,8 @@ type ProductFilterParams = CatalogFilterParamsInterface
  * Конвертирует API фильтры в query параметры для URL
  * Убирает дефолтные значения чтобы URL был чище
  */
-export function filtersToQueryParams(filters: ProductFilterParams): QueryParams {
-  const params: QueryParams = {}
+export function filtersToQueryParams(filters: ProductFilterParams): QueryParamsInterface {
+  const params: QueryParamsInterface = {}
 
   // Основные фильтры
   if (filters['productType']) params.productType = filters['productType']

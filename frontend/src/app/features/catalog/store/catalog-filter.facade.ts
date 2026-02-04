@@ -1,5 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core'
 import { MenuItem } from 'primeng/api'
+import { buildBaseFacetsParams } from '../utils/build-facets-params'
+import { CatalogFacetsStore } from './catalog-faceds-preview.store'
 import { ProductFilterStore } from './catalog-filter.store'
 
 @Injectable({
@@ -7,6 +9,7 @@ import { ProductFilterStore } from './catalog-filter.store'
 })
 export class CatalogFilterFacade {
   private readonly store = inject(ProductFilterStore)
+  private readonly catalogFacetsStore = inject(CatalogFacetsStore)
 
   readonly isLoading = this.store.isLoading
   readonly error = this.store.error
@@ -32,34 +35,84 @@ export class CatalogFilterFacade {
   setActiveCategory(category: string | null): void {
     this.activeCategory.set(category)
     this.activeStyle.set(null)
+
+    if (!category) {
+      this.catalogFacetsStore.clear()
+      return
+    }
+
+    const params = buildBaseFacetsParams(this.store.selected())
+
+    this.catalogFacetsStore.loadPreviewBrands({
+      activeKey: `productType:${category}`,
+      params,
+      previewProductType: category,
+    })
   }
 
   setActiveStyle(style: string | null): void {
     this.activeStyle.set(style)
     this.activeCategory.set(null)
+
+    if (!style) {
+      this.catalogFacetsStore.clear()
+      return
+    }
+
+    const params = buildBaseFacetsParams(this.store.selected())
+
+    this.catalogFacetsStore.loadPreviewBrands({
+      activeKey: `dressStyle:${style}`,
+      params,
+      previewDressStyle: style,
+    })
   }
 
   readonly categoryBrandsMenu = computed<MenuItem[]>(() => {
     const category = this.activeCategory()
-    const brands = this.brands()
+    if (!category) return []
 
-    if (!category || brands.length === 0) return []
+    const brands = this.catalogFacetsStore.brandsSafe()
+    const isLoading = this.catalogFacetsStore.isLoading()
 
-    return brands.map((brand) => ({
-      label: brand,
-      command: () => this.store.toggleType(category, brand),
+    if (isLoading) {
+      return [{ label: 'Loading...', disabled: true }]
+    }
+
+    if (brands.length === 0) {
+      return [{ label: 'Нет брендов', disabled: true }]
+    }
+
+    const sorted = [...brands].sort((a, b) => b.count - a.count)
+
+    return sorted.map((b) => ({
+      label: `${b.value} (${b.count})`,
+      disabled: b.count === 0,
+      command: () => this.store.toggleType(category, b.value),
     }))
   })
 
   readonly styleBrandsMenu = computed<MenuItem[]>(() => {
     const style = this.activeStyle()
-    const brands = this.brands()
+    if (!style) return []
 
-    if (!style || brands.length === 0) return []
+    const brands = this.catalogFacetsStore.brandsSafe()
+    const isLoading = this.catalogFacetsStore.isLoading()
 
-    return brands.map((brand) => ({
-      label: brand,
-      command: () => this.store.toggleStyle(style, brand),
+    if (isLoading) {
+      return [{ label: 'Loading...', disabled: true }]
+    }
+
+    if (brands.length === 0) {
+      return [{ label: 'Нет брендов', disabled: true }]
+    }
+
+    const sorted = [...brands].sort((a, b) => b.count - a.count)
+
+    return sorted.map((b) => ({
+      label: `${b.value} (${b.count})`,
+      disabled: b.count === 0,
+      command: () => this.store.toggleStyle(style, b.value),
     }))
   })
 
@@ -86,6 +139,7 @@ export class CatalogFilterFacade {
   setCategory(category: string | null): void {
     this.activeCategory.set(null)
     this.activeStyle.set(null)
+    this.catalogFacetsStore.clear()
     this.store.setCategory(category)
   }
 
@@ -93,9 +147,14 @@ export class CatalogFilterFacade {
     this.store.setSearchQuery(query)
   }
 
+  clearPreview(): void {
+    this.catalogFacetsStore.clear()
+  }
+
   resetFilters(): void {
     this.activeCategory.set(null)
     this.activeStyle.set(null)
+    this.catalogFacetsStore.clear()
     this.store.resetFilters()
   }
 }
