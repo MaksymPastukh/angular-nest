@@ -26,51 +26,49 @@ export function mapToApiFilters(
 ): CatalogFilterParamsInterface {
   const params: CatalogFilterParamsInterface = {}
 
-  if (filters.selectedCategory) {
-    params.category = filters.selectedCategory
-  }
+  // Category - всегда устанавливаем (undefined если не выбрано)
+  params.category = filters.selectedCategory ?? undefined
 
+  // Search
   const search = filters.searchQuery.trim()
-  if (search) {
-    params.search = search
-  }
+  params.search = search || undefined
 
+  // Price
   const [minPrice, maxPrice] = filters.priceRange
   if (minPrice !== DEFAULT_MIN_PRICE) params.minPrice = minPrice
   if (maxPrice !== DEFAULT_MAX_PRICE) params.maxPrice = maxPrice
 
+  // Всегда устанавливаем size и color, даже если undefined
+  // Это важно для корректного удаления фильтров
   const size = arrayToStringOrArray(filters.selectedSizes)
-  if (size !== undefined) {
-    params.size = size
-  }
+  params.size = size
 
   const color = arrayToStringOrArray(filters.selectedColors)
-  if (color !== undefined) {
-    params.color = color
-  }
+  params.color = color
 
+  // ProductType/Brand или DressStyle/Brand
   if (filters.selectedTypeKey) {
     const { value: productType, brand } = parseKey(filters.selectedTypeKey)
-    if (productType) {
-      params.productType = productType
-    }
-
-    if (brand) {
-      params.brand = brand
-    }
+    params.productType = productType || undefined
+    params.brand = brand ?? undefined
+    // Явно сбрасываем dressStyle если выбран productType
+    params.dressStyle = undefined
     return params
   }
 
   if (filters.selectedStyleKey) {
     const { value: dressStyle, brand } = parseKey(filters.selectedStyleKey)
-    if (dressStyle) {
-      params.dressStyle = dressStyle
-    }
-
-    if (brand) {
-      params.brand = brand
-    }
+    params.dressStyle = dressStyle || undefined
+    params.brand = brand ?? undefined
+    // Явно сбрасываем productType если выбран dressStyle
+    params.productType = undefined
+    return params
   }
+
+  // Если ничего не выбрано - явно устанавливаем undefined
+  params.productType = undefined
+  params.dressStyle = undefined
+  params.brand = undefined
 
   return params
 }

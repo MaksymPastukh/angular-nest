@@ -1,39 +1,53 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion'
 import { Slider } from 'primeng/slider'
-import { TieredMenu } from 'primeng/tieredmenu'
+
 import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
+import { BrandsDropdownComponent } from '../brands-dropdown/brands-dropdown'
+
+type DropdownType = 'category' | 'style'
+
 @Component({
   selector: 'app-catalog-filter',
   imports: [
-    AccordionContent,
     Accordion,
     AccordionPanel,
     AccordionHeader,
+    AccordionContent,
     Slider,
-    TieredMenu,
     FormsModule,
+    BrandsDropdownComponent,
   ],
   templateUrl: './catalog-filter.html',
   styleUrl: './catalog-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CatalogFilterComponent implements OnInit {
+export class CatalogFilterComponent {
   readonly filterFacade = inject(CatalogFilterFacade)
-  private readonly lastHoverKey: string | null = null
+
   readonly MIN_PRICE = 0
   readonly MAX_PRICE = 400
+
   min = this.MIN_PRICE
   max = this.MAX_PRICE
+
   priceRangeValues: [number, number] = [70, 270]
   openedPanels: string[] = ['0', '1', '2', '3', '4']
-  private closeTimer: ReturnType<typeof setTimeout> | null = null
-  private readonly AUTO_CLOSE_DELAY = 5000
 
-  ngOnInit(): void {
+  readonly openCategoryDropdown = signal<string | null>(null)
+  readonly openStyleDropdown = signal<string | null>(null)
+
+  readonly categoryAnchor = signal<HTMLElement | null>(null)
+  readonly styleAnchor = signal<HTMLElement | null>(null)
+
+  private closeTimer: Record<DropdownType, ReturnType<typeof setTimeout> | null> = {
+    category: null,
+    style: null,
+  }
+
+  constructor() {
     this.filterFacade.ensureLoaded()
-
     const [min, max] = this.filterFacade.selected().priceRange
     this.priceRangeValues = [min, max]
   }
@@ -54,9 +68,12 @@ export class CatalogFilterComponent implements OnInit {
     } else {
       this.openedPanels = values
     }
-  }
 
-  /* ---------- Цена ---------- */
+    if (!this.openedPanels.includes('0')) {
+      this.forceClose('category')
+      this.forceClose('style')
+    }
+  }
 
   onPriceChange(value: number[] | undefined): void {
     if (!value) return
@@ -106,38 +123,83 @@ export class CatalogFilterComponent implements OnInit {
     this.filterFacade.toggleColor(color)
   }
 
-  onCategoryClick(categoryName: string, event: Event, menu: TieredMenu): void {
-    this.filterFacade.setActiveCategory(categoryName)
-    menu.toggle(event)
-    this.startAutoClose(menu)
+  // --- Dropdown helpers ---
+  private clearCloseTimer(type: DropdownType): void {
+    const t = this.closeTimer[type]
+    if (t) clearTimeout(t)
+    this.closeTimer[type] = null
   }
 
-  onStyleClick(styleName: string, event: Event, menu: TieredMenu): void {
-    this.filterFacade.setActiveStyle(styleName)
-    menu.toggle(event)
-    this.startAutoClose(menu)
+  private scheduleClose(type: DropdownType, delayMs: number): void {
+    this.clearCloseTimer(type)
+    this.closeTimer[type] = setTimeout(() => {
+      this.forceClose(type)
+      this.closeTimer[type] = null
+    }, delayMs)
   }
 
-  startAutoClose(menu: TieredMenu): void {
-    this.clearAutoClose()
-
-    this.closeTimer = setTimeout(() => {
-      menu.hide()
-    }, this.AUTO_CLOSE_DELAY)
+  private forceClose(type: DropdownType): void {
+    this.clearCloseTimer(type)
+    if (type === 'category') this.openCategoryDropdown.set(null)
+    else this.openStyleDropdown.set(null)
   }
 
-  clearAutoClose(): void {
-    if (this.closeTimer) {
-      clearTimeout(this.closeTimer)
-      this.closeTimer = null
+  onCategoryHover(categoryName: string, buttonElement: HTMLElement): void {
+    this.clearCloseTimer('category')
+
+    if (this.filterFacade.activeCategory() !== categoryName) {
+      this.filterFacade.setActiveCategory(categoryName)
+    }
+
+    this.categoryAnchor.set(buttonElement)
+    this.openCategoryDropdown.set(categoryName)
+
+    this.openStyleDropdown.set(null)
+    this.clearCloseTimer('style')
+  }
+
+  onCategoryLeave(): void {
+    this.scheduleClose('category', 250)
+  }
+
+  onStyleHover(styleName: string, buttonElement: HTMLElement): void {
+    this.clearCloseTimer('style')
+
+    if (this.filterFacade.activeStyle() !== styleName) {
+      this.filterFacade.setActiveStyle(styleName)
+    }
+
+    this.styleAnchor.set(buttonElement)
+    this.openStyleDropdown.set(styleName)
+
+    this.openCategoryDropdown.set(null)
+    this.clearCloseTimer('category')
+  }
+
+  onStyleLeave(): void {
+    this.scheduleClose('style', 250)
+  }
+
+  onDropdownEnter(type: DropdownType): void {
+    this.clearCloseTimer(type)
+  }
+
+  onDropdownLeave(type: DropdownType): void {
+    this.scheduleClose(type, 100)
+  }
+
+  onBrandSelect(category: string | null, brand: string): void {
+    this.forceClose('category')
+    if (brand && category) {
+      this.filterFacade.toggleType(category, brand)
     }
   }
 
-  resetFilters(): void {
-    this.filterFacade.resetFilters()
-    // синхронизируем локальный ngModel после сброса
-    const [min, max] = this.filterFacade.selected().priceRange
-    this.priceRangeValues = [min, max]
+  onStyleBrandSelect(style: string | null, brand: string): void {
+    this.forceClose('style')
+    if (brand && style) {
+      this.filterFacade.toggleStyle(style, brand)
+    }
   }
 
   reloadFilterData(): void {

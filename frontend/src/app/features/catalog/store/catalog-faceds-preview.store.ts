@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, debounceTime, distinctUntilChanged, EMPTY, map, switchMap, tap } from 'rxjs'
+import { catchError, distinctUntilChanged, EMPTY, map, switchMap, tap } from 'rxjs'
 import { ProductsService } from '../../products/data-access/products.service'
 import { CatalogFacetsStateInterface } from '../domain/interfaces/catalog-facets-state.interface'
 import {
@@ -57,21 +57,12 @@ export const CatalogFacetsStore = signalStore(
       patchState(store, { activeKey: null, brands: null, isLoading: false, error: null })
     }
 
-    const setActive = (activeKey: string) => patchState(store, { activeKey })
-
-    /**
-     * rxMethod: грузим preview бренды.
-     *
-     * Внутри:
-     * - debounceTime для hover
-     * - distinctUntilChanged по активному ключу + params
-     * - switchMap для отмены предыдущего запроса
-     * - cache (если уже запрашивали)
-     */
+    const begin = (activeKey: string) => {
+      patchState(store, { activeKey, brands: null, isLoading: true, error: null })
+    }
 
     const loadPreviewBrands = rxMethod<FacetsPreviewRequest>((source$) =>
       source$.pipe(
-        debounceTime(150),
         map((req) => {
           const finalParams = buildPreviewParams(req)
           const cachKey = JSON.stringify(finalParams)
@@ -79,15 +70,18 @@ export const CatalogFacetsStore = signalStore(
         }),
         distinctUntilChanged((a, b) => a.cachKey === b.cachKey),
         tap(({ req, cachKey }) => {
-          patchState(store, { activeKey: req.activeKey, error: null })
+          // Сначала очищаем старые бренды и устанавливаем loading
+          patchState(store, {
+            activeKey: req.activeKey,
+            brands: null,
+            error: null,
+            isLoading: true,
+          })
 
+          // Затем проверяем кэш и показываем если есть
           const cached = CACHE.get(cachKey)
           if (cached) {
-            // сразу показываем кэш
             patchState(store, { brands: cached, isLoading: false })
-          } else {
-            //чистим старые бренды (чтобы не мигали)
-            patchState(store, { brands: null, isLoading: true })
           }
         }),
         switchMap(({ finalParams, cachKey }) => {
@@ -111,6 +105,7 @@ export const CatalogFacetsStore = signalStore(
 
     return {
       clear,
+      begin,
       loadPreviewBrands,
     }
   })

@@ -23,53 +23,65 @@ export class CatalogFilterFacade {
 
   readonly selected = this.store.selected
 
+  readonly previewBrandsSafe = this.catalogFacetsStore.brandsSafe
+  readonly previewIsLoading = this.catalogFacetsStore.isLoading
+
   readonly selectedColorSet = computed(() => new Set(this.selected().selectedColors))
   readonly selectedSizesSet = computed(() => new Set(this.selected().selectedSizes))
 
   isColorsSelected = (name: string) => this.selectedColorSet().has(name)
   isSizesSelected = (size: string) => this.selectedSizesSet().has(size)
 
-  private readonly activeCategory = signal<string | null>(null)
-  private readonly activeStyle = signal<string | null>(null)
+  private readonly _activeCategory = signal<string | null>(null)
+  private readonly _activeStyle = signal<string | null>(null)
+
+  readonly activeCategory = this._activeCategory.asReadonly()
+  readonly activeStyle = this._activeStyle.asReadonly()
 
   setActiveCategory(category: string | null): void {
-    this.activeCategory.set(category)
-    this.activeStyle.set(null)
+    this._activeCategory.set(category)
+    this._activeStyle.set(null)
 
     if (!category) {
       this.catalogFacetsStore.clear()
       return
     }
 
+    const activeKey = `productType:${category}`
     const params = buildBaseFacetsParams(this.store.selected())
 
+    this.catalogFacetsStore.begin(activeKey)
+
     this.catalogFacetsStore.loadPreviewBrands({
-      activeKey: `productType:${category}`,
+      activeKey,
       params,
       previewProductType: category,
     })
   }
 
   setActiveStyle(style: string | null): void {
-    this.activeStyle.set(style)
-    this.activeCategory.set(null)
+    this._activeStyle.set(style)
+    this._activeCategory.set(null)
 
     if (!style) {
       this.catalogFacetsStore.clear()
       return
     }
 
+    const activeKey = `dressStyle:${style}`
     const params = buildBaseFacetsParams(this.store.selected())
 
+    this.catalogFacetsStore.begin(activeKey)
+
     this.catalogFacetsStore.loadPreviewBrands({
-      activeKey: `dressStyle:${style}`,
+      activeKey,
       params,
       previewDressStyle: style,
     })
   }
 
   readonly categoryBrandsMenu = computed<MenuItem[]>(() => {
-    const category = this.activeCategory()
+    const category = this._activeCategory()
     if (!category) return []
 
     const brands = this.catalogFacetsStore.brandsSafe()
@@ -86,14 +98,14 @@ export class CatalogFilterFacade {
     const sorted = [...brands].sort((a, b) => b.count - a.count)
 
     return sorted.map((b) => ({
-      label: `${b.value} (${b.count})`,
+      label: `${b.value}`,
       disabled: b.count === 0,
       command: () => this.store.toggleType(category, b.value),
     }))
   })
 
   readonly styleBrandsMenu = computed<MenuItem[]>(() => {
-    const style = this.activeStyle()
+    const style = this._activeStyle()
     if (!style) return []
 
     const brands = this.catalogFacetsStore.brandsSafe()
@@ -110,7 +122,7 @@ export class CatalogFilterFacade {
     const sorted = [...brands].sort((a, b) => b.count - a.count)
 
     return sorted.map((b) => ({
-      label: `${b.value} (${b.count})`,
+      label: `${b.value}`,
       disabled: b.count === 0,
       command: () => this.store.toggleStyle(style, b.value),
     }))
@@ -136,9 +148,17 @@ export class CatalogFilterFacade {
     this.store.toggleColor(color)
   }
 
+  toggleType(productType: string, brand: string): void {
+    this.store.toggleType(productType, brand)
+  }
+
+  toggleStyle(dressStyle: string, brand: string): void {
+    this.store.toggleStyle(dressStyle, brand)
+  }
+
   setCategory(category: string | null): void {
-    this.activeCategory.set(null)
-    this.activeStyle.set(null)
+    this._activeCategory.set(null)
+    this._activeStyle.set(null)
     this.catalogFacetsStore.clear()
     this.store.setCategory(category)
   }
@@ -147,13 +167,9 @@ export class CatalogFilterFacade {
     this.store.setSearchQuery(query)
   }
 
-  clearPreview(): void {
-    this.catalogFacetsStore.clear()
-  }
-
   resetFilters(): void {
-    this.activeCategory.set(null)
-    this.activeStyle.set(null)
+    this._activeCategory.set(null)
+    this._activeStyle.set(null)
     this.catalogFacetsStore.clear()
     this.store.resetFilters()
   }

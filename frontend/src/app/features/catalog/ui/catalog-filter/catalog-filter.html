@@ -26,36 +26,44 @@
       }
 
       @if (!filterFacade.isLoading() && !filterFacade.error()) {
-        <p-tieredMenu
-          #mainMenu
-          [model]="filterFacade.categoryBrandsMenu()"
-          [popup]="true"
-          appendTo="body"
-        />
-
         <!-- Кнопки категорий -->
         @for (categoryName of filterFacade.productTypes(); track $index) {
-          <button
-            type="button"
-            class="w-full text-left mt-2 px-2 py-1 rounded-lg font-causten text-lg font-semibold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
-            (click)="onCategoryClick(categoryName, $event, mainMenu)"
-          >
-            <span>{{ categoryName }}</span>
-            <svg
-              class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div class="category-item-wrapper" (pointerleave)="onCategoryLeave()">
+            <button
+              #categoryBtn
+              type="button"
+              class="w-full text-left mt-2 px-2 py-1 rounded-lg font-causten text-lg font-semibold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
+              [class.active]="openCategoryDropdown() === categoryName"
+              (pointerenter)="onCategoryHover(categoryName, categoryBtn)"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
+              <span>{{ categoryName }}</span>
+              <svg
+                class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
         }
+
+        <!-- Глобальный dropdown для категорий (рендерится в body через CDK Overlay) -->
+        <app-brands-dropdown
+          [anchor]="categoryAnchor()"
+          [brands]="filterFacade.previewBrandsSafe()"
+          [isLoading]="filterFacade.previewIsLoading()"
+          [isOpen]="!!openCategoryDropdown()"
+          (brandSelect)="onBrandSelect(openCategoryDropdown(), $event)"
+          (dropdownEnter)="onDropdownEnter('category')"
+          (dropdownLeave)="onDropdownLeave('category')"
+        />
       }
     </p-accordion-content>
   </p-accordion-panel>
@@ -225,35 +233,43 @@
           <p>{{ filterFacade.error() }}</p>
         </div>
       }
-      <p-tieredMenu
-        #styleMenu
-        [model]="filterFacade.styleBrandsMenu()"
-        [popup]="true"
-        appendTo="body"
-      />
 
       @for (styleName of filterFacade.dressStyles(); track $index) {
-        <button
-          type="button"
-          class="w-full text-left mt-2 px-2 py-1 rounded-lg text-lg font-causten font-bold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
-          (click)="onStyleClick(styleName, $event, styleMenu)"
-        >
-          <span>{{ styleName }}</span>
-          <svg
-            class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div class="category-item-wrapper" (pointerleave)="onStyleLeave()">
+          <button
+            #styleBtn
+            type="button"
+            class="w-full text-left mt-2 px-2 py-1 rounded-lg text-lg font-causten font-bold text-[#8a8989] cursor-pointer bg-white hover:text-[#8a33fd] hover:bg-[rgba(168,85,247,0.08)] flex items-center justify-between group"
+            [class.active]="openStyleDropdown() === styleName"
+            (pointerenter)="onStyleHover(styleName, styleBtn)"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
+            <span>{{ styleName }}</span>
+            <svg
+              class="w-4 h-4 text-[#8a8989] group-hover:text-[#8a33fd] transition-colors duration-300 ease-in-out"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
       }
+
+      <app-brands-dropdown
+        [anchor]="styleAnchor()"
+        [brands]="filterFacade.previewBrandsSafe()"
+        [isLoading]="filterFacade.previewIsLoading()"
+        [isOpen]="!!openStyleDropdown()"
+        (brandSelect)="onStyleBrandSelect(openStyleDropdown(), $event)"
+        (dropdownEnter)="onDropdownEnter('style')"
+        (dropdownLeave)="onDropdownLeave('style')"
+      />
     </p-accordion-content>
   </p-accordion-panel>
 </p-accordion>

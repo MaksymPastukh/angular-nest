@@ -6,7 +6,7 @@ export interface FacetItemInterface {
 export interface FacetsResponseInterface {
   brands: FacetItemInterface[]
   productTypes: FacetItemInterface[]
-  dressStyless: FacetItemInterface[]
+  dressStyles: FacetItemInterface[]
   sizes: FacetItemInterface[]
   colors: FacetItemInterface[]
 }

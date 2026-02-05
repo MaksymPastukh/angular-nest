@@ -1,0 +1,20 @@
+<ng-template #dropdownTemplate>
+  <div
+    class="brands-dropdown"
+    (pointerenter)="onDropdownEnter()"
+    (pointerleave)="onDropdownLeave()"
+  >
+    @if (isLoading()) {
+      <div class="dropdown-loading">Loading brands...</div>
+    } @else if (sortedBrands().length === 0) {
+      <div class="dropdown-empty">No brands available</div>
+    } @else {
+      @for (brand of sortedBrands(); track brand.value) {
+        <button type="button" class="dropdown-item" (click)="onBrandClick(brand.value)">
+          <span class="brand-name">{{ brand.value }}</span>
+          <span class="brand-count">({{ brand.count }})</span>
+        </button>
+      }
+    }
+  </div>
+</ng-template>

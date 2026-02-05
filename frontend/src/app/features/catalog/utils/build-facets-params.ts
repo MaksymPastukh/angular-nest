@@ -6,29 +6,21 @@ export const buildBaseFacetsParams = (
   selected: CatalogSelectedFiltersInterface
 ): QueryParamsFacets => {
   const api = mapToApiFilters(selected)
-  const { page, limit, sortBy, order, ...rest } = api
 
   const base: QueryParamsFacets = {}
 
-  // category
-  if (rest.category) base['category'] = rest.category
+  // category - ВАЖНО: учитываем для разделения Men/Women
+  if (api.category) {
+    base['category'] = api.category
+  }
 
-  // price
-  if (rest.minPrice !== undefined) base['minPrice'] = rest.minPrice
-  if (rest.maxPrice !== undefined) base['maxPrice'] = rest.maxPrice
+  // price - опционально, можно учитывать ценовой диапазон
+  if (api.minPrice !== undefined) {
+    base['minPrice'] = api.minPrice
+  }
+  if (api.maxPrice !== undefined) {
+    base['maxPrice'] = api.maxPrice
+  }
 
-  // size / color (string | string[] -> подходит под QueryValue)
-  if (rest.size !== undefined) base['size'] = rest.size
-  if (rest.color !== undefined) base['color'] = rest.color
-
-  // search
-  if (rest.search) base['search'] = rest.search
-
-  /**
-   * ВАЖНО:
-   * - НЕ передаём brand
-   * - НЕ передаём productType / dressStyle
-   * preview задаёт их отдельно
-   */
   return base
 }
