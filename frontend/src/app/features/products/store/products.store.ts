@@ -10,17 +10,11 @@ import {
 } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, switchMap, tap } from 'rxjs'
-<<<<<<< HEAD:frontend/src/app/features/products/catalog/store/product.store.ts
-import { ProductFilterParams } from '../../detail/types/product-filter-params.interface'
-import { ProductsResponse } from '../../detail/types/products-response.interface'
-import { ProductService } from '../services/product.service'
-import { ProductState } from '../types/product-state.interface'
-=======
+
 import { CatalogFilterParamsInterface } from '../../catalog/domain/interfaces/catalog-filter-params.interface'
 import { ProductsService } from '../data-access/products.service'
 import { ProductsResponseInterface } from '../domain/interfaces/products-response.interface'
 import { ShopStateInterface } from '../domain/interfaces/products-state.interface'
->>>>>>> newArchitecture:frontend/src/app/features/products/store/products.store.ts
 
 const initialState: ShopStateInterface = {
   products: [],
