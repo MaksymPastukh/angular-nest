@@ -1,65 +1,25 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
-import { AuthStore } from './core/auth/store/auth.store'
-import { CreateProductStore } from './features/personal/admin/shop/store/create-product.store'
+import { CreateProductStore } from './features/admin/store/create.store'
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, Toast],
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App implements OnInit {
-  protected readonly authStore = inject(AuthStore)
+export class App {
   protected readonly productStore = inject(CreateProductStore)
   protected readonly title = signal('Euphoria')
   private readonly messageService = inject(MessageService)
 
   constructor() {
-    // Effect для обработки событий аутентификации
-    effect(() => {
-      const event = this.authStore.event()
-      console.log('Auth Event:', event)
-      if (!event) return
-
-      switch (event.type) {
-        case 'loginSuccess':
-        case 'registerSuccess':
-          this.messageService.add({
-            severity: 'success',
-            summary: event.type === 'loginSuccess' ? 'Login Successful' : 'Registration Successful',
-            detail: `Welcome, ${event.userName}!`,
-          })
-          break
-
-        case 'loginError':
-        case 'registerError':
-          this.messageService.add({
-            severity: 'error',
-            summary: event.type === 'loginError' ? 'Login Failed' : 'Registration Failed',
-            detail: event.message,
-          })
-          break
-
-        case 'logout':
-          this.messageService.add({
-            severity: 'info',
-            summary: 'Logged Out',
-            detail: 'You have been logged out successfully.',
-          })
-          break
-      }
-
-      // Очищаем event после обработки
-      this.authStore.clearEvent()
-    })
-
     // Effect для обработки событий создания продукта
     effect(() => {
       const event = this.productStore.event()
-      console.log('Product Event:', event)
       if (!event) return
 
       switch (event.type) {
@@ -103,9 +63,5 @@ export class App implements OnInit {
       // Очищаем event после обработки
       this.productStore.clearEvent()
     })
-  }
-
-  ngOnInit() {
-    this.authStore.rehydrate()
   }
 }

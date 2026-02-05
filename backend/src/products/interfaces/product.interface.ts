@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { IProductFacets } from './facet.interface';
 
 /**
  * Интерфейс для продукта
@@ -147,12 +148,9 @@ export interface IProductsResponse {
   /** Общее количество продуктов */
   total: number;
 
-  /** Текущая страница */
-  page: number;
-
-  /** Количество элементов на странице */
-  limit: number;
-
   /** Общее количество страниц */
   totalPages: number;
+
+  /** Фасеты (facets) для фильтрации продуктов */
+  facets: IProductFacets;
 }

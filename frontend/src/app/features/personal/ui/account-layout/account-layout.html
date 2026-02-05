@@ -1,0 +1,13 @@
+<section class="container mx-auto w-full px-4 py-8">
+  <p-breadcrumb [model]="breadcrumbItems()" styleClass="bg-transparent border-0 !pl-0" />
+
+  <div class="grid gap-6 lg:grid-cols-[280px_1fr]">
+    <aside class="lg:sticky lg:top-6">
+      <app-account-nav />
+    </aside>
+
+    <main class="min-w-0">
+      <router-outlet />
+    </main>
+  </div>
+</section>

@@ -41,7 +41,7 @@ export class Product {
    * Бренд/производитель продукта
    * @example "Nike"
    */
-  @Prop({ required: true, type: String })
+  @Prop({ required: true, type: String, index: true })
   public brand: string;
 
   /**
@@ -55,7 +55,7 @@ export class Product {
    * Цена продукта
    * @example 1999.99
    */
-  @Prop({ required: true, type: Number, min: 0 })
+  @Prop({ required: true, type: Number, min: 0, index: true })
   public price: number;
 
   /**
@@ -90,14 +90,14 @@ export class Product {
    * Цвет продукта
    * @example "Черный"
    */
-  @Prop({ required: true, type: String })
+  @Prop({ required: true, type: String, index: true })
   public color: string;
 
   /**
    * Доступные размеры продукта
    * @example ["S", "M", "L", "XL"]
    */
-  @Prop({ required: true, type: [String] })
+  @Prop({ required: true, type: [String], index: true })
   public size: string[];
 
   /**
@@ -161,9 +161,34 @@ export class Product {
 export const ProductSchema = SchemaFactory.createForClass(Product);
 
 /**
- * Создание индексов для оптимизации поиска
+ * Создание составных индексов для оптимизации фильтрации и facets
+ * Эти индексы критичны для производительности preview facets при hover
  */
+
+// Базовые индексы для фильтрации
+ProductSchema.index({ category: 1, productType: 1 });
+ProductSchema.index({ category: 1, dressStyle: 1 });
 ProductSchema.index({ category: 1, brand: 1 });
+ProductSchema.index({ productType: 1, brand: 1 });
+ProductSchema.index({ dressStyle: 1, brand: 1 });
+
+// Индексы для фильтрации по цене
 ProductSchema.index({ price: 1 });
+ProductSchema.index({ category: 1, price: 1 });
+
+// Индексы для сортировки
 ProductSchema.index({ rating: -1 });
+ProductSchema.index({ createdAt: -1 });
+
+// Индексы для фильтрации по цвету и размеру
+ProductSchema.index({ color: 1 });
+ProductSchema.index({ size: 1 }); // Multikey index для массива размеров
+
+// Полнотекстовый поиск
 ProductSchema.index({ title: 'text', description: 'text' });
+
+// Комплексные индексы для частых комбинаций фильтров
+ProductSchema.index({ category: 1, productType: 1, brand: 1 });
+ProductSchema.index({ category: 1, dressStyle: 1, brand: 1 });
+ProductSchema.index({ category: 1, color: 1, brand: 1 });
+ProductSchema.index({ productType: 1, color: 1, brand: 1 });

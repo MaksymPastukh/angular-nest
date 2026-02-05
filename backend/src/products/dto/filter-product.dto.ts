@@ -129,4 +129,22 @@ export class FilterProductDto {
   @Max(100)
   @Type(() => Number)
   public limit?: number;
+
+  /**
+   * Preview параметр для типа товара
+   * Используется для получения facets при hover на определенный тип товара
+   * @example "T-shirts"
+   */
+  @IsOptional()
+  @IsString()
+  public previewProductType?: string;
+
+  /**
+   * Preview параметр для стиля одежды
+   * Используется для получения facets при hover на определенный стиль
+   * @example "Casual"
+   */
+  @IsOptional()
+  @IsString()
+  public previewDressStyle?: string;
 }
