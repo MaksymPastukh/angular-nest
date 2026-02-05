@@ -1,9 +1,8 @@
 @use 'tailwindcss';
 @use 'fonts';
 @use 'variables';
-// PrimeNG 21 - иконки
 @import 'primeicons/primeicons.css';
-
+@import '@angular/cdk/overlay-prebuilt.css';
 
 @theme {
   // Шрифты (для Tailwind)
@@ -59,7 +58,7 @@ p-accordion-header {
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
   border: 1px solid #e0e0e0 !important;
   border-radius: 6px !important;
-  transform: translateX(245px) !important;
+  z-index: 10000 !important;
 
   .p-tieredmenu-root-list {
     padding: 4px !important;
@@ -123,7 +122,7 @@ p-accordion-header {
     border: 1px solid #e0e0e0 !important;
     border-radius: 6px !important;
     padding: 4px !important;
-
+    z-index: 10001 !important;
 
     .p-tieredmenu-item-link {
       font-size: 16px !important;
@@ -138,7 +137,6 @@ p-accordion-header {
 
 // Компоненты
 @layer components {
-
   .label {
     @apply block text-sm font-medium text-gray-700;
   }
@@ -294,7 +292,6 @@ p-accordion-header {
     }
   }
 
-
   .p-accordioncontent {
     background: #ffffff !important;
     color: #3c4242 !important;
@@ -359,4 +356,3 @@ p-accordion-header {
   background: #ffffff !important;
   color: #3c4242 !important;
 }
-

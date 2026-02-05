@@ -1,0 +1,42 @@
+<div class="rounded-2xl bg-white p-4">
+  <div class="mb-6">
+    <div class="flex items-start gap-3">
+      <span class="mt-1 h-6 w-1 rounded-full bg-[var(--color-primary)]"></span>
+
+      <div>
+        <p class="font-coresans text-2xl font-semibold text-[var(--color-text-base)]">
+          Hello Jhanvi
+        </p>
+        <p class="mt-1 text-sm text-[var(--color-text-gray)]">Welcome to your Account</p>
+      </div>
+    </div>
+  </div>
+
+  <nav
+    class="[&>a]:flex [&>a]:cursor-pointer [&>a]:items-center [&>a]:gap-3 [&>a]:rounded-xl [&>a]:px-3 [&>a]:py-2.5 [&>a]:text-sm [&>a]:text-[var(--color-text-menu-gray)] [&>a:hover]:bg-gray-50 [&>a:hover]:text-[var(--color-text-base)] [&>a]:transition-colors [&_i]:text-base [&>a.active]:bg-gray-50 [&>a.active]:text-[var(--color-text-base)] [&>a.active]:relative [&>a.active]:pl-4 [&>a.active]:before:content-[''] [&>a.active]:before:absolute [&>a.active]:before:left-0 [&>a.active]:before:top-2.5 [&>a.active]:before:bottom-2.5 [&>a.active]:before:w-0.5 [&>a.active]:before:rounded-full [&>a.active]:before:bg-[var(--color-text-base)]"
+  >
+    <a routerLink="/account/order" routerLinkActive="active">
+      <i class="pi pi-shopping-bag"></i>
+      My orders
+    </a>
+
+    <a routerLink="/account/wishlist" routerLinkActive="active">
+      <i class="pi pi-heart"></i>
+      Wishlist
+    </a>
+
+    <a
+      routerLink="/account/info"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <i class="pi pi-user"></i>
+      My info
+    </a>
+
+    <a (click)="onLogout()">
+      <i class="pi pi-sign-out"></i>
+      Sign out
+    </a>
+  </nav>
+</div>
