@@ -3,10 +3,10 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, Observable, pipe, switchMap, tap } from 'rxjs'
-import { ProductsService } from '../data-access/products.service'
+import { ProductsService } from '../../catalog/data-access/products.service'
+import { ProductInterface } from '../../catalog/domain/interfaces/product.interface'
 import { ProductDetailGalleryInterface } from '../domain/interfaces/product-detail-gallery.interface'
 import { ProductDetailStateInterface } from '../domain/interfaces/product-detail-state.interface'
-import { ProductInterface } from '../domain/interfaces/product.interface'
 
 const initialState: ProductDetailStateInterface = {
   product: null,

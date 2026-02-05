@@ -1,4 +1,4 @@
-import { FacetItemInterface } from '../../../catalog/domain/interfaces/catalog-facets.interface'
+import { FacetItemInterface } from './catalog-facets.interface'
 import { ProductInterface } from './product.interface'
 
 export interface ProductsFacets {

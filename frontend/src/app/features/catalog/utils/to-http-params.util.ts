@@ -2,7 +2,7 @@ import { HttpParams } from '@angular/common/http'
 import {
   QueryParamsFacets,
   QueryPrimitiveFacets,
-} from '../../catalog/domain/types/facets-preview-request.type'
+} from '../domain/types/facets-preview-request.type'
 
 export function toHttpParams(params: QueryParamsFacets): HttpParams {
   let httpParams = new HttpParams()

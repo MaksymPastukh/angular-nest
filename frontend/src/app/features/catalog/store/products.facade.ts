@@ -1,10 +1,10 @@
 import { Injectable, effect, inject, signal, untracked } from '@angular/core'
 import { Params, Router } from '@angular/router'
-import { CatalogFilterParamsInterface } from '../../catalog/domain/interfaces/catalog-filter-params.interface'
-import { CatalogSelectedFiltersInterface } from '../../catalog/domain/interfaces/catalog-selected-filters.interface'
-import { ProductFilterStore } from '../../catalog/store/catalog-filter.store'
-import { filtersToQueryParams, mapToApiFilters, parseUrlParams } from '../../catalog/utils'
-import { parsedToSelected } from '../../catalog/utils/parse-to-selected'
+import { CatalogFilterParamsInterface } from '../domain/interfaces/catalog-filter-params.interface'
+import { CatalogSelectedFiltersInterface } from '../domain/interfaces/catalog-selected-filters.interface'
+import { filtersToQueryParams, mapToApiFilters, parseUrlParams } from '../utils'
+import { parsedToSelected } from '../utils/parse-to-selected'
+import { ProductFilterStore } from './catalog-filter.store'
 import { ProductStore } from './products.store'
 
 @Injectable({ providedIn: 'root' })

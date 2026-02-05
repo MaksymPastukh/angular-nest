@@ -2,12 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment'
-import { FacetsResponseInterface } from '../../catalog/domain/interfaces/catalog-facets.interface'
-import { CatalogFilterParamsInterface } from '../../catalog/domain/interfaces/catalog-filter-params.interface'
+import { FacetsResponseInterface } from '../domain/interfaces/catalog-facets.interface'
+import { CatalogFilterParamsInterface } from '../domain/interfaces/catalog-filter-params.interface'
 import { ProductInterface } from '../domain/interfaces/product.interface'
 import { ProductsResponseInterface } from '../domain/interfaces/products-response.interface'
+import { QueryParamsFacets } from '../domain/types/facets-preview-request.type'
 import { toHttpParams } from '../utils/to-http-params.util'
-import { QueryParamsFacets } from '../../catalog/domain/types/facets-preview-request.type'
 
 @Injectable({
   providedIn: 'root',

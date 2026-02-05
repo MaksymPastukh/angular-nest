@@ -1,4 +1,4 @@
-import { CatalogFilterParamsInterface } from '../../../catalog/domain/interfaces/catalog-filter-params.interface'
+import { CatalogFilterParamsInterface } from './catalog-filter-params.interface'
 import { ProductInterface } from './product.interface'
 import { ProductsFacets } from './products-response.interface'
 

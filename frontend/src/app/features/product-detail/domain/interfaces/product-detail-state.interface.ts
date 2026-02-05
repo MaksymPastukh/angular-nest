@@ -1,4 +1,4 @@
-import { ProductInterface } from './product.interface'
+import { ProductInterface } from '../../../catalog/domain/interfaces/product.interface'
 
 export interface ProductDetailStateInterface {
   product: ProductInterface | null

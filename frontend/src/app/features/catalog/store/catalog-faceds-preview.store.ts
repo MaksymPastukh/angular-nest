@@ -3,7 +3,7 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, distinctUntilChanged, EMPTY, map, switchMap, tap } from 'rxjs'
-import { ProductsService } from '../../products/data-access/products.service'
+import { ProductsService } from '../data-access/products.service'
 import { CatalogFacetsStateInterface } from '../domain/interfaces/catalog-facets-state.interface'
 import {
   FacetItemInterface,
