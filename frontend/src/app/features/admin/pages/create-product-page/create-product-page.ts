@@ -1,7 +1,8 @@
+import { UISelect } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { Field, form, minLength, required, submit } from '@angular/forms/signals'
+import { form, FormField, minLength, required, submit } from '@angular/forms/signals'
 import { MessageService } from 'primeng/api'
 import { Button } from 'primeng/button'
 import { FileUpload } from 'primeng/fileupload'
@@ -19,14 +20,13 @@ import { CreateProductStore } from '../../store/create.store'
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    Field,
-    InputNumber,
-    Select,
+    FormField,
     MultiSelect,
     Button,
     FileUpload,
     Toast,
     Rating,
+    UISelect,
   ],
   templateUrl: './create-product-page.html',
   styleUrl: './create-product-page.scss',
@@ -63,7 +63,7 @@ export class CreateProductPage {
     questionsAnswers: '',
   })
 
-  protected readonly productForm = form(this.model, (schema) => {
+  protected productForm = form(this.model, (schema) => {
     required(schema.title, { message: 'Это поле обязательно' })
     minLength(schema.title, 3, { message: 'Минимум 3 символа' })
     required(schema.brand, { message: 'Это поле обязательно' })

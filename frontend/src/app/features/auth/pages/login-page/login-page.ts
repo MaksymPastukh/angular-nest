@@ -1,6 +1,6 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
-import { email, Field, form, required, submit } from '@angular/forms/signals'
+import { email, form, FormField, required, submit } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
@@ -9,7 +9,7 @@ import { AuthFacade } from '../../store/auth.facade'
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, NgOptimizedImage, RouterLink, Field, Toast],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormField, Toast],
   providers: [MessageService],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',

@@ -4,8 +4,8 @@ import { ReactiveFormsModule } from '@angular/forms'
 import {
   debounce,
   email,
-  Field,
   form,
+  FormField,
   minLength,
   pattern,
   required,
@@ -19,7 +19,7 @@ import { AuthFacade } from '../../store/auth.facade'
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, NgOptimizedImage, RouterLink, ReactiveFormsModule, Field, Toast],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, ReactiveFormsModule, FormField, Toast],
   templateUrl: './register-page.html',
   styleUrl: './register-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

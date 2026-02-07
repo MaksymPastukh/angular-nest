@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { FormValueControl } from '@angular/forms/signals'
 import { Select } from 'primeng/select'
-import { UISelectOption } from './ui-select.interface'
 
 @Component({
   selector: 'app-ui-select',
@@ -10,8 +9,8 @@ import { UISelectOption } from './ui-select.interface'
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<p-select
     [options]="options()"
-    optionLabel="label"
-    optionValue="value"
+    [optionLabel]="optionLabel()"
+    [optionValue]="optionValue()"
     [appendTo]="appendTo()"
     [class]="styleClass()"
     [panelStyleClass]="panelStyleClass()"
@@ -22,9 +21,12 @@ import { UISelectOption } from './ui-select.interface'
     (ngModelChange)="value.set($event)"
   />`,
 })
-export class UISelect<T = string> implements FormValueControl<T | null> {
+export class UISelect<T = string, TOption = unknown> implements FormValueControl<T | null> {
   readonly value = model<T | null>(null)
-  options = input<UISelectOption<T>[]>([])
+  options = input<TOption[]>([])
+
+  optionLabel = input<string>('label')
+  optionValue = input<string>('value')
 
   placeholder = input<string>('')
   ariaLabel = input<string>('')

@@ -1,9 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router'
 import { MenuItem } from 'primeng/api'
 import { Breadcrumb } from 'primeng/breadcrumb'
-import { filter } from 'rxjs'
 import { AccountNav } from '../account-nav/account-nav'
 
 @Component({
@@ -17,19 +15,13 @@ export class AccountLayout {
   private readonly router = inject(Router)
   private readonly activeRoute = inject(ActivatedRoute)
 
-  private readonly numbTick = signal(0)
-
-  constructor() {
-    this.router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        takeUntilDestroyed()
-      )
-      .subscribe(() => this.numbTick.update((value) => value + 1))
-  }
-
   readonly breadcrumbItems = computed<MenuItem[]>(() => {
-    this.numbTick()
+    this.router.isActive(this.router.url, {
+      paths: 'subset',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    })
 
     const items: MenuItem[] = [
       {

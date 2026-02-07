@@ -76,7 +76,7 @@
           type="text"
           id="firstName"
           autocomplete="given-name"
-          [field]="registerForm.firstName"
+          [formField]="registerForm.firstName"
           placeholder=""
           [class]="{
             'auth-input': true,
@@ -103,7 +103,7 @@
           type="text"
           id="email"
           autocomplete="email"
-          [field]="registerForm.email"
+          [formField]="registerForm.email"
           placeholder=""
           [class]="{
             'auth-input': true,
@@ -169,7 +169,7 @@
           </button>
         </div>
         <input
-          [field]="registerForm.password"
+          [formField]="registerForm.password"
           [type]="isPasswordVisible() ? 'text' : 'password'"
           placeholder=""
           autocomplete="new-password"
@@ -234,7 +234,7 @@
           </button>
         </div>
         <input
-          [field]="registerForm.confirmPassword"
+          [formField]="registerForm.confirmPassword"
           [type]="isConfirmPasswordVisible() ? 'text' : 'password'"
           placeholder=""
           autocomplete="new-password"
@@ -258,7 +258,7 @@
           <input
             type="checkbox"
             id="agreeToTerms"
-            [field]="registerForm.agreeToTerms"
+            [formField]="registerForm.agreeToTerms"
             class="signup-checkbox"
           />
           <label for="agreeToTerms">
