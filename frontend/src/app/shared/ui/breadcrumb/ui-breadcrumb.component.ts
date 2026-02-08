@@ -11,20 +11,22 @@ import { BreadcrumbItemInterface } from './breadcrumb.types'
     <p-breadcrumb [model]="primeItems()" styleClass="ui-breadcrumb__root" />
   </div>`,
   styles: `
-    .ui-breadcrumb__root {
+    :host ::ng-deep .ui-breadcrumb__root {
       background: transparent;
       border: 0;
       padding: 0;
       margin-bottom: 1.25rem;
     }
-
-    .ui-breadcrumb .active-breadcrumb {
-      font-weight: 600;
-      color: #7c3aed;
-    }
-
-    .ui-breadcrumb .active-breadcrumb a {
+    :host
+      ::ng-deep
+      .ui-breadcrumb
+      li.p-breadcrumb-item:last-of-type
+      a.p-breadcrumb-item-link
+      .p-breadcrumb-item-label {
       color: #7c3aed !important;
+      font-weight: 600;
+    }
+    :host ::ng-deep .ui-breadcrumb li.p-breadcrumb-item:last-of-type a.p-breadcrumb-item-link {
       pointer-events: none;
       cursor: default;
     }
