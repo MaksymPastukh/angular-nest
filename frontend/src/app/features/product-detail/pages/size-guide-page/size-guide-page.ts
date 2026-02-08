@@ -1,15 +1,14 @@
+import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
-import { MenuItem } from 'primeng/api'
-import { Breadcrumb } from 'primeng/breadcrumb'
 import { map } from 'rxjs'
 import { ProductDetailStore } from '../../store/product-detail.store'
 
 @Component({
   selector: 'app-detail',
-  imports: [CommonModule, Breadcrumb],
+  imports: [CommonModule, UiBreadcrumbComponent],
   templateUrl: './size-guide-page.html',
   styleUrl: './size-guide-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,33 +19,28 @@ export class SizeGuidePage {
 
   readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
 
-  readonly breadcrumbItems = computed<MenuItem[]>(() => {
+  readonly breadcrumbItems = computed<BreadcrumbItemInterface[]>(() => {
     const product = this.store.product()
-    const productId = this.productId()
+    if (!product) return []
 
-    const items: MenuItem[] = [
-      {
-        label: 'Home',
-        icon: 'pi pi-home',
-        routerLink: '/',
-      },
-      {
-        label: 'Shop',
-        routerLink: '/products',
-      },
-    ]
+    const items: BreadcrumbItemInterface[] = [{ label: 'Shop', routerLink: '/catalog' }]
 
-    if (product) {
+    if (product.category) {
       items.push({
-        label: product.title,
-        routerLink: `/product/${productId}`,
+        label: product.category,
+        routerLink: '/catalog',
+        queryParams: { category: product.category },
       })
     }
 
-    items.push({
-      label: 'Size Guide',
-      styleClass: 'active-breadcrumb',
-    })
+    if (product.productType) {
+      items.push({
+        label: product.productType,
+        routerLink: '/catalog',
+        queryParams: { category: product.category, productType: product.productType },
+        isActive: true,
+      })
+    }
 
     return items
   })

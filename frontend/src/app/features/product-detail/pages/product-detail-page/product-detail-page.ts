@@ -1,3 +1,4 @@
+import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -11,13 +12,10 @@ import {
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterLink } from '@angular/router'
-import { MenuItem } from 'primeng/api'
-import { Breadcrumb } from 'primeng/breadcrumb'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
 import { Rating } from '../../../../shared/ui/rating/rating'
-import { ProductInterface } from '../../../catalog/domain/interfaces/product.interface'
 import { CommentStore } from '../../../comment/store/comment.store'
 import { CommentsComponent } from '../../../comment/ui/comments/comments'
 import { TabsInterface } from '../../domain/interfaces/tabs-info.interface'
@@ -28,7 +26,6 @@ import { ProductDetailStore } from '../../store/product-detail.store'
   imports: [
     CommonModule,
     RouterLink,
-    Breadcrumb,
     ImageUrlPipe,
     Tabs,
     TabList,
@@ -37,6 +34,7 @@ import { ProductDetailStore } from '../../store/product-detail.store'
     TabPanel,
     CommentsComponent,
     Rating,
+    UiBreadcrumbComponent,
   ],
   templateUrl: './product-detail-page.html',
   styleUrl: './product-detail-page.scss',
@@ -126,21 +124,16 @@ export class ProductDetailPage {
     }, 100)
   }
 
-  readonly breadcrumbItems = computed<MenuItem[]>(() => {
-    const product: ProductInterface | null = this.store.product()
+  readonly breadcrumbItems = computed<BreadcrumbItemInterface[]>(() => {
+    const product = this.store.product()
     if (!product) return []
 
-    const items: MenuItem[] = [
-      {
-        label: 'Shop',
-        routerLink: '/products',
-      },
-    ]
+    const items: BreadcrumbItemInterface[] = [{ label: 'Shop', routerLink: '/catalog' }]
 
     if (product.category) {
       items.push({
         label: product.category,
-        routerLink: '/products',
+        routerLink: '/catalog',
         queryParams: { category: product.category },
       })
     }
@@ -148,12 +141,9 @@ export class ProductDetailPage {
     if (product.productType) {
       items.push({
         label: product.productType,
-        styleClass: 'active-breadcrumb',
-        routerLink: '/products',
-        queryParams: {
-          category: product.category,
-          productType: product.productType,
-        },
+        routerLink: '/catalog',
+        queryParams: { category: product.category, productType: product.productType },
+        isActive: true,
       })
     }
 
