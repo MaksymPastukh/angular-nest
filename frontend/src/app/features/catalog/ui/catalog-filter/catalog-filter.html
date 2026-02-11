@@ -1,8 +1,8 @@
 <p-accordion
   class="flex flex-col w-2xs"
-  [(value)]="openedPanels"
-  (valueChange)="onAccordionValueChange($event)"
+  [value]="openedPanels"
   [multiple]="true"
+  (valueChange)="onAccordionChange($event)"
 >
   <p-accordion-panel value="0">
     <p-accordion-header>Filter</p-accordion-header>

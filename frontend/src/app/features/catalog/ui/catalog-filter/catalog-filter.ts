@@ -32,7 +32,7 @@ export class CatalogFilterComponent {
   max = this.MAX_PRICE
 
   priceRangeValues: [number, number] = [70, 270]
-  openedPanels: string[] = ['0']
+  openedPanels: string[] = ['0', '1', '2', '3', '4']
 
   readonly openCategoryDropdown = signal<string | null>(null)
   readonly openStyleDropdown = signal<string | null>(null)
@@ -55,18 +55,20 @@ export class CatalogFilterComponent {
     return Math.max(min, Math.min(value, max))
   }
 
-  onAccordionValueChange(next: string | string[] | number | number[] | null | undefined): void {
-    if (!next) return
+  onAccordionChange(nextValues: string[] | string | number | number[] | null | undefined): void {
+    if (!nextValues) return
 
-    const values = Array.isArray(next) ? next.map(String) : [String(next)]
+    const values = Array.isArray(nextValues)
+      ? nextValues.map((v) => String(v))
+      : [String(nextValues)]
 
-    // гарантируем, что панель "0" всегда открыта
-    const normalized = values.includes('0') ? values : ['0', ...values.filter((v) => v !== '0')]
+    if (!values.includes('0')) {
+      this.openedPanels = ['0', ...values.filter((v) => v !== '0')]
+    } else {
+      this.openedPanels = values
+    }
 
-    this.openedPanels = normalized
-
-    // если вдруг "0" закрылась — закрываем dropdown'ы
-    if (!normalized.includes('0')) {
+    if (!this.openedPanels.includes('0')) {
       this.forceClose('category')
       this.forceClose('style')
     }
