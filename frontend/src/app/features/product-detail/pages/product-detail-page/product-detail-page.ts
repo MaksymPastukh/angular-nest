@@ -15,7 +15,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
-import { Rating } from '../../../../shared/ui/rating/rating'
 import { CommentStore } from '../../../comment/store/comment.store'
 import { CommentsComponent } from '../../../comment/ui/comments/comments'
 import { TabsInterface } from '../../domain/interfaces/tabs-info.interface'
@@ -33,7 +32,6 @@ import { ProductDetailStore } from '../../store/product-detail.store'
     TabPanels,
     TabPanel,
     CommentsComponent,
-    Rating,
     UiBreadcrumbComponent,
   ],
   templateUrl: './product-detail-page.html',

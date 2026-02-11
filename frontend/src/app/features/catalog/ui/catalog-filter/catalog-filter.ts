@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion'
-import { Slider } from 'primeng/slider'
 
+import { Accordion, AccordionContent, AccordionHeader, AccordionPanel, Slider } from '@/shared/ui'
 import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
 import { BrandsDropdownComponent } from '../brands-dropdown/brands-dropdown'
 
@@ -11,13 +10,13 @@ type DropdownType = 'category' | 'style'
 @Component({
   selector: 'app-catalog-filter',
   imports: [
+    FormsModule,
+    BrandsDropdownComponent,
     Accordion,
     AccordionPanel,
     AccordionHeader,
     AccordionContent,
     Slider,
-    FormsModule,
-    BrandsDropdownComponent,
   ],
   templateUrl: './catalog-filter.html',
   styleUrl: './catalog-filter.scss',
@@ -33,7 +32,7 @@ export class CatalogFilterComponent {
   max = this.MAX_PRICE
 
   priceRangeValues: [number, number] = [70, 270]
-  openedPanels: string[] = ['0', '1', '2', '3', '4']
+  openedPanels: string[] = ['0']
 
   readonly openCategoryDropdown = signal<string | null>(null)
   readonly openStyleDropdown = signal<string | null>(null)
@@ -56,20 +55,18 @@ export class CatalogFilterComponent {
     return Math.max(min, Math.min(value, max))
   }
 
-  onAccordionChange(nextValues: string[] | string | number | number[] | null | undefined): void {
-    if (!nextValues) return
+  onAccordionValueChange(next: string | string[] | number | number[] | null | undefined): void {
+    if (!next) return
 
-    const values = Array.isArray(nextValues)
-      ? nextValues.map((v) => String(v))
-      : [String(nextValues)]
+    const values = Array.isArray(next) ? next.map(String) : [String(next)]
 
-    if (!values.includes('0')) {
-      this.openedPanels = ['0', ...values.filter((v) => v !== '0')]
-    } else {
-      this.openedPanels = values
-    }
+    // гарантируем, что панель "0" всегда открыта
+    const normalized = values.includes('0') ? values : ['0', ...values.filter((v) => v !== '0')]
 
-    if (!this.openedPanels.includes('0')) {
+    this.openedPanels = normalized
+
+    // если вдруг "0" закрылась — закрываем dropdown'ы
+    if (!normalized.includes('0')) {
       this.forceClose('category')
       this.forceClose('style')
     }

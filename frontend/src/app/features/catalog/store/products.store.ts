@@ -49,8 +49,6 @@ export const ProductStore = signalStore(
       hasPrev: (store.filters().page ?? 1) > 1,
     })),
 
-    facets: computed(() => store.facets()),
-
     facetsBrands: computed(() => store.facets()?.brands ?? []),
     facetsProductTypes: computed(() => store.facets()?.productTypes ?? []),
     facetsDressStyles: computed(() => store.facets()?.dressStyles ?? []),
