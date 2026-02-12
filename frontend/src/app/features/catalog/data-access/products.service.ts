@@ -2,9 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment'
+import { ProductInterface } from '../../../shared/domain/interfaces/product.interface'
 import { FacetsResponseInterface } from '../domain/interfaces/catalog-facets.interface'
 import { CatalogFilterParamsInterface } from '../domain/interfaces/catalog-filter-params.interface'
-import { ProductInterface } from '../domain/interfaces/product.interface'
 import { ProductsResponseInterface } from '../domain/interfaces/products-response.interface'
 import { QueryParamsFacets } from '../domain/types/facets-preview-request.type'
 import { toHttpParams } from '../utils/to-http-params.util'
@@ -47,10 +47,6 @@ export class ProductsService {
     })
 
     return this.http.get<ProductsResponseInterface>(this.apiUrl, { params })
-  }
-
-  getProductById(id: string): Observable<ProductInterface> {
-    return this.http.get<ProductInterface>(`${this.apiUrl}/${id}`)
   }
 
   updateProduct(id: string, product: Partial<ProductInterface>): Observable<ProductInterface> {

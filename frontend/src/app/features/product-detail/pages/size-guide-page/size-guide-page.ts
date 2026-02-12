@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { map } from 'rxjs'
-import { ProductDetailStore } from '../../store/product-detail.store'
+import { ProductDetailFacade } from '../../store/product-detail.facade'
 
 @Component({
   selector: 'app-detail',
@@ -15,12 +15,12 @@ import { ProductDetailStore } from '../../store/product-detail.store'
 })
 export class SizeGuidePage {
   private readonly route = inject(ActivatedRoute)
-  readonly store = inject(ProductDetailStore)
+  readonly facade = inject(ProductDetailFacade)
 
   readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
 
   readonly breadcrumbItems = computed<BreadcrumbItemInterface[]>(() => {
-    const product = this.store.product()
+    const product = this.facade.product()
     if (!product) return []
 
     const items: BreadcrumbItemInterface[] = [{ label: 'Shop', routerLink: '/catalog' }]
@@ -49,7 +49,7 @@ export class SizeGuidePage {
     effect(() => {
       const id = this.productId()
       if (id) {
-        this.store.loadProduct(id)
+        this.facade.load(id)
       }
     })
   }

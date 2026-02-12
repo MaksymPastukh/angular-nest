@@ -9,9 +9,9 @@ import {
   signal,
 } from '@angular/core'
 import { Router } from '@angular/router'
+import { ProductInterface } from '../../../../shared/domain/interfaces/product.interface'
 import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
 import { ProductsService } from '../../data-access/products.service'
-import { ProductInterface } from '../../domain/interfaces/product.interface'
 
 type ProductType = ProductInterface
 

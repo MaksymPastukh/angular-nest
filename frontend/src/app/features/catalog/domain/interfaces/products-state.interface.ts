@@ -1,5 +1,5 @@
+import { ProductInterface } from '../../../../shared/domain/interfaces/product.interface'
 import { CatalogFilterParamsInterface } from './catalog-filter-params.interface'
-import { ProductInterface } from './product.interface'
 import { ProductsFacets } from './products-response.interface'
 
 export interface ShopStateInterface {

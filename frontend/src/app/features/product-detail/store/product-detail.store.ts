@@ -2,38 +2,99 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, Observable, pipe, switchMap, tap } from 'rxjs'
-import { ProductsService } from '../../catalog/data-access/products.service'
-import { ProductInterface } from '../../catalog/domain/interfaces/product.interface'
+import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs'
+import { ProductsDetailService } from '../data-access/product-detail.service'
 import { ProductDetailGalleryInterface } from '../domain/interfaces/product-detail-gallery.interface'
 import { ProductDetailStateInterface } from '../domain/interfaces/product-detail-state.interface'
+import { ProductDetailInterface } from '../domain/interfaces/product-detail.interface'
 
 const initialState: ProductDetailStateInterface = {
   product: null,
   isLoading: false,
   error: null,
+  selectedSize: null,
+  selectedColor: null,
+  quantity: 1,
+  activeImageIndex: 0,
 }
 
 export const ProductDetailStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, productService = inject(ProductsService)) => {
-    const setLoading = (isLoading: boolean) =>
-      patchState(store, { isLoading, error: isLoading ? null : store.error() })
+  withComputed((store) => {
+    const galleryImages = computed((): ProductDetailGalleryInterface[] => {
+      const product = store.product()
+      if (!product) return []
+      return Array.from({ length: 3 }, () => ({ image: product.image, alt: product.title }))
+    })
 
-    const setError = (error: string) =>
+    const activeImage = computed(() => galleryImages()[store.activeImageIndex()] ?? null)
+
+    const availableColors = computed(() => {
+      const c = store.product()?.color
+      if (!c) return []
+      return Array.isArray(c) ? c : [c]
+    })
+
+    const hasMultipleColors = computed(() => availableColors().length > 1)
+
+    return {
+      hasProduct: computed(() => !!store.product()),
+      productTitle: computed(() => store.product()?.title ?? ''),
+      availableSizes: computed(() => store.product()?.size ?? []),
+
+      canAddToCart: computed(() => {
+        const sizes = store.product()?.size ?? []
+        const needSize = sizes.length > 0
+        const needColor = hasMultipleColors()
+
+        return (!needSize || !!store.selectedSize()) && (!needColor || !!store.selectedColor())
+      }),
+      galleryImages,
+      activeImage,
+      availableColors,
+      hasMultipleColors,
+    }
+  }),
+  withMethods((store, productDetailService = inject(ProductsDetailService)) => {
+    const setLoading = (): void => {
+      patchState(store, { isLoading: true, error: null, activeImageIndex: 0 })
+    }
+
+    const setError = (error: string): void =>
       patchState(store, {
         isLoading: false,
         error,
       })
 
-    const handleHttpError = (error: HttpErrorResponse) => {
-      const message =
-        (error.error as { message?: string })?.message ?? error.message ?? 'Произошла ошибка'
+    const handleHttpError = (error: unknown) => {
+      if (!(error instanceof HttpErrorResponse)) {
+        setError('Произошла ошибка')
+        return
+      }
 
-      setError(String(message))
+      const apiMessage = (error.error as { message?: unknown })?.message
+      const message =
+        typeof apiMessage === 'string'
+          ? apiMessage
+          : (error.message ?? `Request failed with status ${error.status}.`)
+
+      setError(message)
     }
 
+    const setSuccess = (product: ProductDetailInterface) => {
+      const colors = Array.isArray(product.color) ? product.color : [product.color]
+      const defaultColor = colors.length === 1 ? colors[0] : null
+      patchState(store, {
+        product,
+        isLoading: false,
+        error: null,
+        selectedSize: null,
+        selectedColor: defaultColor,
+        quantity: 1,
+        activeImageIndex: 0,
+      })
+    }
     const reset = (): void => {
       patchState(store, initialState)
     }
@@ -41,55 +102,37 @@ export const ProductDetailStore = signalStore(
     return {
       loadProduct: rxMethod<string>(
         pipe(
-          tap(() => setLoading(true)),
-          switchMap((id: string) => {
-            return productService.getProductById(id).pipe(
-              tap((product: ProductInterface) => {
-                patchState(store, {
-                  product,
-                })
-                setLoading(false)
-              }),
-              catchError((error: HttpErrorResponse): Observable<never> => {
+          tap(setLoading),
+          switchMap((id: string) =>
+            productDetailService.getProductById(id).pipe(
+              tap((product) => setSuccess(product)),
+              catchError((error) => {
                 handleHttpError(error)
                 return EMPTY
               })
             )
-          })
+          )
         )
       ),
+      selectSize(size: string | null) {
+        patchState(store, { selectedSize: size })
+      },
+      selectColor(color: string | null) {
+        patchState(store, { selectedColor: color })
+      },
+      setQuantity(quantity: number) {
+        patchState(store, { quantity: Math.max(1, quantity) })
+      },
+      incQty() {
+        patchState(store, { quantity: store.quantity() + 1 })
+      },
+      decQty() {
+        patchState(store, { quantity: Math.max(1, store.quantity() - 1) })
+      },
+      selectImage(index: number) {
+        patchState(store, { activeImageIndex: Math.max(0, index) })
+      },
       reset,
-    }
-  }),
-
-  withComputed((store) => {
-    const galleryImagesCache = new WeakMap<ProductInterface, { image: string; alt: string }[]>()
-
-    return {
-      hasProduct: computed((): boolean => store.product() !== null),
-      productTitle: computed((): string => store.product()?.title ?? ''),
-      galleryImages: computed((): ProductDetailGalleryInterface[] => {
-        const product: ProductInterface | null = store.product()
-        if (!product) return []
-
-        // Если массив уже есть для этого продукта — возвращаем его
-        if (galleryImagesCache.has(product)) {
-          return galleryImagesCache.get(product) ?? []
-        }
-
-        // Создаём массив изображений
-        const images: ProductDetailGalleryInterface[] = Array.from({ length: 3 }, () => ({
-          image: product.image,
-          alt: product.title,
-        }))
-
-        // Сохраняем в cache
-        galleryImagesCache.set(product, images)
-
-        return images
-      }),
     }
   })
 )
-
-export type ProductDetailStoreType = InstanceType<typeof ProductDetailStore>

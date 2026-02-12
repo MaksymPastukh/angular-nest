@@ -1,5 +1,5 @@
 <div class="container mx-auto px-4 py-8">
-  @if (store.isLoading()) {
+  @if (facade.isLoading()) {
     <div class="flex items-center justify-center min-h-[400px]">
       <div class="text-center">
         <div
@@ -8,7 +8,7 @@
         <p class="text-gray-600">Loading product...</p>
       </div>
     </div>
-  } @else if (store.error()) {
+  } @else if (facade.error()) {
     <div class="flex items-center justify-center min-h-[400px]">
       <div class="text-center">
         <svg
@@ -25,7 +25,7 @@
           />
         </svg>
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Error</h2>
-        <p class="text-gray-600">{{ store.error() }}</p>
+        <p class="text-gray-600">{{ facade.error() }}</p>
         <a
           routerLink="/products"
           class="mt-4 inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
@@ -34,33 +34,34 @@
         </a>
       </div>
     </div>
-  } @else if (store.product(); as prod) {
+  } @else if (facade.product(); as prod) {
     <div class="container mx-auto px-4 py-10">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1 order-1 sm:order-2">
-            <img
-              class="w-lg h-auto rounded-3xl object-cover max-h-full border border-gray-100"
-              [src]="galleryImages()[selectedImageIndex()]?.image | imageUrl"
-              [alt]="galleryImages()[selectedImageIndex()]?.alt"
-              (error)="onImageError($event)"
-            />
+            @if (facade.activeImage(); as img) {
+              <img
+                class="w-lg h-auto rounded-3xl object-cover max-h-full border border-gray-100"
+                [src]="img.image | imageUrl"
+                [alt]="img.alt"
+                (error)="onImageError($event)"
+              />
+            }
           </div>
 
           <div class="flex sm:flex-col gap-3 order-2 sm:order-1">
             <div class="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
-              @for (img of galleryImages(); track $index) {
+              @for (img of facade.galleryImages(); track $index) {
                 <img
                   class="w-20 h-24 sm:w-20 sm:h-24 flex-shrink-0 object-cover rounded-lg border-2 cursor-pointer transition-all duration-200"
-                  [class.border-purple-600]="selectedImageIndex() === $index"
-                  [class.border-gray-200]="selectedImageIndex() !== $index"
-                  [class.opacity-60]="selectedImageIndex() !== $index"
-                  [class.hover:opacity-100]="selectedImageIndex() !== $index"
-                  [class.hover:border-purple-400]="selectedImageIndex() !== $index"
+                  [class.border-gray-200]="facade.activeImageIndex() !== $index"
+                  [class.opacity-60]="facade.activeImageIndex() !== $index"
+                  [class.hover:opacity-100]="facade.activeImageIndex() !== $index"
+                  [class.hover:border-purple-400]="facade.activeImageIndex() !== $index"
+                  [class.border-purple-600]="facade.activeImageIndex() === $index"
+                  (click)="facade.selectImage($index)"
                   [src]="img.image | imageUrl"
                   [alt]="img.alt"
-                  (click)="selectImage($index)"
-                  (error)="onImageError($event)"
                 />
               }
             </div>
@@ -69,7 +70,7 @@
               <button
                 type="button"
                 class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
-                (click)="previousImage()"
+                (click)="facade.prevImage()"
                 aria-label="Previous image"
               >
                 <svg
@@ -90,7 +91,7 @@
               <button
                 type="button"
                 class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
-                (click)="nextImage()"
+                (click)="facade.nextImage()"
                 aria-label="Next image"
               >
                 <svg
@@ -176,15 +177,15 @@
               @for (size of prod.size; track $index) {
                 <button
                   type="button"
-                  (click)="selectSize(size)"
+                  (click)="facade.selectSize(size)"
                   class="px-4 py-2 rounded-lg cursor-pointer border text-sm font-medium transition-all duration-200"
-                  [class.border-purple-600]="selectedSize() === size"
-                  [class.bg-purple-600]="selectedSize() === size"
-                  [class.text-white]="selectedSize() === size"
-                  [class.border-gray-300]="selectedSize() !== size"
-                  [class.text-gray-900]="selectedSize() !== size"
-                  [class.hover:border-purple-400]="selectedSize() !== size"
-                  [class.hover:bg-purple-50]="selectedSize() !== size"
+                  [class.border-purple-600]="facade.selectedSize() === size"
+                  [class.bg-purple-600]="facade.selectedSize() === size"
+                  [class.text-white]="facade.selectedSize() === size"
+                  [class.border-gray-300]="facade.selectedSize() !== size"
+                  [class.text-gray-900]="facade.selectedSize() !== size"
+                  [class.hover:border-purple-400]="facade.selectedSize() !== size"
+                  [class.hover:bg-purple-50]="facade.selectedSize() !== size"
                 >
                   {{ size }}
                 </button>
@@ -195,33 +196,34 @@
           <div>
             <p class="font-causten font-bold text-lg mb-2">Colour Available</p>
             <div class="flex gap-3 mt-3">
-              <button
-                type="button"
-                (click)="selectColor(prod.color)"
-                class="w-8 h-8 rounded-full transition-all duration-200 cursor-pointer border-2 border-gray-300 focus:outline-none"
-                [class.ring-purple-600]="selectedColor() === prod.color"
-                [class.ring-offset-2]="selectedColor() === prod.color"
-                [class.ring-gray-300]="selectedColor() !== prod.color"
-                [class.ring-offset-0]="selectedColor() !== prod.color"
-                [style.background-color]="prod.color"
-                [title]="prod.color"
-                aria-label="Select color"
-              ></button>
+              @for (color of facade.availableColors(); track $index) {
+                <button
+                  type="button"
+                  (click)="facade.selectColor(color)"
+                  class="w-8 h-8 rounded-full transition-all duration-200 cursor-pointer border-2 border-gray-300 focus:outline-none"
+                  [class.ring-2]="facade.selectedColor() === color"
+                  [class.ring-purple-600]="facade.selectedColor() === color"
+                  [class.ring-offset-2]="facade.selectedColor() === color"
+                  [style.background-color]="color"
+                  [title]="color"
+                  aria-label="Select color"
+                ></button>
+              }
             </div>
           </div>
 
           <div class="flex flex-wrap gap-8 mt-8">
             <button
               type="button"
-              (click)="addToCart()"
-              [disabled]="!canAddToCart()"
+              (click)="facade.addToCart()"
+              [disabled]="!facade.canAddToCart()"
               class="flex w-3xs items-center font-causten font-bold text-lg cursor-pointer gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200"
-              [class.bg-purple-600]="canAddToCart()"
-              [class.text-white]="canAddToCart()"
-              [class.hover:bg-purple-700]="canAddToCart()"
-              [class.bg-gray-300]="!canAddToCart()"
-              [class.text-gray-500]="!canAddToCart()"
-              [class.cursor-not-allowed]="!canAddToCart()"
+              [class.bg-purple-600]="facade.canAddToCart()"
+              [class.text-white]="facade.canAddToCart()"
+              [class.hover:bg-purple-700]="facade.canAddToCart()"
+              [class.bg-gray-300]="!facade.canAddToCart()"
+              [class.text-gray-500]="!facade.canAddToCart()"
+              [class.cursor-not-allowed]="!facade.canAddToCart()"
             >
               <svg
                 width="17"
@@ -237,11 +239,11 @@
                   stroke-linecap="round"
                 />
               </svg>
-              @if (!selectedSize() && !selectedColor()) {
+              @if (!facade.selectedSize() && !facade.selectedColor()) {
                 <span>Select size & color</span>
-              } @else if (!selectedSize()) {
+              } @else if (!facade.selectedSize()) {
                 <span>Select size</span>
-              } @else if (!selectedColor()) {
+              } @else if (!facade.selectedColor()) {
                 <span>Select color</span>
               } @else {
                 <span>Add to cart</span>
@@ -413,12 +415,15 @@
             <div
               class="relative w-full max-w-md aspect-video rounded-2xl overflow-hidden bg-gray-300"
             >
-              <img
-                [src]="galleryImages()[selectedImageIndex()]?.image | imageUrl"
-                [alt]="galleryImages()[selectedImageIndex()]?.alt"
-                (error)="onImageError($event)"
-                class="w-full object-cover"
-              />
+              @if (facade.activeImage(); as img) {
+                <img
+                  [src]="img.image | imageUrl"
+                  [alt]="img.alt"
+                  (error)="onImageError($event)"
+                  class="w-full object-cover"
+                />
+              }
+
               <div class="absolute inset-0 bg-black/20"></div>
               <button
                 class="absolute inset-0 flex items-center justify-center"
@@ -448,7 +453,7 @@
                 1.00 M
               </span>
               <div class="absolute bottom-4 left-4 right-4">
-                <p class="text-white text-sm font-medium">{{ store.product()?.title }}</p>
+                <p class="text-white text-sm font-medium">{{ prod.title }}</p>
               </div>
             </div>
           </div>

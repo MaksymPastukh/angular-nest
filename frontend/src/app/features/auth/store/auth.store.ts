@@ -43,6 +43,7 @@ const errorEvent = (type: AuthErrorType, message: string): AuthEventInterface =>
 })
 
 export const AuthStore = signalStore(
+  { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => {
     const user = computed(() => store.user()?.user ?? null)

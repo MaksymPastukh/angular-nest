@@ -1,5 +1,5 @@
+import { ProductInterface } from '../../../../shared/domain/interfaces/product.interface'
 import { FacetItemInterface } from './catalog-facets.interface'
-import { ProductInterface } from './product.interface'
 
 export interface ProductsFacets {
   brands: FacetItemInterface[]

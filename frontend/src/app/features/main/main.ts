@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { RouterLink } from '@angular/router'
 import { Carousel } from 'primeng/carousel'
 import { GalleriaModule } from 'primeng/galleria'
-import { ProductInterface } from '../catalog/domain/interfaces/product.interface'
+import { ProductInterface } from '../../shared/domain/interfaces/product.interface'
 import { ProductCardComponent } from '../catalog/ui/product-card/product-card'
 import { CategoriesService } from '../categories/data-access/categories.service'
 import { CategoriesInterface } from '../categories/domain/interfaces/categories.interface'

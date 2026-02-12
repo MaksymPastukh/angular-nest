@@ -1,7 +1,11 @@
-import { ProductInterface } from '../../../catalog/domain/interfaces/product.interface'
+import { ProductDetailInterface } from './product-detail.interface'
 
 export interface ProductDetailStateInterface {
-  product: ProductInterface | null
+  product: ProductDetailInterface | null
   isLoading: boolean
   error: string | null
+  selectedSize: string | null
+  selectedColor: string | null
+  quantity: number
+  activeImageIndex: number
 }
