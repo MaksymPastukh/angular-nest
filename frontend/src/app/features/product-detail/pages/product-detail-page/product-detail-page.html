@@ -121,7 +121,11 @@
 
           <div class="flex text-sm">
             <div class="flex items-end">
-              <span class="text-gray-500 font-family font-medium text-xl">{{ prod.rating }}.0</span>
+              <app-ui-rating [value]="prod.rating" [readonly]="true" [stars]="5" />
+
+              <span class="text-gray-500 font-family pl-3 font-medium text-xl">
+                {{ prod.rating }}.0</span
+              >
             </div>
             <button
               type="button"
@@ -200,10 +204,9 @@
                 <button
                   type="button"
                   (click)="facade.selectColor(color)"
-                  class="w-8 h-8 rounded-full transition-all duration-200 cursor-pointer border-2 border-gray-300 focus:outline-none"
+                  class="w-8 h-8 rounded-full transition-all duration-200 cursor-pointer border-2 border-gray-100 focus:outline-none"
                   [class.ring-2]="facade.selectedColor() === color"
-                  [class.ring-purple-600]="facade.selectedColor() === color"
-                  [class.ring-offset-2]="facade.selectedColor() === color"
+                  [class.ring-purple-500]="facade.selectedColor() === color"
                   [style.background-color]="color"
                   [title]="color"
                   aria-label="Select color"

@@ -13,6 +13,8 @@ import { RatingValueType } from './ui-rating.type'
       [readonly]="readonly()"
       [disabled]="disabled()"
       [stars]="stars()"
+      [iconOnStyle]="{ color: '#facc15' }"
+      [iconOffStyle]="{ color: '#d1d5db' }"
       (onRate)="rateCommitted.emit(value())"
       (onCancel)="cancelCommitted.emit()"
     />
@@ -22,7 +24,6 @@ import { RatingValueType } from './ui-rating.type'
 export class UiRatingComponent {
   value = model<RatingValueType>(null)
 
-  // UI options
   stars = input<number>(5)
   readonly = input<boolean>(false)
   disabled = input<boolean>(false)

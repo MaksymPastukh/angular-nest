@@ -1,4 +1,4 @@
-import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@/shared/ui'
+import { BreadcrumbItemInterface, UiBreadcrumbComponent, UiRatingComponent } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -32,6 +32,7 @@ import { ProductDetailFacade } from '../../store/product-detail.facade'
     TabPanel,
     CommentsComponent,
     UiBreadcrumbComponent,
+    UiRatingComponent,
   ],
   templateUrl: './product-detail-page.html',
   styleUrl: './product-detail-page.scss',
