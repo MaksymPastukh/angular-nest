@@ -11,7 +11,7 @@ export class AdminShopService {
   private readonly http = inject(HttpClient)
   private readonly apiUrl = `${environment.api}products`
 
-  createProduct(product: Omit<ProductInterface, '_id'>): Observable<ProductInterface> {
+  createProduct(product: Omit<ProductInterface, 'id'>): Observable<ProductInterface> {
     return this.http.post<ProductInterface>(this.apiUrl, product)
   }
 

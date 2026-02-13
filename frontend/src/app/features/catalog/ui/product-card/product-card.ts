@@ -1,19 +1,9 @@
 import { CommonModule } from '@angular/common'
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  input,
-  InputSignal,
-  signal,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { ProductInterface } from '../../../../shared/domain/interfaces/product.interface'
 import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
 import { ProductsService } from '../../data-access/products.service'
-
-type ProductType = ProductInterface
+import { ProductInterface } from '../../../../shared/domain'
 
 @Component({
   selector: 'app-product-card',
@@ -23,7 +13,7 @@ type ProductType = ProductInterface
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
-  productIn: InputSignal<ProductType> = input.required<ProductType>()
+  productIn = input.required<ProductInterface>()
   readonly router: Router = inject(Router)
   private readonly productService = inject(ProductsService)
 
@@ -40,7 +30,7 @@ export class ProductCardComponent {
     event.stopPropagation()
 
     const product = this.productIn()
-    if (!product?._id) return
+    if (!product?.id) return
   }
 
   onImageError(event: Event): void {
@@ -55,8 +45,8 @@ export class ProductCardComponent {
 
   navigateToDetail(): void {
     const product = this.productIn()
-    if (product?._id) {
-      void this.router.navigate(['/product', product._id])
+    if (product?.id) {
+      void this.router.navigate(['/product', product.id])
     } else {
       console.error('Product or product ID is undefined', product)
     }

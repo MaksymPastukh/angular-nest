@@ -1,6 +1,5 @@
 export interface ProductInterface {
-  _id?: string
-  id?: string
+  id: string
   title: string
   rating: number
   brand: string
