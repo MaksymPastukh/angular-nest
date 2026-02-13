@@ -1,13 +1,14 @@
 import { Type } from 'class-transformer';
 import {
-  ArrayMinSize,
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-  MinLength,
+    ArrayMaxSize,
+    ArrayMinSize,
+    IsArray,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+    Max,
+    Min,
+    MinLength,
 } from 'class-validator';
 
 /**
@@ -43,12 +44,14 @@ export class CreateProductDto {
   brand: string;
 
   /**
-   * Путь к изображению продукта
-   * @example "/images/products/nike-air-shirt.jpg"
+   * Массив путей к изображениям продукта (максимум 3)
+   * @example ["/images/products/nike-air-shirt-1.jpg", "/images/products/nike-air-shirt-2.jpg"]
    */
-  @IsString()
-  @IsNotEmpty()
-  image: string;
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(3)
+  @IsString({ each: true })
+  images: string[];
 
   /**
    * Цена продукта
@@ -92,12 +95,13 @@ export class CreateProductDto {
   dressStyle: string;
 
   /**
-   * Цвет продукта
-   * @example "Черный"
+   * Доступные цвета продукта
+   * @example ["Black", "White"]
    */
-  @IsString()
-  @IsNotEmpty()
-  color: string;
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsString({ each: true })
+  color: string[];
 
   /**
    * Доступные размеры продукта

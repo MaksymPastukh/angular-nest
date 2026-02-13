@@ -109,11 +109,11 @@ export class CartService {
       const newItem: CartItem = {
         productId: product._id.toString(),
         productTitle: product.title,
-        productImage: product.image,
+        productImage: product.images[0], // Первое изображение из массива
         price: product.price,
         quantity: addToCartDto.quantity,
         size: addToCartDto.size,
-        color: product.color,
+        color: addToCartDto.color, // Цвет, выбранный пользователем
         addedAt: new Date(),
       };
 

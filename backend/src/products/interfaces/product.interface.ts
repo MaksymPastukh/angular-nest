@@ -12,11 +12,14 @@ export interface IProduct {
   /** Рейтинг продукта (0-5) */
   rating: number;
 
+  /** Денормализованные агрегаты рейтинга продукта */
+  ratingStats?: IProductRatingStats;
+
   /** Бренд/производитель продукта */
   brand: string;
 
-  /** Путь к изображению продукта */
-  image: string;
+  /** Массив путей к изображениям продукта */
+  images: string[];
 
   /** Цена продукта */
   price: number;
@@ -33,8 +36,8 @@ export interface IProduct {
   /** Стиль одежды (Classic, Casual, Business, и т.д.) */
   dressStyle: string;
 
-  /** Цвет продукта */
-  color: string;
+  /** Доступные цвета продукта */
+  color: string[];
 
   /** Доступные размеры продукта */
   size: string[];
@@ -59,6 +62,29 @@ export interface IProduct {
 
   /** ID пользователей, которые добавили в избранное */
   likedBy: string[];
+}
+
+/**
+ * Денормализованные агрегаты рейтинга продукта
+ * Используются для быстрого каталога и карточек
+ */
+export interface IProductRatingStats {
+  avg: number;
+  count: number;
+  sum: number;
+  distribution: IRatingDistribution;
+  updatedAt: Date | null;
+}
+
+/**
+ * Распределение рейтинга по звездам
+ */
+export interface IRatingDistribution {
+  1: number;
+  2: number;
+  3: number;
+  4: number;
+  5: number;
 }
 
 /**

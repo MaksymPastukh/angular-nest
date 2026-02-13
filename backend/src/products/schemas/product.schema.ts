@@ -7,6 +7,36 @@ import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 export type ProductDocument = HydratedDocument<Product>;
 
 /**
+ * Денормализованные агрегаты рейтинга продукта
+ * Используются для быстрых сортировок и отображения в каталоге
+ */
+@Schema({ _id: false })
+export class ProductRatingStats {
+  /** Средний рейтинг (0..5), округление до 0.1 */
+  @Prop({ type: Number, default: 0, min: 0, max: 5 })
+  public avg: number;
+
+  /** Количество опубликованных отзывов */
+  @Prop({ type: Number, default: 0, min: 0 })
+  public count: number;
+
+  /** Сумма рейтингов (для инкрементальных пересчетов) */
+  @Prop({ type: Number, default: 0, min: 0 })
+  public sum: number;
+
+  /** Распределение по звездам (1..5) */
+  @Prop({
+    type: Object,
+    default: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+  })
+  public distribution: Record<1 | 2 | 3 | 4 | 5, number>;
+
+  /** Дата последнего обновления агрегатов */
+  @Prop({ type: Date, default: null })
+  public updatedAt: Date | null;
+}
+
+/**
  * Схема продукта для MongoDB
  * Определяет структуру документа продукта в базе данных
  */
@@ -14,10 +44,49 @@ export type ProductDocument = HydratedDocument<Product>;
   timestamps: true,
   versionKey: false, // Убираем поле __v из документов
   toJSON: {
+    virtuals: true,
     // Настройка сериализации в JSON
     transform: (_doc, ret: any) => {
-      ret.id = ret._id.toString(); // Добавляем поле id
+      if (ret._id) {
+        ret.id = ret._id.toString(); // Добавляем поле id
+      }
       delete ret._id; // Удаляем _id
+      
+      // Переименовываем поля для публичного API
+      if (ret.color) {
+        ret.colors = ret.color;
+        delete ret.color;
+      }
+      if (ret.size) {
+        ret.sizes = ret.size;
+        delete ret.size;
+      }
+      // image удаляется (устаревшее поле, используем images)
+      delete ret.image;
+      
+      return ret;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (ret._id) {
+        ret.id = ret._id.toString();
+      }
+      delete ret._id;
+      
+      // Переименовываем поля для публичного API
+      if (ret.color) {
+        ret.colors = ret.color;
+        delete ret.color;
+      }
+      if (ret.size) {
+        ret.sizes = ret.size;
+        delete ret.size;
+      }
+      // image удаляется (устаревшее поле, используем images)
+      delete ret.image;
+      
       return ret;
     },
   },
@@ -31,11 +100,18 @@ export class Product {
   public title: string;
 
   /**
-   * Рейтинг продукта от 0 до 5
+    * Рейтинг продукта от 0 до 5 (avg, legacy поле для совместимости)
    * @example 4.5
    */
   @Prop({ required: true, type: Number, min: 0, max: 5, default: 0 })
   public rating: number;
+
+    /**
+    * Денормализованные агрегаты отзывов
+    * Источник истины для avg/count/distribution
+    */
+    @Prop({ type: ProductRatingStats, default: () => ({}) })
+    public ratingStats: ProductRatingStats;
 
   /**
    * Бренд/производитель продукта
@@ -45,11 +121,11 @@ export class Product {
   public brand: string;
 
   /**
-   * Путь к изображению продукта
-   * @example "/images/products/nike-air-shirt.jpg"
+   * Массив путей к изображениям продукта (до 3 изображений)
+   * @example ["/images/products/nike-air-shirt-1.jpg", "/images/products/nike-air-shirt-2.jpg"]
    */
-  @Prop({ required: true, type: String })
-  public image: string;
+  @Prop({ required: true, type: [String], validate: [(val: string[]) => val.length <= 3, 'Maximum 3 images allowed'] })
+  public images: string[];
 
   /**
    * Цена продукта
@@ -87,11 +163,11 @@ export class Product {
   public dressStyle: string;
 
   /**
-   * Цвет продукта
-   * @example "Черный"
+   * Доступные цвета продукта
+   * @example ["Black", "White", "Red"]
    */
-  @Prop({ required: true, type: String, index: true })
-  public color: string;
+  @Prop({ required: true, type: [String], index: true })
+  public color: string[];
 
   /**
    * Доступные размеры продукта
@@ -160,6 +236,11 @@ export class Product {
  */
 export const ProductSchema = SchemaFactory.createForClass(Product);
 
+// Виртуальное поле id для стабильного DX (id вместо _id)
+ProductSchema.virtual('id').get(function (this: { _id: { toString: () => string } }) {
+  return this._id.toString();
+});
+
 /**
  * Создание составных индексов для оптимизации фильтрации и facets
  * Эти индексы критичны для производительности preview facets при hover
@@ -178,6 +259,8 @@ ProductSchema.index({ category: 1, price: 1 });
 
 // Индексы для сортировки
 ProductSchema.index({ rating: -1 });
+ProductSchema.index({ 'ratingStats.avg': -1 });
+ProductSchema.index({ 'ratingStats.count': -1 });
 ProductSchema.index({ createdAt: -1 });
 
 // Индексы для фильтрации по цвету и размеру
