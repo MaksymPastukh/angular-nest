@@ -63,8 +63,13 @@ export class ProductDetailPage {
         content: '',
       },
       {
-        title: 'User Comments',
+        title: 'Reviews',
         value: 1,
+        content: '',
+      },
+      {
+        title: 'Q&A',
+        value: 2,
         content: '',
       },
     ]

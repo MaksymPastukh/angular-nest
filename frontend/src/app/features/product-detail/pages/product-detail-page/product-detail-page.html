@@ -355,6 +355,13 @@
                           >{{ tab.content }}</span
                         >
                       }
+                      @case (2) {
+                        <span class="font-causten font-medium text-lg">{{ tab.title }}</span>
+                        <span
+                          class="ml-1 px-2 py-0.5 text-xs rounded-md bg-purple-600 text-white"
+                          >{{ tab.content }}</span
+                        >
+                      }
                     }
                   </p-tab>
                 }
@@ -408,6 +415,9 @@
                       <app-comments [productId]="id" />
                     }
                   </div>
+                </p-tabpanel>
+                <p-tabpanel [value]="2">
+                  <div class="py-6">text</div>
                 </p-tabpanel>
               </p-tabpanels>
             </p-tabs>
