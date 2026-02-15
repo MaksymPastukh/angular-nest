@@ -199,39 +199,48 @@ export const ReviewsStore = signalStore(
     const loadMyReview = rxMethod<void>(myReviewCommand())
 
     const createReview = rxMethod<CreateReviewInterface>(
-      submitCommand<CreateReviewInterface>(
-        (data) =>
-          reviewsService.create({
-            productId: store.productId() as string,
-            rating: data.rating,
-            text: data.text,
-          }),
-        () => {
-          patchState(store, { page: 1 })
-          load()
-          loadMyReview()
-        }
+      pipe(
+        requireProductId<CreateReviewInterface>(),
+        submitCommand<CreateReviewInterface>(
+          (data) =>
+            reviewsService.create({
+              productId: store.productId() as string,
+              rating: data.rating,
+              text: data.text,
+            }),
+          () => {
+            patchState(store, { page: 1 })
+            load()
+            loadMyReview()
+          }
+        )
       )
     )
 
     const updateReview = rxMethod<UpdateReviewInterface>(
-      submitCommand<UpdateReviewInterface>(
-        (data) => reviewsService.update(data.id, { rating: data.rating, text: data.text }),
-        () => {
-          patchState(store, { page: 1 })
-          load()
-          loadMyReview()
-        }
+      pipe(
+        requireProductId<UpdateReviewInterface>(),
+        submitCommand<UpdateReviewInterface>(
+          (data) => reviewsService.update(data.id, { rating: data.rating, text: data.text }),
+          () => {
+            patchState(store, { page: 1 })
+            load()
+            loadMyReview()
+          }
+        )
       )
     )
 
     const remove = rxMethod<{ id: string }>(
-      submitCommand<{ id: string }>(
-        ({ id }) => reviewsService.remove(id),
-        () => {
-          patchState(store, { myReview: null, page: 1 })
-          load()
-        }
+      pipe(
+        requireProductId<{ id: string }>(),
+        submitCommand<{ id: string }>(
+          ({ id }) => reviewsService.remove(id),
+          () => {
+            patchState(store, { myReview: null, page: 1 })
+            load()
+          }
+        )
       )
     )
 

@@ -83,7 +83,7 @@ export class ProductDetailFacade {
 
     // ВАЖНО: твой бэк отдаёт _id
     console.warn('[ADD_TO_CART stub]', {
-      productId: product._id,
+      productId: product.id,
       title: product.title,
       price: product.price,
       qty: this.quantity(),

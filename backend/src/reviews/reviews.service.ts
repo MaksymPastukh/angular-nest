@@ -300,7 +300,8 @@ export class ReviewsService {
     const oldRating = review.rating;
 
     // Проверяем, что пользователь обновляет свой отзыв
-    if (review.userId !== userId) {
+    // Преобразуем userId из базы в строку для корректного сравнения
+    if (review.userId.toString() !== userId) {
       throw new ForbiddenException('Вы можете редактировать только свои отзывы');
     }
 
@@ -508,7 +509,7 @@ export class ReviewsService {
     return {
       id: review._id.toString(),
       productId: review.productId,
-      userId: review.userId,
+      userId: review.userId.toString(), // Всегда преобразуем в строку
       userName: review.userName,
       rating: review.rating,
       text: review.text,

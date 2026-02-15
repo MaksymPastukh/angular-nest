@@ -61,9 +61,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // Возвращаем данные пользователя, которые будут доступны в req.user
     // во всех защищённых контроллерах
+    // ВАЖНО: используем payload.sub как id (строка), а не _id из базы (ObjectId)
     return {
       id: payload.sub,
-      ...user,
+      email: user.email,
+      firstName: user.firstName,
+      role: user.role,
+      isActive: user.isActive,
     };
   }
 }

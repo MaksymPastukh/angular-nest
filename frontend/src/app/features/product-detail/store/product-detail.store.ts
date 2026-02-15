@@ -24,16 +24,14 @@ export const ProductDetailStore = signalStore(
   withComputed((store) => {
     const galleryImages = computed((): ProductDetailGalleryInterface[] => {
       const product = store.product()
-      if (!product) return []
-      return Array.from({ length: 3 }, () => ({ image: product.image, alt: product.title }))
+      if (!product?.images?.length) return []
+      return product.images.map((image) => ({ image, alt: product.title }))
     })
 
     const activeImage = computed(() => galleryImages()[store.activeImageIndex()] ?? null)
 
     const availableColors = computed(() => {
-      const c = store.product()?.color
-      if (!c) return []
-      return Array.isArray(c) ? c : [c]
+      return store.product()?.colors ?? []
     })
 
     const hasMultipleColors = computed(() => availableColors().length > 1)
@@ -41,10 +39,10 @@ export const ProductDetailStore = signalStore(
     return {
       hasProduct: computed(() => !!store.product()),
       productTitle: computed(() => store.product()?.title ?? ''),
-      availableSizes: computed(() => store.product()?.size ?? []),
+      availableSizes: computed(() => store.product()?.sizes ?? []),
 
       canAddToCart: computed(() => {
-        const sizes = store.product()?.size ?? []
+        const sizes = store.product()?.sizes ?? []
         const needSize = sizes.length > 0
         const needColor = hasMultipleColors()
 
@@ -83,8 +81,7 @@ export const ProductDetailStore = signalStore(
     }
 
     const setSuccess = (product: ProductDetailInterface) => {
-      const colors = Array.isArray(product.color) ? product.color : [product.color]
-      const defaultColor = colors.length === 1 ? colors[0] : null
+      const defaultColor = product.colors.length === 1 ? product.colors[0] : null
       patchState(store, {
         product,
         isLoading: false,

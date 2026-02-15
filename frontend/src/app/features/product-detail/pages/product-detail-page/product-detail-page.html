@@ -178,7 +178,7 @@
               </div>
             </div>
             <div class="flex gap-2 flex-wrap">
-              @for (size of prod.size; track $index) {
+              @for (size of prod.sizes; track $index) {
                 <button
                   type="button"
                   (click)="facade.selectSize(size)"
@@ -411,8 +411,8 @@
                 </p-tabpanel>
                 <p-tabpanel [value]="1">
                   <div #commentsSection class="py-6">
-                    @if (productId(); as id) {
-                      <app-comments [productId]="id" />
+                    @if (facade.product(); as prod) {
+                      <app-ui-reviews [productId]="prod.id" [initialSummary]="prod.ratingStats" />
                     }
                   </div>
                 </p-tabpanel>

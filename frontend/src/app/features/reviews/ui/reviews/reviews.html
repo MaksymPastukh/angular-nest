@@ -13,14 +13,16 @@
     </div>
   }
 
-  <!-- Debug / temporary -->
-  <div class="rounded-xl border border-gray-200 bg-white p-4 mb-6">
-    <div class="text-sm text-gray-600">Reviews summary</div>
-    <div class="mt-2 flex items-center gap-3">
-      <div class="text-2xl font-bold text-gray-900">{{ facade.avg() }}</div>
-      <div class="text-sm text-gray-600">{{ facade.count() }} reviews</div>
-    </div>
-  </div>
+  @if (facade.hasProduct()) {
+    <app-review-ui-form
+      [isAuthenticated]="authState.isAuthenticated()"
+      [isSubmitting]="facade.isSubmitting()"
+      [myReview]="facade.myReview()"
+      (create)="onCreateReview($event)"
+      (update)="onUpdateReview($event)"
+      (delete)="onDeleteReview($event)"
+    />
+  }
 
   @if (!facade.isLoading() && facade.items().length > 0) {
     <div class="space-y-4">

@@ -29,6 +29,7 @@ export class ReviewsFacade {
   readonly isLoadingMy = this.store.isLoadingMy
   readonly error = computed(() => this.store.error()?.message ?? null)
 
+  readonly hasProduct = this.store.hasProduct
   readonly hasMore = this.store.hasMore
   readonly canLoadMore = this.store.canLoadMore
   readonly isEmpty = this.store.isEmpty

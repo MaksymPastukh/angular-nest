@@ -1,16 +1,13 @@
 export interface ProductDetailInterface {
-  _id: string
+  images: string[]
   title: string
   rating: number
   brand: string
-  image: string
   price: number
   comment: string
   category: string
   productType: string
   dressStyle: string
-  color: string | string[]
-  size: string[]
   description: string
   createdAt: string
   updatedAt: string
@@ -18,8 +15,23 @@ export interface ProductDetailInterface {
   fit: string
   neck: string
   pattern: string
-  questionsAnswers: string[]
   sleeve: string
-  userComments: string[]
-  isLiked: false
+  ratingStats: RatingStatsInterface
+  id: string
+  colors: string[]
+  sizes: string[]
+  isLiked: boolean
+}
+
+export interface RatingStatsInterface {
+  avg: 0
+  count: 0
+  distribution: {
+    '1': 0
+    '2': 0
+    '3': 0
+    '4': 0
+    '5': 0
+  }
+  updatedAt: null
 }

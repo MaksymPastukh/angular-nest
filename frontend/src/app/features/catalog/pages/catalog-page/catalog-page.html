@@ -15,7 +15,7 @@
           <p class="text-sm text-gray-500 mt-2">Попробуйте изменить фильтры или сбросить их</p>
         </div>
       } @else {
-        @for (product of productFacade.products(); track product.id || product._id) {
+        @for (product of productFacade.products(); track product.id) {
           <app-product-card [productIn]="product" />
         }
       }

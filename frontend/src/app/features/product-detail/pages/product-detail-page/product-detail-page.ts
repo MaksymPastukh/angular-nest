@@ -1,3 +1,4 @@
+import { Reviews } from '@/features/reviews/ui/reviews/reviews'
 import { BreadcrumbItemInterface, UiBreadcrumbComponent, UiRatingComponent } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import {
@@ -15,7 +16,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
-import { CommentsComponent } from '../../../comment/ui/comments/comments'
 import { TabsInterface } from '../../domain/interfaces/tabs-info.interface'
 import { ProductDetailFacade } from '../../store/product-detail.facade'
 
@@ -30,9 +30,9 @@ import { ProductDetailFacade } from '../../store/product-detail.facade'
     Tab,
     TabPanels,
     TabPanel,
-    CommentsComponent,
     UiBreadcrumbComponent,
     UiRatingComponent,
+    Reviews,
   ],
   templateUrl: './product-detail-page.html',
   styleUrl: './product-detail-page.scss',
@@ -41,6 +41,7 @@ import { ProductDetailFacade } from '../../store/product-detail.facade'
 export class ProductDetailPage {
   private readonly route = inject(ActivatedRoute)
   readonly facade = inject(ProductDetailFacade)
+
   private readonly commentsSection = viewChild<ElementRef<HTMLDivElement>>('commentsSection')
   readonly selectedImageIndex = signal(0)
   private readonly imageErrorHandled = signal(false)
@@ -119,7 +120,7 @@ export class ProductDetailPage {
     }
 
     console.warn('[ProductDetail] Add to cart (stub)', {
-      productId: product._id,
+      productId: product.id,
       title: product.title,
       price: product.price,
       size: this.selectedSize(),
