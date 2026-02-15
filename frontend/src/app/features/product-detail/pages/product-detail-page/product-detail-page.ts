@@ -1,4 +1,4 @@
-import { Reviews } from '@/features/reviews/ui/reviews/reviews'
+import { Reviews } from '@/features/reviews/pages/reviews/reviews'
 import { BreadcrumbItemInterface, UiBreadcrumbComponent, UiRatingComponent } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import {

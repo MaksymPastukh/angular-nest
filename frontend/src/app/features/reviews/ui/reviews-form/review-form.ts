@@ -52,12 +52,10 @@ export class ReviewFormComponent {
   })
 
   constructor() {
+    // Загружаем данные отзыва когда он появляется (режим редактирования)
     effect(() => {
       const review = this.myReview()
-      if (!review) {
-        this.reviewsModel.set({ text: '', rating: 5 })
-        return
-      }
+      if (!review) return
 
       this.reviewsModel.set({
         text: review.text,
@@ -92,8 +90,8 @@ export class ReviewFormComponent {
         if (review) this.update.emit({ id: review.id, text, rating })
       } else {
         this.create.emit({ text, rating })
+        this.reviewsModel.set({ text: '', rating: 5 })
       }
-
       return Promise.resolve(undefined)
     })
   }

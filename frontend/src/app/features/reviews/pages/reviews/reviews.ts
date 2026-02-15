@@ -7,7 +7,7 @@ import { UpdateReviewInterface } from '../../domain/interfaces/update-review.int
 import { RatingFilterType } from '../../domain/types/reviews-rating.type'
 import { ReviewSortByType } from '../../domain/types/reviews-sortBy.type'
 import { ReviewsFacade } from '../../store/reviews.facade'
-import { ReviewFormComponent } from '../reviews-form/review-form'
+import { ReviewFormComponent } from '../../ui/reviews-form/review-form'
 @Component({
   selector: 'app-ui-reviews',
   imports: [DatePipe, ReviewFormComponent],
