@@ -27,7 +27,7 @@ export class ReviewsService {
     if (option.rating) params = params.set('rating', option.rating)
     return this.http.get<ReviewsPaginatedResponseInterface>(this.baseUrl, { params })
   }
-  getMyReviews(productId: string): Observable<ReviewResponseInterface> {
+  getMyReview(productId: string): Observable<ReviewResponseInterface> {
     return this.http.get<ReviewResponseInterface>(`${this.baseUrl}/user/product/${productId}`)
   }
   create(dto: { productId: string; rating: number; text: string }) {
