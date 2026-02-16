@@ -4,8 +4,8 @@ import { ReactiveFormsModule } from '@angular/forms'
 import {
   debounce,
   email,
-  Field,
   form,
+  FormField,
   minLength,
   pattern,
   required,
@@ -19,7 +19,7 @@ import { AuthFacade } from '../../store/auth.facade'
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, NgOptimizedImage, RouterLink, ReactiveFormsModule, Field, Toast],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, ReactiveFormsModule, FormField, Toast],
   templateUrl: './register-page.html',
   styleUrl: './register-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,10 +70,10 @@ export class RegisterPage {
     required(controlSchema.agreeToTerms, { message: 'You must agree to the terms and conditions.' })
   })
 
-  protected register(event: Event): void {
+  async register(event: Event): Promise<void> {
     event.preventDefault()
 
-    submit(this.registerForm, () => {
+    await submit(this.registerForm, () => {
       const formModel = this.registerModel()
 
       const registerData: RegisterDataInterface = {

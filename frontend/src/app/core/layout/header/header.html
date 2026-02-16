@@ -68,26 +68,6 @@
                 Women
               </a>
             </li>
-            <li>
-              <a
-                [routerLink]="['/catalog']"
-                [queryParams]="{ category: 'Combos' }"
-                routerLinkActive="!text-purple-600"
-                class="hover:text-purple-600 transition-colors"
-              >
-                Combos
-              </a>
-            </li>
-            <li>
-              <a
-                [routerLink]="['/catalog']"
-                [queryParams]="{ category: 'Joggers' }"
-                routerLinkActive="!text-purple-600"
-                class="hover:text-purple-600 transition-colors"
-              >
-                Joggers
-              </a>
-            </li>
           </ul>
         </nav>
       }
@@ -210,13 +190,10 @@
 
       @if (!authState.isAuthenticated()) {
         <div class="sm:w-[100px] flex-shrink-0">
-          <p-select
-            [(ngModel)]="selectedLanguage"
-            name="language"
+          <app-ui-select
+            [(value)]="selectedLanguage"
             [options]="languages"
-            optionLabel="label"
-            optionValue="value"
-            styleClass="!border-0 !shadow-none !outline-none focus:!ring-0"
+            ariaLabel="Language selector"
           />
         </div>
         <div class="flex items-center gap-2 sm:gap-6">

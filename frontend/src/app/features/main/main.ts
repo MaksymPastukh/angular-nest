@@ -3,12 +3,11 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { RouterLink } from '@angular/router'
 import { Carousel } from 'primeng/carousel'
 import { GalleriaModule } from 'primeng/galleria'
-import { Rating } from '../../shared/ui/rating/rating'
+import { ProductInterface } from '../../shared/domain/interfaces/product.interface'
+import { ProductCardComponent } from '../catalog/ui/product-card/product-card'
 import { CategoriesService } from '../categories/data-access/categories.service'
 import { CategoriesInterface } from '../categories/domain/interfaces/categories.interface'
 import { CategoriesCardComponent } from '../categories/ui/categories-card/categories-card'
-import { ProductInterface } from '../products/domain/interfaces/product.interface'
-import { ProductCardComponent } from '../products/ui/product-card/product-card'
 
 @Component({
   selector: 'app-main',
@@ -19,7 +18,6 @@ import { ProductCardComponent } from '../products/ui/product-card/product-card'
     CategoriesCardComponent,
     ProductCardComponent,
     RouterLink,
-    Rating,
   ],
   templateUrl: './main.html',
   styleUrl: './main.scss',

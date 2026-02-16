@@ -9,7 +9,9 @@ import { LoginDataInterface } from '../domain/interfaces/loginData.interface'
 import { RegisterDataInterface } from '../domain/interfaces/registerData.interface'
 import { AuthStore } from './auth.store'
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthFacade {
   private readonly store = inject(AuthStore)
   private readonly router = inject(Router)

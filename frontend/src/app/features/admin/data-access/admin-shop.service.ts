@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment'
-import { ProductInterface } from '../../products/domain/interfaces/product.interface'
+import { ProductInterface } from '../../../shared/domain/interfaces/product.interface'
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +11,7 @@ export class AdminShopService {
   private readonly http = inject(HttpClient)
   private readonly apiUrl = `${environment.api}products`
 
-  createProduct(product: Omit<ProductInterface, '_id'>): Observable<ProductInterface> {
+  createProduct(product: Omit<ProductInterface, 'id'>): Observable<ProductInterface> {
     return this.http.post<ProductInterface>(this.apiUrl, product)
   }
 

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion'
-import { Slider } from 'primeng/slider'
 
+import { Accordion, AccordionContent, AccordionHeader, AccordionPanel, Slider } from '@/shared/ui'
 import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
 import { BrandsDropdownComponent } from '../brands-dropdown/brands-dropdown'
 
@@ -11,13 +10,13 @@ type DropdownType = 'category' | 'style'
 @Component({
   selector: 'app-catalog-filter',
   imports: [
+    FormsModule,
+    BrandsDropdownComponent,
     Accordion,
     AccordionPanel,
     AccordionHeader,
     AccordionContent,
     Slider,
-    FormsModule,
-    BrandsDropdownComponent,
   ],
   templateUrl: './catalog-filter.html',
   styleUrl: './catalog-filter.scss',

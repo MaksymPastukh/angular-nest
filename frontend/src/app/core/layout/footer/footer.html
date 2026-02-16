@@ -201,7 +201,7 @@
 
     <!-- ACCORDION -->
     <div class="footer-best mt-8">
-      <p-accordion [value]="['0']" [multiple]="false">
+      <!-- <p-accordion [value]="['0']" [multiple]="false">
         <p-accordion-panel value="0">
           <p-accordion-header class="!text-2xl sm:!text-3xl !font-bold !text-[#f6f6f6]">
             Popular Categories
@@ -213,7 +213,11 @@
             </p>
           </p-accordion-content>
         </p-accordion-panel>
-      </p-accordion>
+      </p-accordion> -->
+      <app-ui-accordion>
+        <ng-template appUiAccordionHeader>Popular Categories</ng-template>
+        <ng-template appUiAccordionContent> ... </ng-template>
+      </app-ui-accordion>
     </div>
 
     <!-- MIDDLE -->
