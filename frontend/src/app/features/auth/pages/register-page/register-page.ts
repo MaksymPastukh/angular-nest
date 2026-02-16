@@ -70,10 +70,10 @@ export class RegisterPage {
     required(controlSchema.agreeToTerms, { message: 'You must agree to the terms and conditions.' })
   })
 
-  protected register(event: Event): void {
+  async register(event: Event): Promise<void> {
     event.preventDefault()
 
-    submit(this.registerForm, () => {
+    await submit(this.registerForm, () => {
       const formModel = this.registerModel()
 
       const registerData: RegisterDataInterface = {

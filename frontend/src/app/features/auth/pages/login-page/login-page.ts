@@ -31,10 +31,10 @@ export class LoginPage {
 
   isPasswordVisible = signal(false)
 
-  login(event: Event): void {
+  async login(event: Event): Promise<void> {
     event.preventDefault()
 
-    submit(this.loginForm, () => {
+    await submit(this.loginForm, () => {
       const formModel: LoginDataInterface = this.loginModel()
       const loginData: LoginDataInterface = {
         email: formModel.email,
