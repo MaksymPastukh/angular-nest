@@ -1,3 +1,5 @@
+import { UiRatingComponent } from '@/shared/ui'
+import { UiIconComponent } from '@/shared/ui/ui-icon'
 import { DatePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core'
 import { AuthStateService } from '../../../../core/auth/http/auth-state.service'
@@ -10,7 +12,7 @@ import { ReviewsFacade } from '../../store/reviews.facade'
 import { ReviewFormComponent } from '../../ui/reviews-form/review-form'
 @Component({
   selector: 'app-ui-reviews',
-  imports: [DatePipe, ReviewFormComponent],
+  imports: [DatePipe, ReviewFormComponent, UiRatingComponent, UiIconComponent],
   templateUrl: './reviews.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -51,8 +53,10 @@ export class Reviews {
   }
 
   onDeleteReview(reviewId: string): void {
-    // eslint-disable-next-line no-alert
-    if (confirm('Вы уверены, что хотите удалить этот отзыв?')) {
+    const review = this.facade.myReview()
+    if (!review) return
+
+    if (review && reviewId) {
       this.facade.removeReview(reviewId)
     }
   }
