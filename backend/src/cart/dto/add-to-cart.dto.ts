@@ -19,6 +19,13 @@ export class AddToCartDto {
   public size: string;
 
   /**
+   * Выбранный цвет
+   */
+  @IsString()
+  @IsNotEmpty()
+  public color: string;
+
+  /**
    * Количество (по умолчанию 1)
    */
   @IsNumber()

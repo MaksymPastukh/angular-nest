@@ -27,7 +27,7 @@ export const routes: Routes = [
       {
         path: 'product',
         loadChildren: () =>
-          import('./features/products/products.routes').then((m) => m.PRODUCTS_ROUTES),
+          import('./features/product-detail/product-detail.routes').then((m) => m.PRODUCTS_ROUTES),
       },
       {
         path: '',

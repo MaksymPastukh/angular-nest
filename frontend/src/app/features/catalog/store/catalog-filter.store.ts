@@ -10,7 +10,7 @@ import {
 } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, forkJoin, switchMap, tap } from 'rxjs'
-import { ProductsService } from '../../products/data-access/products.service'
+import { ProductsService } from '../data-access/products.service'
 import { CatalogFilterState } from '../domain/interfaces/catalog-filter-state.interface'
 import { CatalogSelectedFiltersInterface } from '../domain/interfaces/catalog-selected-filters.interface'
 import { ToggleArrayKey } from '../domain/types/toggle-array.type'

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { RouterOutlet } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
+import { AuthStateService } from './core/auth/http/auth-state.service'
 import { CreateProductStore } from './features/admin/store/create.store'
 
 @Component({
@@ -15,8 +16,11 @@ export class App {
   protected readonly productStore = inject(CreateProductStore)
   protected readonly title = signal('Euphoria')
   private readonly messageService = inject(MessageService)
+  private readonly authState = inject(AuthStateService)
 
   constructor() {
+    // Восстанавливаем сессию пользователя из localStorage при старте приложения
+    this.authState.bootstrap()
     // Effect для обработки событий создания продукта
     effect(() => {
       const event = this.productStore.event()

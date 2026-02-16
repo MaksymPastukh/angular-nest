@@ -18,7 +18,7 @@
             id="title"
             type="text"
             placeholder="Например: Футболка Nike Air"
-            [field]="productForm.title"
+            [formField]="productForm.title"
             class="input"
             [class.input-error]="productForm.title().touched() && productForm.title().invalid()"
           />
@@ -39,7 +39,7 @@
             id="brand"
             type="text"
             placeholder="Nike"
-            [field]="productForm.brand"
+            [formField]="productForm.brand"
             class="input"
             [class.input-error]="productForm.brand().touched() && productForm.brand().invalid()"
           />
@@ -54,15 +54,13 @@
         <div class="space-y-1">
           <label for="price" class="label"> Цена <span class="text-red-500">*</span> </label>
 
-          <p-inputNumber
-            inputId="price"
-            [field]="productForm.price"
-            mode="currency"
-            currency="USD"
-            locale="USD"
-            [min]="0"
+          <input
+            id="price"
+            type="number"
             placeholder="0.00"
-            class="w-full"
+            [formField]="productForm.price"
+            class="input"
+            [class.input-error]="productForm.price().touched() && productForm.price().invalid()"
           />
 
           @if (productForm.price().touched() && productForm.price().invalid()) {
@@ -75,7 +73,7 @@
         <div class="space-y-1">
           <div class="label">Рейтинг</div>
           <div class="flex items-center gap-3">
-            <p-rating [field]="productForm.rating" [stars]="5" />
+            <p-rating [formField]="productForm.rating" [stars]="5" />
             <span class="hint-text">От 0 до 5</span>
           </div>
         </div>
@@ -90,14 +88,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-1">
             <div class="label">Категория *</div>
-            <p-select
+            <app-ui-select
               [options]="store.options().categories"
-              [field]="productForm.category"
+              [formField]="productForm.category"
               optionLabel="label"
               optionValue="value"
               placeholder="Выберите категорию"
               class="w-full"
-              [showClear]="true"
             />
             @if (productForm.category().touched() && productForm.category().invalid()) {
               <p class="error-text">{{ productForm.category().errors()[0].message }}</p>
@@ -106,40 +103,37 @@
 
           <div class="space-y-1">
             <div class="label">Тип продукта *</div>
-            <p-select
+            <app-ui-select
               [options]="store.options().productTypes"
-              [field]="productForm.productType"
+              [formField]="productForm.productType"
               optionLabel="label"
               optionValue="value"
               placeholder="Выберите тип"
               class="w-full"
-              [showClear]="true"
             />
           </div>
 
           <div class="space-y-1">
             <div class="label">Стиль *</div>
-            <p-select
+            <app-ui-select
               [options]="store.options().dressStyles"
-              [field]="productForm.dressStyle"
+              [formField]="productForm.dressStyle"
               optionLabel="label"
               optionValue="value"
               placeholder="Выберите стиль"
               class="w-full"
-              [showClear]="true"
             />
           </div>
 
           <div class="space-y-1">
             <div class="label">Цвет *</div>
-            <p-select
+            <app-ui-select
               [options]="store.options().colors"
-              [field]="productForm.color"
+              [formField]="productForm.color"
               optionLabel="name"
               optionValue="name"
               placeholder="Выберите цвет"
               class="w-full"
-              [showClear]="true"
             />
           </div>
 
@@ -147,7 +141,7 @@
             <div class="label">Размеры *</div>
             <p-multiselect
               [options]="store.options().sizes"
-              [field]="productForm.size"
+              [formField]="productForm.size"
               optionLabel="label"
               optionValue="value"
               display="chip"
@@ -170,7 +164,7 @@
           <input
             type="text"
             placeholder="Короткое описание"
-            [field]="productForm.comment"
+            [formField]="productForm.comment"
             class="input"
             [class.input-error]="productForm.comment().touched() && productForm.comment().invalid()"
           />
@@ -181,7 +175,7 @@
           <textarea
             rows="6"
             placeholder="Подробное описание продукта..."
-            [field]="productForm.description"
+            [formField]="productForm.description"
             class="input resize-none"
             [class.input-error]="
               productForm.description().touched() && productForm.description().invalid()
@@ -230,7 +224,6 @@
         </div>
       </section>
 
-      <!-- ===== ACTIONS ===== -->
       <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200">
         <p-button
           label="Сбросить"

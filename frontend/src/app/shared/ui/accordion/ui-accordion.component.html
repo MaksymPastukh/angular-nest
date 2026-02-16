@@ -1,0 +1,40 @@
+<div class="w-full">
+  <button
+    type="button"
+    [class]="'w-full flex items-center justify-between text-left select-none ' + headerClass()"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-controls]="contentId"
+    (click)="toggle()"
+    (keydown.escape)="onEscape($event)"
+  >
+    <ng-container *ngTemplateOutlet="headerTpl().tpl" />
+
+    <span class="ml-3 inline-flex items-center" aria-hidden="true">
+      <svg
+        class="h-5 w-5 transition-transform duration-200"
+        [class.rotate-180]="isOpen()"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </span>
+  </button>
+
+  <div
+    [id]="contentId"
+    role="region"
+    [class]="'grid transition-[grid-template-rows] duration-200 ease-in-out' + contentWrapClass()"
+    [style.gridTemplateRows]="isOpen() ? '1fr' : '0fr'"
+  >
+    <div class="overflow-hidden">
+      <div [class]="contentClass()">
+        <ng-container *ngTemplateOutlet="contentTpl().tpl" />
+      </div>
+    </div>
+  </div>
+</div>

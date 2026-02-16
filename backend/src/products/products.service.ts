@@ -161,7 +161,9 @@ export class ProductsService {
    * @returns Список всех уникальных цветов
    */
   public async getColors(): Promise<string[]> {
-    return await this.productModel.distinct('color').exec();
+    const colors = await this.productModel.distinct('color').exec();
+    // Цвета могут быть массивами, поэтому собираем все уникальные значения
+    return [...new Set(colors.flat())];
   }
 
   /**
@@ -258,15 +260,9 @@ export class ProductsService {
       } else {
         colors = [color];
       }
-
-      // Используем $or с регулярными выражениями для регистронезависимого поиска
-      if (colors.length === 1) {
-        filter.color = { $regex: new RegExp(`^${colors[0]}$`, 'i') };
-      } else {
-        filter.$or = colors.map((c) => ({
-          color: { $regex: new RegExp(`^${c}$`, 'i') },
-        }));
-      }
+      // color в схеме это массив строк ["Black", "White", "Red"]
+      // $in найдёт продукты где хотя бы один элемент массива color совпадает с запрошенными
+      filter.color = { $in: colors };
     }
 
     if (size && !excludeFields.includes('size')) {
@@ -305,7 +301,7 @@ export class ProductsService {
       this.calculateFieldFacet(filterDto, 'productType', 'productType'),
       this.calculateFieldFacet(filterDto, 'dressStyle', 'dressStyle'),
       this.calculateSizeFacet(filterDto),
-      this.calculateFieldFacet(filterDto, 'color', 'color'),
+      this.calculateColorFacet(filterDto),
     ]);
 
     return {
@@ -386,17 +382,56 @@ export class ProductsService {
   }
 
   /**
+   * Вычисление фасетов для цветов
+   * Цвета хранятся как массив, поэтому требуется специальная обработка
+   * @param filterDto - Параметры фильтрации
+   * @returns Массив фасетов цветов с количеством
+   */
+  private async calculateColorFacet(filterDto: FilterProductDto): Promise<IFacetItem[]> {
+    // Строим фильтр, исключая color (self-excluding)
+    const filter = this.buildFilter(filterDto, ['color']);
+
+    // Используем $unwind для развертывания массива цветов
+    const result = await this.productModel
+      .aggregate([
+        { $match: filter },
+        { $unwind: '$color' }, // Разворачиваем массив цветов
+        {
+          $group: {
+            _id: '$color',
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } }, // Сортируем по убыванию количества
+      ])
+      .exec();
+
+    // Преобразуем результат в нужный формат
+    return result.map((item) => ({
+      value: item._id,
+      count: item.count,
+    }));
+  }
+
+  /**
    * Трансформация продукта для ответа
    * @param product - Продукт
    * @param userId - ID текущего пользователя (опционально)
-   * @returns Продукт с isLiked
+   * @returns Продукт с isLiked, без служебных полей
    */
   private transformProduct(product: ProductDocument, userId?: string): any {
     const productObj = (product as any).toObject ? (product as any).toObject() : product;
     const isLiked = userId ? (productObj.likedBy as string[]).includes(userId) : false;
 
-    // Удаляем likedBy и добавляем isLiked
-    const { likedBy, ...rest } = productObj;
+    // Очищаем ratingStats.sum (служебное поле для инкрементов)
+    if (productObj.ratingStats && productObj.ratingStats.sum !== undefined) {
+      const { sum, ...cleanRatingStats } = productObj.ratingStats;
+      productObj.ratingStats = cleanRatingStats;
+    }
+
+    // Удаляем служебные поля и устаревшие данные
+    const { likedBy, userComments, questionsAnswers, reviews, ...rest } = productObj;
+    
     return {
       ...rest,
       isLiked,

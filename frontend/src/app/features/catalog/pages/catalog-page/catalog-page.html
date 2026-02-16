@@ -2,7 +2,7 @@
   <app-catalog-filter />
 
   <div class="ml-[40px] mt-10 flex flex-col z-1">
-    <h2 class="font-bold text-2xl font-family color-active">{{ titleCategory() }} Clothing</h2>
+    <h2 class="font-bold text-2xl font-family color-active">{{ title() }} {{ titleSuffix() }}</h2>
 
     <div class="flex flex-wrap mt-10 gap-x-[20px] gap-y-[24px]">
       @if (productFacade.isLoading()) {
@@ -15,7 +15,7 @@
           <p class="text-sm text-gray-500 mt-2">Попробуйте изменить фильтры или сбросить их</p>
         </div>
       } @else {
-        @for (product of productFacade.products(); track product.id || product._id) {
+        @for (product of productFacade.products(); track product.id) {
           <app-product-card [productIn]="product" />
         }
       }

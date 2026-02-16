@@ -34,6 +34,17 @@
       My info
     </a>
 
+    @if (authState.isAdmin()) {
+      <a
+        routerLink="/admin/create-product-page"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <i class="pi pi-plus"></i>
+        Create product
+      </a>
+    }
+
     <a (click)="onLogout()">
       <i class="pi pi-sign-out"></i>
       Sign out

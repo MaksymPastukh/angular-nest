@@ -1,20 +1,20 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Request,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Request,
+    UploadedFiles,
+    UseGuards,
+    UseInterceptors
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -51,15 +51,15 @@ export class ProductsController {
   }
 
   /**
-   * Загрузка изображения для продукта
-   * POST /products/upload-image
-   * @param file - Файл изображения
-   * @returns Путь к загруженному изображению
+   * Загрузка изображений для продукта (до 3 изображений)
+   * POST /products/upload-images
+   * @param files - Массив файлов изображений
+   * @returns Массив путей к загруженным изображениям
    */
-  @Post('upload-image')
+  @Post('upload-images')
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
-    FileInterceptor('image', {
+    FilesInterceptor('images', 3, {
       storage: diskStorage({
         destination: './public/images/products',
         filename: (_req, file, callback) => {
@@ -78,20 +78,24 @@ export class ProductsController {
         callback(null, true);
       },
       limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
+        fileSize: 5 * 1024 * 1024, // 5MB на файл
       },
     }),
   )
-  public async uploadImage(
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<{ imagePath: string }> {
-    if (!file) {
-      throw new Error('Файл не загружен');
+  public async uploadImages(
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<{ imagePaths: string[] }> {
+    if (!files || files.length === 0) {
+      throw new Error('Файлы не загружены');
     }
 
-    // Возвращаем путь относительно public директории
-    const imagePath = `/images/products/${file.filename}`;
-    return { imagePath };
+    if (files.length > 3) {
+      throw new Error('Максимум 3 изображения разрешены');
+    }
+
+    // Возвращаем пути относительно public директории
+    const imagePaths = files.map((file) => `/images/products/${file.filename}`);
+    return { imagePaths };
   }
 
   /**

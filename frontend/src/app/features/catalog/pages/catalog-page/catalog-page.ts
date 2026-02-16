@@ -2,11 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Params } from '@angular/router'
 import { distinctUntilChanged, map } from 'rxjs'
-import { ProductsPageFacade } from '../../../products/store/products.facade'
-import { ProductCardComponent } from '../../../products/ui/product-card/product-card'
 import { TableBestPriceInterface } from '../../domain/interfaces/table-best-price.interface'
+import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
+import { ProductsPageFacade } from '../../store/products.facade'
 import { CatalogFilterComponent } from '../../ui/catalog-filter/catalog-filter'
 import { TableBestPrice } from '../../ui/table-best-price/table-best-price'
+import { extractBrand } from '../../utils/extract-brand'
+import { ProductCardComponent } from '../../ui/product-card/product-card'
 
 @Component({
   selector: 'app-catalog',
@@ -18,11 +20,29 @@ import { TableBestPrice } from '../../ui/table-best-price/table-best-price'
 export class CatalogPage {
   readonly productFacade = inject(ProductsPageFacade)
   private readonly route = inject(ActivatedRoute)
+  private readonly catalogFilterFacade = inject(CatalogFilterFacade)
 
   readonly products = this.productFacade.products
   readonly filters = this.productFacade.filters
 
-  readonly titleCategory = computed(() => this.filters().selectedCategory ?? 'All')
+  readonly title = computed(() => {
+    const data = this.filters()
+
+    const brandFromType = extractBrand(data.selectedTypeKey)
+    if (brandFromType) return brandFromType
+
+    const brandFromStyle = extractBrand(data.selectedStyleKey)
+    if (brandFromStyle) return brandFromStyle
+
+    return data.selectedCategory ?? 'All'
+  })
+
+  readonly titleSuffix = computed(() => {
+    const data = this.filters()
+    if (data.selectedStyleKey) return 'Style'
+
+    return 'Clothing'
+  })
 
   private readonly queryParams = toSignal(
     this.route.queryParams.pipe(
