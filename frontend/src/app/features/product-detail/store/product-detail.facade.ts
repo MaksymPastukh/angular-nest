@@ -27,6 +27,9 @@ export class ProductDetailFacade {
   readonly hasMultipleColors = this.store.hasMultipleColors
   readonly selectedColor = this.store.selectedColor
 
+  readonly rantingAvg = this.store.getRantingAvg
+  readonly rantingCount = this.store.getRaitingCount
+
   load(id: string): void {
     this.store.loadProduct(id)
   }

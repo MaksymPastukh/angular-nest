@@ -40,6 +40,8 @@ export const ProductDetailStore = signalStore(
       hasProduct: computed(() => !!store.product()),
       productTitle: computed(() => store.product()?.title ?? ''),
       availableSizes: computed(() => store.product()?.sizes ?? []),
+      getRaitingCount: computed(() => store.product()?.ratingStats.count ?? 0),
+      getRantingAvg: computed(() => store.product()?.ratingStats.avg ?? 5),
 
       canAddToCart: computed(() => {
         const sizes = store.product()?.sizes ?? []

@@ -53,11 +53,13 @@ export class Reviews {
   }
 
   onDeleteReview(reviewId: string): void {
-    const review = this.facade.myReview()
-    if (!review) return
+    // Проверяем права: либо это мой отзыв, либо я администратор
+    const myReview = this.facade.myReview()
+    const isMyReview = myReview?.id === reviewId
+    const isAdmin = this.facade.isAdmin()
 
-    if (review && reviewId) {
-      this.facade.removeReview(reviewId)
-    }
+    if (!isMyReview && !isAdmin) return
+
+    this.facade.removeReview(reviewId)
   }
 }

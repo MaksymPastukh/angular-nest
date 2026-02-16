@@ -51,7 +51,7 @@
                   <app-ui-icon name="thumbs-up" tone="muted" />
                 }
               </button>
-              @if (facade.myReview()) {
+              @if (facade.myReview()?.id === r.id || facade.isAdmin()) {
                 <button
                   type="button"
                   (click)="onDeleteReview(r.id)"

@@ -55,8 +55,6 @@ export class ProductDetailPage {
   })
 
   readonly tabss = computed<TabsInterface[]>((): TabsInterface[] => {
-    // const commentsCount = this.commentStore.commentsCount()
-
     return [
       {
         title: 'Description',
@@ -66,7 +64,7 @@ export class ProductDetailPage {
       {
         title: 'Reviews',
         value: 1,
-        content: '',
+        content: this.facade.rantingCount(),
       },
       {
         title: 'Q&A',
