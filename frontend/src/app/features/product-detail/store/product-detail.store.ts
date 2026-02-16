@@ -3,11 +3,11 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs'
+import { ProductDetailInterface } from '../domain/interfaces/product-detail.interface'
 import { ReviewsStore } from '../../reviews/store/reviews.store'
 import { ProductsDetailService } from '../data-access/product-detail.service'
 import { ProductDetailGalleryInterface } from '../domain/interfaces/product-detail-gallery.interface'
 import { ProductDetailStateInterface } from '../domain/interfaces/product-detail-state.interface'
-import { ProductDetailInterface } from '../domain/interfaces/product-detail.interface'
 
 const initialState: ProductDetailStateInterface = {
   product: null,
