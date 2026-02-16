@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 
 /**
  * Тип документа лайка отзыва
@@ -17,16 +17,16 @@ export type ReviewLikeDocument = HydratedDocument<ReviewLike>;
 })
 export class ReviewLike {
   /**
-   * ID отзыва
+   * ID отзыва (хранится как ObjectId в MongoDB)
    */
   @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'Review', index: true })
-  public reviewId: string;
+  public reviewId: Types.ObjectId;
 
   /**
-   * ID пользователя, который поставил лайк
+   * ID пользователя, который поставил лайк (хранится как ObjectId в MongoDB)
    */
   @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
-  public userId: string;
+  public userId: Types.ObjectId;
 
   /** Дата создания лайка */
   public createdAt: Date;

@@ -367,8 +367,8 @@ export class ReviewsService {
   /**
    * Переключение лайка отзыва (полностью атомарная операция)
    * Использует $inc для атомарного обновления likesCount без race conditions
-   * @param reviewId - ID отзыва
-   * @param userId - ID пользователя
+   * @param reviewId - ID отзыва (строка)
+   * @param userId - ID пользователя (строка)
    * @returns Обновленный отзыв с полями isLiked и likesCount
    */
   public async toggleLike(reviewId: string, userId: string): Promise<ReviewResponse> {
@@ -383,16 +383,23 @@ export class ReviewsService {
       throw new ForbiddenException('Невозможно лайкнуть скрытый отзыв');
     }
 
+    // Преобразуем строки в ObjectId для работы с базой данных
+    const reviewObjectId = new Types.ObjectId(reviewId);
+    const userObjectId = new Types.ObjectId(userId);
+
     let isLiked = false;
 
     try {
       // Пытаемся создать лайк (атомарная операция благодаря unique index)
-      const newLike = new this.reviewLikeModel({ reviewId, userId });
+      const newLike = new this.reviewLikeModel({ 
+        reviewId: reviewObjectId, 
+        userId: userObjectId 
+      });
       await newLike.save();
       
       // Атомарный инкремент через $inc (избегает race conditions)
       await this.reviewModel.updateOne(
-        { _id: reviewId },
+        { _id: reviewObjectId },
         { $inc: { likesCount: 1 } },
       ).exec();
       
@@ -400,11 +407,14 @@ export class ReviewsService {
     } catch (error: any) {
       // Если duplicate key (код 11000) - лайк уже существует, удаляем его
       if (error.code === 11000) {
-        await this.reviewLikeModel.deleteOne({ reviewId, userId }).exec();
+        await this.reviewLikeModel.deleteOne({ 
+          reviewId: reviewObjectId, 
+          userId: userObjectId 
+        }).exec();
         
         // Атомарный декремент с защитой от отрицательных значений
         await this.reviewModel.updateOne(
-          { _id: reviewId, likesCount: { $gt: 0 } },
+          { _id: reviewObjectId, likesCount: { $gt: 0 } },
           { $inc: { likesCount: -1 } },
         ).exec();
         
@@ -425,32 +435,47 @@ export class ReviewsService {
 
   /**
    * Проверка, лайкнул ли пользователь отзыв
-   * @param reviewId - ID отзыва
-   * @param userId - ID пользователя
+   * @param reviewId - ID отзыва (строка)
+   * @param userId - ID пользователя (строка)
    * @returns true если пользователь лайкнул отзыв
    */
   private async checkUserLiked(reviewId: string, userId: string): Promise<boolean> {
-    const like = await this.reviewLikeModel.findOne({ reviewId, userId }).exec();
+    // Преобразуем строки в ObjectId для корректного сравнения
+    const reviewObjectId = new Types.ObjectId(reviewId);
+    const userObjectId = new Types.ObjectId(userId);
+    
+    const like = await this.reviewLikeModel
+      .findOne({ reviewId: reviewObjectId, userId: userObjectId })
+      .exec();
     return !!like;
   }
 
   /**
    * Проверка лайков для массива отзывов
-   * @param reviewIds - Массив ID отзывов
-   * @param userId - ID пользователя
+   * @param reviewIds - Массив ID отзывов (строки)
+   * @param userId - ID пользователя (строка)
    * @returns Map с ID отзыва и булевым значением isLiked
    */
   public async checkUserLikes(reviewIds: string[], userId: string): Promise<Map<string, boolean>> {
+    // Преобразуем строки в ObjectId для корректного сравнения
+    const reviewObjectIds = reviewIds.map((id) => new Types.ObjectId(id));
+    const userObjectId = new Types.ObjectId(userId);
+
     const likes = await this.reviewLikeModel
       .find({
-        reviewId: { $in: reviewIds },
-        userId,
+        reviewId: { $in: reviewObjectIds },
+        userId: userObjectId,
       })
       .exec();
 
+    // Создаем Map со строковыми ключами для удобства использования
     const likesMap = new Map<string, boolean>();
     reviewIds.forEach((id) => likesMap.set(id, false));
-    likes.forEach((like) => likesMap.set(like.reviewId, true));
+    likes.forEach((like) => {
+      // Преобразуем ObjectId обратно в строку для ключа
+      const likeId = like.reviewId.toString();
+      likesMap.set(likeId, true);
+    });
 
     return likesMap;
   }
