@@ -1,4 +1,5 @@
 export { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion'
+export { AutoCompleteModule } from 'primeng/autocomplete'
 export { Slider } from 'primeng/slider'
 export * from './accordion'
 export * from './breadcrumb'

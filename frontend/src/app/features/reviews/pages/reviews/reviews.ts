@@ -2,17 +2,20 @@ import { UiRatingComponent } from '@/shared/ui'
 import { UiIconComponent } from '@/shared/ui/ui-icon'
 import { DatePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { Select } from 'primeng/select'
 import { AuthStateService } from '../../../../core/auth/http/auth-state.service'
+import { CreateReviewInterface } from '../../domain/interfaces/create-review.interface'
+import { SelectOption } from '../../domain/interfaces/reviews-sort-select.interface'
 import { ReviewsSummaryInterface } from '../../domain/interfaces/reviews-summary'
 import { UpdateReviewInterface } from '../../domain/interfaces/update-review.interface'
 import { RatingFilterType } from '../../domain/types/reviews-rating.type'
 import { ReviewSortByType } from '../../domain/types/reviews-sortBy.type'
-import { CreateReviewInterface } from '../../domain/interfaces/create-review.interface'
 import { ReviewsFacade } from '../../store/reviews.facade'
 import { ReviewFormComponent } from '../../ui/reviews-form/review-form'
 @Component({
   selector: 'app-ui-reviews',
-  imports: [DatePipe, ReviewFormComponent, UiRatingComponent, UiIconComponent],
+  imports: [DatePipe, ReviewFormComponent, UiRatingComponent, UiIconComponent, Select, FormsModule],
   templateUrl: './reviews.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -31,6 +34,23 @@ export class Reviews {
       })
     })
   }
+
+  readonly sortOptions: SelectOption<ReviewSortByType>[] = [
+    { label: 'Newest', value: 'newest' },
+    { label: 'Oldest', value: 'oldest' },
+    { label: 'Rating: high → low', value: 'rating_desc' },
+    { label: 'Rating: low → high', value: 'rating_asc' },
+    { label: 'Most liked', value: 'most_liked' },
+  ]
+
+  readonly ratingFilterOptions: SelectOption<RatingFilterType>[] = [
+    { label: 'All ratings', value: null },
+    { label: '5 stars', value: 5 },
+    { label: '4 stars', value: 4 },
+    { label: '3 stars', value: 3 },
+    { label: '2 stars', value: 2 },
+    { label: '1 star', value: 1 },
+  ]
 
   onLoadMore(): void {
     this.facade.loadMore()
