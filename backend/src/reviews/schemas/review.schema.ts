@@ -115,7 +115,19 @@ ReviewSchema.index({ userId: 1 });
 ReviewSchema.index({ productId: 1, status: 1, likesCount: -1, createdAt: -1 });
 
 /**
- * Уникальный индекс: один пользователь может оставить только один отзыв на продукт
+ * Уникальный индекс: один пользователь может оставить только один активный отзыв на продукт
+ * Partial index применяется только к published и hidden отзывам,
+ * позволяя создавать новый отзыв после удаления старого
  * Это предотвращает спам и улучшает UX (как в Amazon/Rozetka)
  */
-ReviewSchema.index({ productId: 1, userId: 1 }, { unique: true });
+ReviewSchema.index(
+  { productId: 1, userId: 1 }, 
+  { 
+    unique: true,
+    partialFilterExpression: { 
+      status: { 
+        $in: [ReviewStatus.PUBLISHED, ReviewStatus.HIDDEN] 
+      } 
+    }
+  }
+);
