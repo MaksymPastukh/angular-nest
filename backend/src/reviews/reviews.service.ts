@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ProductRatingService } from '../products/product-rating.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewSortBy } from './dto/filter-review.dto';
@@ -201,14 +201,17 @@ export class ReviewsService {
 
   /**
    * Получение суммарной статистики отзывов для продукта
-   * @param productId - ID продукта
+   * @param productId - ID продукта (строка)
    * @returns Статистика с avg, count и distribution
    */
   public async getReviewsSummary(productId: string): Promise<ReviewsSummary> {
+    // Преобразуем строку в ObjectId для корректного сравнения в MongoDB
+    const productObjectId = new Types.ObjectId(productId);
+
     const aggregation = await this.reviewModel.aggregate([
       { 
         $match: { 
-          productId, 
+          productId: productObjectId, 
           status: ReviewStatus.PUBLISHED 
         } 
       },

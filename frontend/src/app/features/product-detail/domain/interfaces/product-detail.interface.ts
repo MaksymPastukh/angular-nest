@@ -24,14 +24,14 @@ export interface ProductDetailInterface {
 }
 
 export interface RatingStatsInterface {
-  avg: 0
-  count: 0
+  avg: number
+  count: number
   distribution: {
-    '1': 0
-    '2': 0
-    '3': 0
-    '4': 0
-    '5': 0
+    '1': number
+    '2': number
+    '3': number
+    '4': number
+    '5': number
   }
-  updatedAt: null
+  updatedAt: string | null
 }

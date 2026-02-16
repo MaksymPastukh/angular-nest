@@ -3,6 +3,7 @@ import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs'
+import { ReviewsStore } from '../../reviews/store/reviews.store'
 import { ProductsDetailService } from '../data-access/product-detail.service'
 import { ProductDetailGalleryInterface } from '../domain/interfaces/product-detail-gallery.interface'
 import { ProductDetailStateInterface } from '../domain/interfaces/product-detail-state.interface'
@@ -22,6 +23,45 @@ export const ProductDetailStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => {
+    const reviewsStore = inject(ReviewsStore)
+    const emptyDistribution = {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0,
+    } as const
+
+    const ratingStats = computed(() => {
+      const product = store.product()
+      if (!product) return null
+
+      const base = product.ratingStats ?? {
+        avg: product.rating ?? 0,
+        count: 0,
+        distribution: emptyDistribution,
+        updatedAt: null,
+      }
+
+      const summary = reviewsStore.summary()
+      const reviewsProductId = reviewsStore.productId()
+
+      if (summary && reviewsProductId === product.id) {
+        return {
+          ...base,
+          avg: summary.avg,
+          count: summary.count,
+          distribution: summary.distribution ?? emptyDistribution,
+          updatedAt: null,
+        }
+      }
+
+      return {
+        ...base,
+        distribution: base.distribution ?? emptyDistribution,
+      }
+    })
+
     const galleryImages = computed((): ProductDetailGalleryInterface[] => {
       const product = store.product()
       if (!product?.images?.length) return []
@@ -40,8 +80,9 @@ export const ProductDetailStore = signalStore(
       hasProduct: computed(() => !!store.product()),
       productTitle: computed(() => store.product()?.title ?? ''),
       availableSizes: computed(() => store.product()?.sizes ?? []),
-      getRaitingCount: computed(() => store.product()?.ratingStats.count ?? 0),
-      getRantingAvg: computed(() => store.product()?.ratingStats.avg ?? 5),
+      ratingAvg: computed(() => ratingStats()?.avg ?? 0),
+      ratingCount: computed(() => ratingStats()?.count ?? 0),
+      ratingDistribution: computed(() => ratingStats()?.distribution ?? emptyDistribution),
 
       canAddToCart: computed(() => {
         const sizes = store.product()?.sizes ?? []
