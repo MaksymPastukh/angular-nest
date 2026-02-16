@@ -1,13 +1,5 @@
 import { UiRatingComponent } from '@/shared/ui'
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  input,
-  output,
-  signal,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core'
 import {
   form,
   FormField,
@@ -51,19 +43,6 @@ export class ReviewFormComponent {
     max(controlSchema.rating, 5, { message: 'Максимальная оценка - 5.' })
   })
 
-  constructor() {
-    // Загружаем данные отзыва когда он появляется (режим редактирования)
-    effect(() => {
-      const review = this.myReview()
-      if (!review) return
-
-      this.reviewsModel.set({
-        text: review.text,
-        rating: review.rating,
-      })
-    })
-  }
-
   setRating(rating: number): void {
     this.reviewsForm.rating().value.set(rating)
     this.reviewsForm.rating().markAsTouched()
@@ -88,9 +67,12 @@ export class ReviewFormComponent {
       if (this.isEditMode()) {
         const review = this.myReview()
         if (review) this.update.emit({ id: review.id, text, rating })
+        this.reviewsModel.set({ text: '', rating: 5 })
+        this.reviewsForm().reset()
       } else {
         this.create.emit({ text, rating })
         this.reviewsModel.set({ text: '', rating: 5 })
+        this.reviewsForm().reset()
       }
       return Promise.resolve(undefined)
     })
