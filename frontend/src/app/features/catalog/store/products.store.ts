@@ -10,9 +10,9 @@ import {
 } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, switchMap, tap } from 'rxjs'
+
 import { CatalogFilterParamsInterface } from '../../catalog/domain/interfaces/catalog-filter-params.interface'
 import { ProductsService } from '../data-access/products.service'
-import { CatalogFilterParamsInterface } from '../domain/interfaces/catalog-filter-params.interface'
 import { ProductsResponseInterface } from '../domain/interfaces/products-response.interface'
 import { ShopStateInterface } from '../domain/interfaces/products-state.interface'
 
