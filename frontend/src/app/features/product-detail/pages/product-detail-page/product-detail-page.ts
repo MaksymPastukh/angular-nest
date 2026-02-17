@@ -105,27 +105,6 @@ export class ProductDetailPage {
     }, 100)
   }
 
-  addToCart(): void {
-    const product = this.facade.product()
-    if (!product) return
-
-    if (!this.canAddToCart()) {
-      console.warn('[ProductDetail] Cannot add to cart: choose required options', {
-        selectedSize: this.selectedSize(),
-        selectedColor: this.selectedColor(),
-      })
-      return
-    }
-
-    console.warn('[ProductDetail] Add to cart (stub)', {
-      productId: product.id,
-      title: product.title,
-      price: product.price,
-      size: this.selectedSize(),
-      color: this.selectedColor(),
-    })
-  }
-
   readonly breadcrumbItems = computed<BreadcrumbItemInterface[]>(() => {
     const product = this.facade.product()
     if (!product) return []

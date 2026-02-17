@@ -1,3 +1,5 @@
+import { RatingStatsInterface } from './product-rating-stats.interface'
+
 export interface ProductDetailInterface {
   images: string[]
   title: string
@@ -21,17 +23,4 @@ export interface ProductDetailInterface {
   colors: string[]
   sizes: string[]
   isLiked: boolean
-}
-
-export interface RatingStatsInterface {
-  avg: number
-  count: number
-  distribution: {
-    '1': number
-    '2': number
-    '3': number
-    '4': number
-    '5': number
-  }
-  updatedAt: string | null
 }
