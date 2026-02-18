@@ -89,10 +89,12 @@ export class Reviews {
   }
 
   onSortChange(sortBy: ReviewSortByType): void {
+    this.pendingScroll.set(true)
     this.facade.setSortBy(sortBy)
   }
 
   onRatingFilterChange(rating: RatingFilterType): void {
+    this.pendingScroll.set(true)
     this.facade.setRatingFilter(rating)
   }
 

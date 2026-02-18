@@ -32,7 +32,6 @@ export class ReviewsFacade {
 
   readonly hasProduct = this.store.hasProduct
   readonly hasMore = this.store.hasMore
-  readonly canLoadMore = this.store.canLoadMore
   readonly isEmpty = this.store.isEmpty
 
   readonly avg = this.store.avg
