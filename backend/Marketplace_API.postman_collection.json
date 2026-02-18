@@ -1,0 +1,1236 @@
+{
+	"info": {
+		"_postman_id": "marketplace-api-collection",
+		"name": "Marketplace API",
+		"description": "Полная коллекция API для маркетплейса (NestJS + MongoDB)\n\nВключает:\n- Аутентификация (JWT)\n- Продукты (CRUD + фильтры)\n- Отзывы (CRUD + лайки)\n- Вопросы (Q&A)\n- Корзина\n\nПеред использованием:\n1. Запустите бэкенд: npm run start:dev\n2. Выполните Login запрос\n3. Token автоматически сохранится в переменные",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', response.access_token);",
+									"    pm.collectionVariables.set('userId', response.user.id);",
+									"    console.log('✅ Token saved:', response.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Иван\",\n  \"agreeToTerms\": true,\n  \"subscribeToNewsletter\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Регистрация нового пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', response.access_token);",
+									"    pm.collectionVariables.set('userId', response.user.id);",
+									"    console.log('✅ Token saved:', response.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Вход в систему (получение JWT токена)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						},
+						"description": "Получение профиля текущего пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('accessToken', response.access_token);",
+									"    console.log('✅ Token refreshed');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"your-refresh-token-here\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Обновление access токена"
+					},
+					"response": []
+				}
+			],
+			"description": "Эндпоинты аутентификации и авторизации"
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.products && response.products.length > 0) {",
+									"        pm.collectionVariables.set('productId', response.products[0].id);",
+									"        console.log('✅ Product ID saved:', response.products[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?page=1&pageSize=20&sortBy=newest",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Номер страницы"
+								},
+								{
+									"key": "pageSize",
+									"value": "20",
+									"description": "Размер страницы"
+								},
+								{
+									"key": "sortBy",
+									"value": "newest",
+									"description": "newest | oldest | price-asc | price-desc | name-asc | name-desc"
+								},
+								{
+									"key": "category",
+									"value": "Casual",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "1000",
+									"disabled": true
+								},
+								{
+									"key": "brand",
+									"value": "Nike",
+									"disabled": true
+								},
+								{
+									"key": "color",
+									"value": "Red",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "M",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Получение всех продуктов с фильтрацией и пагинацией"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"{{productId}}"
+							]
+						},
+						"description": "Получение продукта по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Nike Air Max 2023\",\n  \"description\": \"Стильные кроссовки Nike Air Max с отличной амортизацией\",\n  \"price\": 12999,\n  \"category\": \"Casual\",\n  \"brand\": \"Nike\",\n  \"color\": [\"White\", \"Black\"],\n  \"size\": [\"39\", \"40\", \"41\", \"42\"],\n  \"images\": [\"/images/products/example-1.jpg\"],\n  \"stock\": 50,\n  \"productType\": \"Shoes\",\n  \"dressStyle\": \"Casual\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						},
+						"description": "Создание нового продукта"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Nike Air Max 2023 Updated\",\n  \"price\": 13999\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"{{productId}}"
+							]
+						},
+						"description": "Обновление продукта"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"{{productId}}"
+							]
+						},
+						"description": "Удаление продукта"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Product Images",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/upload-images",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"upload-images"
+							]
+						},
+						"description": "Загрузка изображений продукта (до 3 файлов)"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Product Like",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products/{{productId}}/like",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"{{productId}}",
+								"like"
+							]
+						},
+						"description": "Добавить/удалить продукт из избранного"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Liked Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products/liked/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"liked",
+								"me"
+							]
+						},
+						"description": "Получить избранные продукты пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/filters/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"filters",
+								"categories"
+							]
+						},
+						"description": "Получить все доступные категории"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/filters/brands",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"filters",
+								"brands"
+							]
+						},
+						"description": "Получить все доступные бренды"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Colors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/filters/colors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"filters",
+								"colors"
+							]
+						},
+						"description": "Получить все доступные цвета"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sizes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/filters/sizes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"filters",
+								"sizes"
+							]
+						},
+						"description": "Получить все доступные размеры"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/filters/product-types",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"filters",
+								"product-types"
+							]
+						},
+						"description": "Получить все типы продуктов"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dress Styles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/filters/dress-styles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"filters",
+								"dress-styles"
+							]
+						},
+						"description": "Получить все стили одежды"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Facets",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/facets?category=Casual",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"facets"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "Casual"
+								}
+							]
+						},
+						"description": "Получить фасеты для фильтрации с количеством товаров"
+					},
+					"response": []
+				}
+			],
+			"description": "Управление продуктами"
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Create Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('reviewId', response.id);",
+									"    console.log('✅ Review ID saved:', response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 5,\n  \"text\": \"Отличный товар! Очень доволен покупкой. Рекомендую!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						},
+						"description": "Создание нового отзыва"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviews by Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews?productId={{productId}}&page=1&pageSize=20&sortBy=newest",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "productId",
+									"value": "{{productId}}"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "20"
+								},
+								{
+									"key": "sortBy",
+									"value": "newest",
+									"description": "newest | oldest | rating-desc | rating-asc | most-liked"
+								},
+								{
+									"key": "rating",
+									"value": "5",
+									"disabled": true,
+									"description": "Фильтр по рейтингу (1-5)"
+								}
+							]
+						},
+						"description": "Получение отзывов продукта с пагинацией"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}"
+							]
+						},
+						"description": "Получение отзыва по ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Review for Product",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/user/product/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"user",
+								"product",
+								"{{productId}}"
+							]
+						},
+						"description": "Получение отзыва пользователя для конкретного продукта"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/product/{{productId}}/summary",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"product",
+								"{{productId}}",
+								"summary"
+							]
+						},
+						"description": "Получение статистики отзывов продукта"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 4,\n  \"text\": \"Обновленный отзыв. Хороший товар, но есть небольшие замечания.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}"
+							]
+						},
+						"description": "Обновление своего отзыва"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}"
+							]
+						},
+						"description": "Удаление своего отзыва (soft delete)"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Review Like",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/like",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}",
+								"like"
+							]
+						},
+						"description": "Добавить/убрать лайк отзыву"
+					},
+					"response": []
+				}
+			],
+			"description": "Управление отзывами"
+		},
+		{
+			"name": "Questions (Q&A)",
+			"item": [
+				{
+					"name": "Create Question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('questionId', response.id);",
+									"    console.log('✅ Question ID saved:', response.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId}}\",\n  \"question\": \"Какой размер подойдет для роста 180 см?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/questions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions"
+							]
+						},
+						"description": "Создание нового вопроса о продукте"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Questions by Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/questions?productId={{productId}}&page=1&pageSize=10&status=ANSWERED",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions"
+							],
+							"query": [
+								{
+									"key": "productId",
+									"value": "{{productId}}"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "status",
+									"value": "ANSWERED",
+									"description": "PENDING | ANSWERED | HIDDEN | DELETED"
+								}
+							]
+						},
+						"description": "Получение вопросов продукта (по умолчанию только ANSWERED)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Question for Product",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/questions/user/product/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"user",
+								"product",
+								"{{productId}}"
+							]
+						},
+						"description": "Получение моего вопроса по конкретному продукту"
+					},
+					"response": []
+				},
+				{
+					"name": "Answer Question (Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"answer\": \"Для роста 180 см рекомендуем размер L. Модель немного маломерит.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/questions/{{questionId}}/answer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"{{questionId}}",
+								"answer"
+							]
+						},
+						"description": "Ответ на вопрос (только администратор)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Question",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/questions/{{questionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"questions",
+								"{{questionId}}"
+							]
+						},
+						"description": "Удаление вопроса (soft delete, может автор или админ)"
+					},
+					"response": []
+				}
+			],
+			"description": "Управление вопросами о продуктах"
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Get Cart",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cart",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart"
+							]
+						},
+						"description": "Получение корзины текущего пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cart Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cart/count",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart",
+								"count"
+							]
+						},
+						"description": "Получение количества товаров в корзине"
+					},
+					"response": []
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"selectedColor\": \"White\",\n  \"selectedSize\": \"M\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart"
+							]
+						},
+						"description": "Добавление товара в корзину"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Item",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 3\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart/item",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart",
+								"item"
+							]
+						},
+						"description": "Обновление количества товара в корзине"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove from Cart",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart/item",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart",
+								"item"
+							]
+						},
+						"description": "Удаление товара из корзины"
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cart",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart"
+							]
+						},
+						"description": "Очистка всей корзины"
+					},
+					"response": []
+				}
+			],
+			"description": "Управление корзиной покупок"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "productId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "reviewId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "questionId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
