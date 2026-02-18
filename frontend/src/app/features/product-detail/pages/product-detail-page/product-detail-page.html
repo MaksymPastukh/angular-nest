@@ -409,7 +409,7 @@
                   </div>
                 </p-tabpanel>
                 <p-tabpanel [value]="1">
-                  <div #commentsSection class="py-6">
+                  <div #reviewsSection class="py-6">
                     @if (facade.product(); as prod) {
                       <app-ui-reviews [productId]="prod.id" [initialSummary]="prod.ratingStats" />
                     }

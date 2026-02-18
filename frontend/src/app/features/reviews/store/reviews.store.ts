@@ -15,6 +15,7 @@ import {
 } from 'rxjs'
 import { ReviewsService } from '../data-access/reviews.service'
 import { CreateReviewInterface } from '../domain/interfaces/create-review.interface'
+import { ReviewsPageChangeInterface } from '../domain/interfaces/reviews-page-change.interface'
 import { ReviewsPaginatedResponseInterface } from '../domain/interfaces/reviews-paginated-response.interface'
 import { ReviewResponseInterface } from '../domain/interfaces/reviews-response.interface'
 import { ReviewsStateInterface } from '../domain/interfaces/reviews-state.interface'
@@ -187,6 +188,29 @@ export const ReviewsStore = signalStore(
         )
       )
 
+    const loadPageCommand = () =>
+      pipe(
+        requireProductId<ReviewsPageChangeInterface>(),
+        tap(() => setPending('list')),
+        switchMap(({ page, pageSize }) =>
+          reviewsService
+            .getReviews({
+              productId: store.productId() as string,
+              page,
+              pageSize,
+              sortBy: store.sortBy(),
+              rating: store.ratingFilter() ?? undefined,
+            })
+            .pipe(
+              tap((response) => setListSuccess(response, 'replace')),
+              catchError((error) => {
+                setFailure(getErrorMessage(error))
+                return EMPTY
+              })
+            )
+        )
+      )
+
     const load = rxMethod<void>(loadCommand('replace'))
     const loadMore = rxMethod<void>(
       pipe(
@@ -260,15 +284,18 @@ export const ReviewsStore = signalStore(
       })
     }
 
+    const goToPage = rxMethod<ReviewsPageChangeInterface>(loadPageCommand())
+
     const setSortBy = (sortBy: ReviewSortByType): void => {
-      patchState(store, { sortBy })
-      load()
+      patchState(store, { sortBy, page: 1 })
+      goToPage({ page: 1, pageSize: store.pageSize() })
     }
 
     const setRatingFilter = (rating: RatingFilterType): void => {
-      patchState(store, { ratingFilter: rating })
-      load()
+      patchState(store, { ratingFilter: rating, page: 1 })
+      goToPage({ page: 1, pageSize: store.pageSize() })
     }
+
     return {
       setContext,
       setSortBy,
@@ -280,6 +307,7 @@ export const ReviewsStore = signalStore(
       updateReview,
       remove,
       toggleLike,
+      goToPage,
     }
   })
 )

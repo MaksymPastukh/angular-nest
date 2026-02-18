@@ -1,9 +1,8 @@
-import { UiRatingComponent } from '@/shared/ui'
+import { Paginator, PaginatorState, Select, UiRatingComponent } from '@/shared/ui'
 import { UiIconComponent } from '@/shared/ui/ui-icon'
 import { DatePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Select } from 'primeng/select'
 import { AuthStateService } from '../../../../core/auth/http/auth-state.service'
 import { CreateReviewInterface } from '../../domain/interfaces/create-review.interface'
 import { SelectOption } from '../../domain/interfaces/reviews-sort-select.interface'
@@ -15,7 +14,15 @@ import { ReviewsFacade } from '../../store/reviews.facade'
 import { ReviewFormComponent } from '../../ui/reviews-form/review-form'
 @Component({
   selector: 'app-ui-reviews',
-  imports: [DatePipe, ReviewFormComponent, UiRatingComponent, UiIconComponent, Select, FormsModule],
+  imports: [
+    DatePipe,
+    ReviewFormComponent,
+    UiRatingComponent,
+    UiIconComponent,
+    Select,
+    FormsModule,
+    Paginator,
+  ],
   templateUrl: './reviews.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -72,8 +79,17 @@ export class Reviews {
     this.facade.updateReview(data)
   }
 
+  onReviewsPageChange(event: PaginatorState): void {
+    const pageIndex = event.page ?? 0
+    const rows = event.rows ?? this.facade.pageSize()
+
+    this.facade.gotToPage({
+      page: pageIndex + 1,
+      pageSize: rows,
+    })
+  }
+
   onDeleteReview(reviewId: string): void {
-    // Проверяем права: либо это мой отзыв, либо я администратор
     const myReview = this.facade.myReview()
     const isMyReview = myReview?.id === reviewId
     const isAdmin = this.facade.isAdmin()

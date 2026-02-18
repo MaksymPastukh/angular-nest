@@ -1,6 +1,7 @@
 import { computed, inject, Injectable } from '@angular/core'
 import { AuthStateService } from '../../../core/auth/http/auth-state.service'
 import { CreateReviewInterface } from '../domain/interfaces/create-review.interface'
+import { ReviewsPageChangeInterface } from '../domain/interfaces/reviews-page-change.interface'
 import { ReviewsSummaryInterface } from '../domain/interfaces/reviews-summary'
 import { UpdateReviewInterface } from '../domain/interfaces/update-review.interface'
 import { RatingFilterType } from '../domain/types/reviews-rating.type'
@@ -48,6 +49,10 @@ export class ReviewsFacade {
     if (this.authState.isAuthenticated()) {
       this.store.loadMyReview()
     }
+  }
+
+  gotToPage(params: ReviewsPageChangeInterface): void {
+    this.store.goToPage(params)
   }
 
   refresh(): void {

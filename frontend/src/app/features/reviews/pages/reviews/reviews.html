@@ -85,7 +85,17 @@
         </div>
       }
     </div>
-
+    @if (facade.total() > facade.pageSize()) {
+      <div class="mt-6 flex justify-center">
+        <p-paginator
+          [first]="(facade.page() - 1) * facade.pageSize()"
+          [rows]="facade.pageSize()"
+          [totalRecords]="facade.total()"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          (onPageChange)="onReviewsPageChange($event)"
+        />
+      </div>
+    }
     @if (facade.canLoadMore()) {
       <div class="flex justify-center mt-8">
         <button
