@@ -1,7 +1,16 @@
 import { Paginator, PaginatorState, Select, UiRatingComponent } from '@/shared/ui'
 import { UiIconComponent } from '@/shared/ui/ui-icon'
 import { DatePipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  signal,
+  ViewChild,
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { AuthStateService } from '../../../../core/auth/http/auth-state.service'
 import { CreateReviewInterface } from '../../domain/interfaces/create-review.interface'
@@ -29,16 +38,32 @@ import { ReviewFormComponent } from '../../ui/reviews-form/review-form'
 export class Reviews {
   readonly facade = inject(ReviewsFacade)
   readonly authState = inject(AuthStateService)
-  productId = input<string>('')
+  productId = input.required<string>()
   initialSummary = input<ReviewsSummaryInterface>()
-
+  @ViewChild('reviewsTop', { read: ElementRef })
+  private readonly reviewsTop?: ElementRef<HTMLElement>
+  private readonly pendingScroll = signal<boolean>(false)
+  private readonly lastProductId = signal<string | null>(null)
   constructor() {
     effect(() => {
-      if (!this.productId()) return
+      const prodId = this.productId()
+      if (!prodId) return
+
+      if (this.lastProductId() === prodId) return
+      this.lastProductId.set(prodId)
+
       this.facade.init({
-        productId: this.productId(),
-        initialSummary: this.initialSummary(),
+        productId: prodId,
+        initialSummary: this.initialSummary() ?? undefined,
       })
+    })
+
+    effect(() => {
+      if (!this.pendingScroll()) return
+      if (this.facade.isLoading()) return
+
+      this.pendingScroll.set(false)
+      this.reviewsTop?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
   }
 
@@ -83,10 +108,13 @@ export class Reviews {
     const pageIndex = event.page ?? 0
     const rows = event.rows ?? this.facade.pageSize()
 
-    this.facade.gotToPage({
+    this.facade.goToPage({
       page: pageIndex + 1,
       pageSize: rows,
     })
+
+    this.pendingScroll.set(true)
+    this.facade.goToPage({ page: pageIndex + 1, pageSize: rows })
   }
 
   onDeleteReview(reviewId: string): void {

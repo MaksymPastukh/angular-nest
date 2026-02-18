@@ -42,7 +42,7 @@ export class ProductDetailPage {
   private readonly route = inject(ActivatedRoute)
   readonly facade = inject(ProductDetailFacade)
 
-  private readonly commentsSection = viewChild<ElementRef<HTMLDivElement>>('commentsSection')
+  private readonly reviewsSection = viewChild<ElementRef<HTMLDivElement>>('reviewsSection')
   readonly selectedImageIndex = signal(0)
   private readonly imageErrorHandled = signal(false)
   readonly selectedSize = signal<string | null>(null)
@@ -91,10 +91,10 @@ export class ProductDetailPage {
     this.facade.nextImage()
   }
 
-  protected scrollToComments(): void {
+  protected scrollToReviews(): void {
     this.onTabChange(1)
     setTimeout(() => {
-      const elem = this.commentsSection()?.nativeElement
+      const elem = this.reviewsSection()?.nativeElement
 
       if (elem) {
         elem.scrollIntoView({

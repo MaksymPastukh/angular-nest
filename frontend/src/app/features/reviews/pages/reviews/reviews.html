@@ -44,7 +44,7 @@
   }
 
   @if (facade.items().length > 0) {
-    <div class="space-y-4">
+    <div #reviewsTop class="space-y-4">
       @for (r of facade.items(); track r.id) {
         <div class="rounded-xl border border-gray-200 bg-white p-4 mt-5">
           <div class="flex items-center justify-between">

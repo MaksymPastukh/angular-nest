@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core'
+import { computed, effect, inject, Injectable, signal } from '@angular/core'
 import { AuthStateService } from '../../../core/auth/http/auth-state.service'
 import { CreateReviewInterface } from '../domain/interfaces/create-review.interface'
 import { ReviewsPageChangeInterface } from '../domain/interfaces/reviews-page-change.interface'
@@ -41,25 +41,27 @@ export class ReviewsFacade {
 
   readonly isAuthenticated = this.authState.isAuthenticated
   readonly isAdmin = this.authState.isAdmin
+  private readonly lastMyReviewPid = signal<string | null>(null)
+
+  constructor() {
+    effect(() => {
+      if (!this.authState.isAuthenticated()) return
+      const prodId = this.store.productId()
+      if (!prodId) return
+
+      if (this.lastMyReviewPid() === prodId) return
+      this.lastMyReviewPid.set(prodId)
+      this.store.loadMyReview()
+    })
+  }
 
   init(params: { productId: string; initialSummary?: ReviewsSummaryInterface }): void {
     this.store.setContext(params)
-    this.store.load()
-
-    if (this.authState.isAuthenticated()) {
-      this.store.loadMyReview()
-    }
+    this.store.goToPage({ page: 1, pageSize: this.store.pageSize() })
   }
 
-  gotToPage(params: ReviewsPageChangeInterface): void {
+  goToPage(params: ReviewsPageChangeInterface): void {
     this.store.goToPage(params)
-  }
-
-  refresh(): void {
-    this.store.load()
-    if (this.authState.isAuthenticated()) {
-      this.store.loadMyReview()
-    }
   }
 
   loadMore(): void {
