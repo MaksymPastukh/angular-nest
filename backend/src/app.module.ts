@@ -10,6 +10,7 @@ import { ProductsModule } from './products/products.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StaticModule } from './static/static.module';
 import { UsersModule } from './users/users.module';
+import { QuestionsModule } from './questions/questions.module';
 
 /**
  * Главный модуль приложения
@@ -44,6 +45,7 @@ import { UsersModule } from './users/users.module';
     AuthModule, // Модуль аутентификации и авторизации
     ProductsModule, // Модуль управления продуктами магазина
     ReviewsModule, // Модуль управления отзывами и рейтингами
+    QuestionsModule, // Модуль управления вопросами о продуктах
     CartModule, // Модуль корзины покупок
   ],
   controllers: [AppController],
