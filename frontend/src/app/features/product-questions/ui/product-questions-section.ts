@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core'
 import { ProductQuestionFacade } from '../store/product-questions.facade'
-import { AskQiuestionForm } from './asl-question-form'
+import { AskQiuestionForm } from './ask-question-form'
 import { MyQuestionCardComponent } from './my-question-card'
 import { QuestionsListComponent } from './questions-list'
 
@@ -11,11 +11,6 @@ import { QuestionsListComponent } from './questions-list'
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="mt-8 space-y-4">
-      <header class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold">Вопросы и ответы</h2>
-        <span class="text-sm text-gray-500">Всего ответов: {{ facade.total() }}</span>
-      </header>
-
       @if (facade.myQuestion(); as my) {
         <app-my-question-card
           [question]="my"

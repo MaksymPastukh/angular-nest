@@ -27,6 +27,6 @@ export class ProductQuestionService {
     return this.http.get<ProductQuestionInterface>(`${this.apiUrl}/user/product/${productId}`)
   }
   public removeQuestion(id: string): Observable<ProductQuestionInterface> {
-    return this.http.delete<ProductQuestionInterface>(`${this.apiUrl}${id}`)
+    return this.http.delete<ProductQuestionInterface>(`${this.apiUrl}/${id}`)
   }
 }

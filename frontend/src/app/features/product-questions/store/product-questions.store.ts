@@ -48,7 +48,7 @@ export const ProductQuestionStore = signalStore(
         items: response.items,
         total: response.total,
         page: response.page,
-        pageSize: response.page,
+        pageSize: response.pageSize, // Исправлено: было response.page
         isLoading: false,
         error: null,
       })
@@ -161,7 +161,11 @@ export const ProductQuestionStore = signalStore(
     const goToPage = rxMethod<QuestionsPageChangeInterface>(
       pipe(
         requireProductId<QuestionsPageChangeInterface>(),
-        tap(() => setPending('list')),
+        tap(({ page, pageSize }) => {
+          // Обновляем state перед запросом, чтобы UI отобразил корректную страницу
+          patchState(store, { page, pageSize })
+          setPending('list')
+        }),
         switchMap(({ page, pageSize }) =>
           questionService
             .getAllQuestions({

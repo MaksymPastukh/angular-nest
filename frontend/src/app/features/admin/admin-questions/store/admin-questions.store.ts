@@ -102,7 +102,11 @@ export const AdminQuestionsStore = signalStore(
 
     const goToPageCommand = () =>
       pipe(
-        tap<AdminQuestionsPageChangeInterface>(() => setPending('list')),
+        tap<AdminQuestionsPageChangeInterface>(({ page, pageSize }) => {
+          // Обновляем state перед запросом, чтобы UI отобразил корректную страницу
+          patchState(store, { page, pageSize })
+          setPending('list')
+        }),
         switchMap(({ page, pageSize }) =>
           api
             .getQuestions({

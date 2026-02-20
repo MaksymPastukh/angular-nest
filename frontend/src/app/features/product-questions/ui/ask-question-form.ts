@@ -9,50 +9,41 @@ import { AskQuestionModelInterface } from '../domain/interfaces/ask-question-mod
   imports: [FormField, ButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="rounded-2xl border p-4 shadow-sm">
-      <h3 class="text-base font-semibold">Задать вопрос</h3>
-      <p class="mt-1 text-sm text-gray-600">
-        Можно задать один вопрос по товару. После удаления — можно создать новый.
+    <div class="rounded-lg border border-gray-200 bg-white p-6">
+      <p class="mt-1 font-family text-base text-gray-600">
+        You can ask one question about the product. After deteling it, you can create a new one
       </p>
 
       <div class="mt-3">
         <textarea
-          pInputTextarea
           class="w-full"
           [rows]="4"
+          class="w-full resize-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
           [formField]="formAsk.question"
-          placeholder="Напишите ваш вопрос (3–500 символов)"
+          placeholder="Write you quewstion (3–500 words)"
         ></textarea>
 
         <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
-          <span>{{ length() }}/500</span>
+          <div>
+            @if (formAsk.question().touched() && formAsk.question().invalid()) {
+              @if (formAsk.question().errors().length > 0) {
+                <span class="text-red-600">{{ formAsk.question().errors()[0].message }}</span>
+              }
+            }
+          </div>
 
-          @if (formAsk.question().touched() && formAsk.question().invalid()) {
-            <div>{{ formAsk.question().errors()[0].message }}</div>
-          }
+          <div>{{ length() }}/500</div>
         </div>
 
-        @if (errorMessage()) {
-          <p class="mt-2 text-sm text-red-600">{{ errorMessage() }}</p>
-        }
-
-        <div class="mt-3 flex gap-2">
+        <div class="mt-3 flex justify-end gap-2">
           <button
-            pButton
-            type="button"
-            label="Отправить"
+            type="submit"
             [disabled]="isSubmitting() || formAsk.question().invalid()"
             (click)="onSubmit()"
-          ></button>
-
-          <button
-            pButton
-            type="button"
-            label="Очистить"
-            severity="secondary"
-            [disabled]="isSubmitting()"
-            (click)="onReset()"
-          ></button>
+            class="bg-purple-600 rounded-lg cursor-pointer font-bold text-lg px-5 py-2 text-sm font-medium text-white transition hover:bg-purple-800 active:scale-95 disabled:bg-purple-300 disabled:cursor-not-allowed"
+          >
+            Send
+          </button>
         </div>
       </div>
     </div>
@@ -79,9 +70,6 @@ export class AskQiuestionForm {
     if (value.length < 3) return
 
     this.submitQuestion.emit(value)
-  }
-
-  public onReset(): void {
     this.formModel.set({ question: '' })
     this.formAsk.question().reset()
   }

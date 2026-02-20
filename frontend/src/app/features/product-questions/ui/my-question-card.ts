@@ -8,14 +8,14 @@ import type { ProductQuestionInterface } from '../domain/interfaces/product-ques
   imports: [ButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="rounded-2xl border p-4 shadow-sm">
+    <div class="rounded-lg border border-gray-200 bg-white p-6">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <h3 class="text-base font-semibold">Ваш вопрос</h3>
-          <p class="mt-1 text-sm text-gray-600">
-            Статус:
+          <h3 class="text-xl font-family font-semibold">Your question</h3>
+          <p class="mt-1 font-family text-base text-gray-600">
+            Status:
             <span
-              class="font-medium"
+              class="font-medium "
               [class.text-green-700]="question().status === 'ANSWERED'"
               [class.text-amber-700]="question().status === 'PENDING'"
             >
@@ -25,29 +25,29 @@ import type { ProductQuestionInterface } from '../domain/interfaces/product-ques
         </div>
 
         <button
-          pButton
-          type="button"
-          label="Удалить"
-          severity="danger"
+          type="submit"
           [disabled]="isSubmitting()"
           (click)="remove.emit(question().id)"
-        ></button>
+          class="bg-purple-600 rounded-lg cursor-pointer font-bold text-lg px-5 py-2 text-sm font-medium text-white transition hover:bg-purple-800 active:scale-95 disabled:bg-purple-300 disabled:cursor-not-allowed"
+        >
+          Delete
+        </button>
       </div>
 
       <div class="mt-3 space-y-3">
         <div>
-          <p class="text-sm text-gray-500">Вопрос</p>
+          <p class="font-family text-sm text-gray-500">Question</p>
           <p class="mt-1 whitespace-pre-wrap">{{ question().question }}</p>
         </div>
 
         @if (question().status === 'ANSWERED' && question().answer) {
           <div>
-            <p class="text-sm text-gray-500">Ответ администратора</p>
+            <p class="font-family text-sm text-gray-500">Answer admin</p>
             <p class="mt-1 whitespace-pre-wrap">{{ question().answer }}</p>
           </div>
         } @else {
-          <div class="text-sm text-gray-600">
-            Как только администратор ответит — вы увидите ответ здесь.
+          <div class="font-family text-sm text-gray-600">
+            As soon as the administator responds, you will see the answer here
           </div>
         }
       </div>
@@ -63,13 +63,13 @@ export class MyQuestionCardComponent {
   public statusLabel(status: ProductQuestionInterface['status']): string {
     switch (status) {
       case 'PENDING':
-        return 'ожидает ответа'
+        return 'awating a response'
       case 'ANSWERED':
-        return 'отвечен'
+        return 'answered'
       case 'HIDDEN':
-        return 'скрыт'
+        return 'hiden'
       case 'DELETED':
-        return 'удален'
+        return 'deleted'
       default:
         return status
     }

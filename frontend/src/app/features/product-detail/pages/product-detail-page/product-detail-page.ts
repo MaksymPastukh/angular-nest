@@ -17,6 +17,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
+import { ProductQuestionFacade } from '../../../product-questions/store/product-questions.facade'
 import { TabsInterface } from '../../domain/interfaces/tabs-info.interface'
 import { ProductDetailFacade } from '../../store/product-detail.facade'
 
@@ -42,7 +43,8 @@ import { ProductDetailFacade } from '../../store/product-detail.facade'
 })
 export class ProductDetailPage {
   private readonly route = inject(ActivatedRoute)
-  readonly facade = inject(ProductDetailFacade)
+  public readonly facade = inject(ProductDetailFacade)
+  public readonly facadeQuestion = inject(ProductQuestionFacade)
 
   private readonly reviewsSection = viewChild<ElementRef<HTMLDivElement>>('reviewsSection')
   readonly selectedImageIndex = signal(0)
@@ -71,7 +73,7 @@ export class ProductDetailPage {
       {
         title: 'Q&A',
         value: 2,
-        content: '',
+        content: this.facadeQuestion.total(),
       },
     ]
   })
