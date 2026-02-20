@@ -1,16 +1,16 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Request,
-  UseGuards,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Request,
+    UseGuards,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -19,15 +19,15 @@ import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ParseObjectIdPipe } from '../common/pipes/parse-objectid.pipe';
 import type {
-  RequestWithOptionalUser,
-  RequestWithUser,
+    RequestWithOptionalUser,
+    RequestWithUser,
 } from '../reviews/interfaces/request-user.interface';
 import { AnswerQuestionDto } from './dto/answer-question.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { FilterQuestionsDto } from './dto/filter-questions.dto';
 import {
-  ProductQuestionResponse,
-  ProductQuestionsPaginatedResponse,
+    ProductQuestionResponse,
+    ProductQuestionsPaginatedResponse,
 } from './interfaces/question-response.interface';
 import { QuestionsService } from './questions.service';
 
@@ -62,9 +62,11 @@ export class QuestionsController {
   }
 
   /**
-   * Получение вопросов для продукта с пагинацией
-   * GET /questions?productId=xxx&page=1&pageSize=10&status=ANSWERED
-   * По умолчанию возвращает только ANSWERED вопросы
+   * Получение вопросов с фильтрацией и пагинацией
+   * GET /api/questions?productId=xxx&page=1&pageSize=10&status=PENDING
+   * - Если productId указан: вопросы для конкретного продукта
+   * - Если productId не указан: все вопросы (для админской панели)
+   * По умолчанию возвращает только ANSWERED вопросы (для публичного списка)
    * @param filterDto - Параметры фильтрации и пагинации
    * @param req - Запрос с опциональными данными пользователя
    * @returns Объект с вопросами и пагинацией

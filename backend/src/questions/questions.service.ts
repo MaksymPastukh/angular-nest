@@ -92,9 +92,13 @@ export class QuestionsService {
     const statusFilter = status || QuestionStatus.ANSWERED;
 
     const filter: any = {
-      productId,
       status: statusFilter,
     };
+
+    // Добавляем фильтр по продукту только если productId указан
+    if (productId) {
+      filter.productId = productId;
+    }
 
     // Подсчет общего количества
     const total = await this.questionModel.countDocuments(filter).exec();

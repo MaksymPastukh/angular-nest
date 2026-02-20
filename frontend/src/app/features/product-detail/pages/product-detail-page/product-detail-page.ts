@@ -1,4 +1,5 @@
-import { Reviews } from '@/features/reviews/pages/reviews/reviews'
+import { ProductQuestionsSectionComponent } from '@/features/product-questions/ui/product-questions-section'
+import { Reviews } from '@/features/reviews/ui/reviews/reviews'
 import { BreadcrumbItemInterface, UiBreadcrumbComponent, UiRatingComponent } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import {
@@ -33,6 +34,7 @@ import { ProductDetailFacade } from '../../store/product-detail.facade'
     UiBreadcrumbComponent,
     UiRatingComponent,
     Reviews,
+    ProductQuestionsSectionComponent,
   ],
   templateUrl: './product-detail-page.html',
   styleUrl: './product-detail-page.scss',

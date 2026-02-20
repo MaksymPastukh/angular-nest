@@ -416,7 +416,9 @@
                   </div>
                 </p-tabpanel>
                 <p-tabpanel [value]="2">
-                  <div class="py-6">text</div>
+                  @if (facade.product(); as prod) {
+                    <app-product-questions-section [productId]="prod.id" />
+                  }
                 </p-tabpanel>
               </p-tabpanels>
             </p-tabs>

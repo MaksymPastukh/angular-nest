@@ -11,11 +11,11 @@ export class ProductQuestionService {
   private readonly http = inject(HttpClient)
   private readonly apiUrl = `${environment.api}questions`
 
-  public create(body: CreateQuestionInterface): Observable<ProductQuestionInterface> {
+  public createQuestion(body: CreateQuestionInterface): Observable<ProductQuestionInterface> {
     return this.http.post<ProductQuestionInterface>(`${this.apiUrl}`, body)
   }
 
-  public getPublic(params: {
+  public getAllQuestions(params: {
     productId: string
     page: number
     pageSize: number
@@ -23,10 +23,10 @@ export class ProductQuestionService {
     return this.http.get<QuestionsPageInterface>(`${this.apiUrl}`, { params })
   }
 
-  public getMy(productId: string): Observable<ProductQuestionInterface | null> {
+  public getMyQuestion(productId: string): Observable<ProductQuestionInterface | null> {
     return this.http.get<ProductQuestionInterface>(`${this.apiUrl}/user/product/${productId}`)
   }
-  public delete(id: string): Observable<ProductQuestionInterface> {
+  public removeQuestion(id: string): Observable<ProductQuestionInterface> {
     return this.http.delete<ProductQuestionInterface>(`${this.apiUrl}${id}`)
   }
 }

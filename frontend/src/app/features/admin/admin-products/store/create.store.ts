@@ -3,7 +3,6 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, of, switchMap, tap } from 'rxjs'
-import { AdminShopService } from '../data-access/admin-shop.service'
 import {
   CATEGORIES,
   COLORS,
@@ -14,6 +13,7 @@ import {
 import { CreateProductFormDataInterface } from '../domain/interfaces/create-product-formData.interface'
 import { CreateProductResponseInterface } from '../domain/interfaces/create-product-response.interface'
 import { CreateProductStoreStateInterface } from '../domain/interfaces/create-product-storeState.interface'
+import { AdminShopService } from '../data-access/admin-shop.service'
 
 const initialState: CreateProductStoreStateInterface = {
   options: {

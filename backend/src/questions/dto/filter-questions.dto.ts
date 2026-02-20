@@ -7,10 +7,11 @@ import { QuestionStatus } from '../schemas/question.schema';
  */
 export class FilterQuestionsDto {
   /**
-   * ID продукта для фильтрации
+   * ID продукта для фильтрации (опционально для админской страницы)
    */
+  @IsOptional()
   @IsMongoId({ message: 'Некорректный ID продукта' })
-  public productId: string;
+  public productId?: string;
 
   /**
    * Номер страницы (начиная с 1)

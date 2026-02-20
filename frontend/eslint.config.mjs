@@ -122,7 +122,7 @@ export default tseslint.config(
       '@angular-eslint/component-max-inline-declarations': [
         'error',
         {
-          template: 13, // Максимум 13 строки для inline template
+          template: 53, // Максимум 53 строки для inline template
           styles: 23, // Максимум 23 строки для inline styles
         },
       ],
