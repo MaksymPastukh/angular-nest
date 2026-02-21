@@ -1,8 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { inject } from '@angular/core'
+import { tapResponse } from '@ngrx/operators'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, of, switchMap, tap } from 'rxjs'
+import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
+import { pipe, switchMap, tap } from 'rxjs'
+
+import { AdminShopService } from '../data-access/admin-shop.service'
 import {
   CATEGORIES,
   COLORS,
@@ -13,7 +16,8 @@ import {
 import { CreateProductFormDataInterface } from '../domain/interfaces/create-product-formData.interface'
 import { CreateProductResponseInterface } from '../domain/interfaces/create-product-response.interface'
 import { CreateProductStoreStateInterface } from '../domain/interfaces/create-product-storeState.interface'
-import { AdminShopService } from '../data-access/admin-shop.service'
+import { UploadEventType } from '../domain/types/upload-event.type'
+import { CreateEventType } from '../domain/types/create-event.type'
 
 const initialState: CreateProductStoreStateInterface = {
   options: {
@@ -33,101 +37,107 @@ const initialState: CreateProductStoreStateInterface = {
 
 export const CreateProductStore = signalStore(
   { providedIn: 'root' },
-
   withState(initialState),
 
   withMethods((store, productService = inject(AdminShopService)) => {
-    const uploadImage = rxMethod<File>((source$) =>
-      source$.pipe(
-        tap(() => {
-          patchState(store, {
-            isUploadingImage: true,
-            error: null,
-            uploadedImagePath: null,
-            event: null,
-          })
-        }),
+    const setUploadPending = (): void => {
+      patchState(store, {
+        isUploadingImage: true,
+        error: null,
+        uploadedImagePath: null,
+        event: null,
+      })
+    }
+
+    const stopUpload = (): void => {
+      patchState(store, { isUploadingImage: false })
+    }
+
+    const setCreatePending = (): void => {
+      patchState(store, {
+        isLoading: true,
+        error: null,
+        success: false,
+        event: null,
+      })
+    }
+
+    const stopCreate = (): void => {
+      patchState(store, { isLoading: false })
+    }
+
+    const setFailure = (message: string): void => {
+      patchState(store, { error: message })
+    }
+
+    const getErrorMessage = (error: unknown, fallback: string): string => {
+      if (!(error instanceof HttpErrorResponse)) return fallback
+      const apiMessage: unknown = (error.error as { message?: unknown })?.message
+      if (typeof apiMessage === 'string' && apiMessage.length > 0) return apiMessage
+      if (Array.isArray(apiMessage) && apiMessage.length > 0) return apiMessage.join(' ')
+      return error.message ?? fallback
+    }
+
+    const uploadImage: RxMethod<File> = rxMethod<File>(
+      pipe(
+        tap(() => setUploadPending()),
         switchMap((file: File) =>
           productService.uploadImage(file).pipe(
-            tap((response: { imagePath: string }) => {
-              patchState(store, {
-                uploadedImagePath: response.imagePath,
-                isUploadingImage: false,
-                event: {
-                  type: 'imageUploaded',
-                },
-              })
-            }),
-            catchError((error: HttpErrorResponse) => {
-              const errorMessage =
-                (error?.error as { message?: string })?.message ??
-                'Не удалось загрузить изображение'
-
-              patchState(store, {
-                isUploadingImage: false,
-                error: errorMessage,
-                uploadedImagePath: null,
-                event: {
-                  type: 'imageUploadError',
-                  message: errorMessage,
-                },
-              })
-
-              return of(null)
+            tapResponse({
+              next: (response: { imagePath: string }) => {
+                patchState(store, {
+                  uploadedImagePath: response.imagePath,
+                  event: { type: 'imageUploaded' } satisfies UploadEventType,
+                })
+              },
+              error: (e) => {
+                const message = getErrorMessage(e, 'Не удалось загрузить изображение')
+                // keep domain-specific event
+                patchState(store, {
+                  uploadedImagePath: null,
+                  event: { type: 'imageUploadError', message } satisfies UploadEventType,
+                })
+                setFailure(message)
+              },
+              finalize: () => stopUpload(),
             })
           )
         )
       )
     )
 
-    const createProduct = rxMethod<CreateProductFormDataInterface>((source$) =>
-      source$.pipe(
-        tap(() => {
-          patchState(store, {
-            isLoading: true,
-            error: null,
-            success: false,
-            event: null,
-          })
-        }),
-        switchMap((formData: CreateProductFormDataInterface) =>
-          productService.createProduct(formData).pipe(
-            tap((response: CreateProductResponseInterface) => {
-              patchState(store, {
-                isLoading: false,
-                success: true,
-                error: null,
-                event: {
-                  type: 'productCreated',
-                  productTitle: response.title,
+    const createProduct: RxMethod<CreateProductFormDataInterface> =
+      rxMethod<CreateProductFormDataInterface>(
+        pipe(
+          tap(() => setCreatePending()),
+          switchMap((formData: CreateProductFormDataInterface) =>
+            productService.createProduct(formData).pipe(
+              tapResponse({
+                next: (response: CreateProductResponseInterface) => {
+                  patchState(store, {
+                    success: true,
+                    event: {
+                      type: 'productCreated',
+                      productTitle: response.title,
+                    } satisfies CreateEventType,
+                  })
                 },
-              })
-            }),
-            catchError((error: HttpErrorResponse) => {
-              const errorMessage =
-                (error?.error as { message?: string })?.message ?? 'Не удалось создать продукт'
-
-              patchState(store, {
-                isLoading: false,
-                error: errorMessage,
-                success: false,
-                event: {
-                  type: 'productCreateError',
-                  message: errorMessage,
+                error: (e) => {
+                  const message = getErrorMessage(e, 'Не удалось создать продукт')
+                  patchState(store, {
+                    success: false,
+                    event: { type: 'productCreateError', message } satisfies CreateEventType,
+                  })
+                  setFailure(message)
                 },
+                finalize: () => stopCreate(),
               })
-
-              return of(null)
-            })
+            )
           )
         )
       )
-    )
 
-    /**
-     * Сброс состояния (только после успешного создания)
-     */
-    function resetState() {
+    const resetState = (): void => {
       patchState(store, {
         uploadedImagePath: null,
         error: null,
@@ -138,10 +148,7 @@ export const CreateProductStore = signalStore(
       })
     }
 
-    /**
-     * Очистка события после обработки
-     */
-    function clearEvent() {
+    const clearEvent = (): void => {
       patchState(store, { event: null })
     }
 

@@ -96,7 +96,6 @@ export const AdminQuestionsStore = signalStore(
       rxMethod<AdminQuestionsPageChangeInterface>(
         pipe(
           tap(({ page, pageSize }) => {
-            // update state before request so UI reflects requested page immediately
             patchState(store, { page, pageSize })
             setPending('list')
           }),
@@ -129,7 +128,6 @@ export const AdminQuestionsStore = signalStore(
           questionsService.answerQuestion(id, { answer }).pipe(
             tapResponse({
               next: (updated) => {
-                // optimistic: remove from current list (relevant for PENDING filter)
                 patchState(store, {
                   items: store.items().filter((q) => q.id !== updated.id),
                   total: Math.max(0, store.total() - 1),
