@@ -27,7 +27,6 @@ export class ProductQuestionFacade {
   public readonly error = this.store.error
   public readonly existingQuestionId = this.store.existingQuestionId
 
-  // полезный derived сигнал для UI
   public readonly hasMyQuestion = computed(() => this.myQuestion() !== null)
 
   public setContext(productId: string): void {

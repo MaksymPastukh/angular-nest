@@ -16,7 +16,6 @@ import { AskQuestionModelInterface } from '../domain/interfaces/ask-question-mod
 
       <div class="mt-3">
         <textarea
-          class="w-full"
           [rows]="4"
           class="w-full resize-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
           [formField]="formAsk.question"
@@ -49,7 +48,7 @@ import { AskQuestionModelInterface } from '../domain/interfaces/ask-question-mod
     </div>
   `,
 })
-export class AskQiuestionForm {
+export class AskQuestionForm {
   public readonly isSubmitting = input<boolean>(false)
   public readonly errorMessage = input<string | null>(null)
   public readonly submitQuestion = output<string>()

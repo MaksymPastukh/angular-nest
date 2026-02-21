@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core'
 import { ProductQuestionFacade } from '../store/product-questions.facade'
-import { AskQiuestionForm } from './ask-question-form'
+import { AskQuestionForm } from './ask-question-form'
 import { MyQuestionCardComponent } from './my-question-card'
 import { QuestionsListComponent } from './questions-list'
 
 @Component({
   selector: 'app-product-questions-section',
   standalone: true,
-  imports: [MyQuestionCardComponent, AskQiuestionForm, QuestionsListComponent],
+  imports: [MyQuestionCardComponent, QuestionsListComponent, AskQuestionForm],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="mt-8 space-y-4">

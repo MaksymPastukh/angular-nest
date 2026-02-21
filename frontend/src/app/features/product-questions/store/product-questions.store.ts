@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import {RxMethod, rxMethod} from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, exhaustMap, filter, Observable, pipe, switchMap, tap } from 'rxjs'
 import { ProductQuestionService } from '../data-access/product-questions.service'
 import { CreateQuestionInterface } from '../domain/interfaces/create-questin.inteface'
@@ -155,18 +155,17 @@ export const ProductQuestionStore = signalStore(
         )
       )
 
-    const load = rxMethod<void>(loadListCommand())
-    const loadMy = rxMethod<void>(loadMyCommand())
+    const load: RxMethod<void> = rxMethod<void>(loadListCommand())
+    const loadMy: RxMethod<void>  = rxMethod<void>(loadMyCommand())
 
-    const goToPage = rxMethod<QuestionsPageChangeInterface>(
+    const goToPage: RxMethod<QuestionsPageChangeInterface>  = rxMethod<QuestionsPageChangeInterface>(
       pipe(
         requireProductId<QuestionsPageChangeInterface>(),
-        tap(({ page, pageSize }) => {
-          // Обновляем state перед запросом, чтобы UI отобразил корректную страницу
+        tap(({ page, pageSize }:QuestionsPageChangeInterface):void => {
           patchState(store, { page, pageSize })
           setPending('list')
         }),
-        switchMap(({ page, pageSize }) =>
+        switchMap(({ page, pageSize }:QuestionsPageChangeInterface) =>
           questionService
             .getAllQuestions({
               productId: store.productId() as string,
@@ -174,7 +173,7 @@ export const ProductQuestionStore = signalStore(
               pageSize,
             })
             .pipe(
-              tap((response) => setListSuccess(response)),
+              tap((response: QuestionsPageInterface) => setListSuccess(response)),
               catchError((error) => {
                 setFailure(getErrorMessage(error))
                 return EMPTY
