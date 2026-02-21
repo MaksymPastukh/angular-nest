@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
+import { tapResponse } from '@ngrx/operators'
 import {
   patchState,
   signalStore,
@@ -8,8 +9,8 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, forkJoin, switchMap, tap } from 'rxjs'
+import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
+import { forkJoin, pipe, switchMap, tap } from 'rxjs'
 import { ProductsService } from '../data-access/products.service'
 import { CatalogFilterState } from '../domain/interfaces/catalog-filter-state.interface'
 import { CatalogSelectedFiltersInterface } from '../domain/interfaces/catalog-selected-filters.interface'
@@ -35,14 +36,13 @@ const initialState: CatalogFilterState = {
   initialized: false,
 }
 
-const toggle = (list: string[], value: string): string[] => {
-  return list.includes(value) ? list.filter((v) => v !== value) : [...list, value]
-}
+const toggle = (list: string[], value: string): string[] =>
+  list.includes(value) ? list.filter((v) => v !== value) : [...list, value]
 
-const getColorHex = (name: string) => {
+const getColorHex = (name: string): string => {
   const predefined = COLOR_MAP[name]
-
   if (predefined) return predefined
+
   const cached = COLOR_HEX_CACHE.get(name)
   if (cached) return cached
 
@@ -53,66 +53,53 @@ const getColorHex = (name: string) => {
 
 export const ProductFilterStore = signalStore(
   { providedIn: 'root' },
-
   withState(initialState),
-
-  withComputed((store) => {
-    return {
-      sizes: computed(() => store.filterData()?.sizes ?? []),
-      colors: computed(() =>
-        (store.filterData()?.colors ?? []).map((name: string) => ({
-          name,
-          value: getColorHex(name),
-        }))
-      ),
-      brands: computed(() => store.filterData()?.brands ?? []),
-      productTypes: computed(() => store.filterData()?.productTypes ?? []),
-      dressStyles: computed(() => store.filterData()?.dressStyles ?? []),
-    }
-  }),
-
+  withComputed((store) => ({
+    sizes: computed(() => store.filterData()?.sizes ?? []),
+    colors: computed(() =>
+      (store.filterData()?.colors ?? []).map((name: string) => ({
+        name,
+        value: getColorHex(name),
+      }))
+    ),
+    brands: computed(() => store.filterData()?.brands ?? []),
+    productTypes: computed(() => store.filterData()?.productTypes ?? []),
+    dressStyles: computed(() => store.filterData()?.dressStyles ?? []),
+  })),
   withMethods((store, productService = inject(ProductsService)) => {
-    const startLoading = () => patchState(store, { isLoading: true, error: null })
-    const setError = (error: string) =>
-      patchState(store, {
-        isLoading: false,
-        error,
-      })
+    const setPending = (): void => patchState(store, { isLoading: true, error: null })
+    const stop = (): void => patchState(store, { isLoading: false })
 
-    const handleHttpError = (error: unknown) => {
-      const e = error as HttpErrorResponse
-      const message = (e.error as { message?: string })?.message ?? e.message ?? 'Произошла ошибка'
-      setError(String(message))
+    const setFailure = (message: string): void => patchState(store, { error: message })
+
+    const getErrorMessage = (error: unknown): string => {
+      if (!(error instanceof HttpErrorResponse)) return 'Произошла ошибка'
+
+      const apiMessage: unknown = (error.error as { message?: unknown })?.message
+      if (typeof apiMessage === 'string') return apiMessage
+      if (Array.isArray(apiMessage)) return apiMessage.join(' ')
+
+      return error.message ?? `Request failed with status ${error.status}.`
     }
 
     const updateSelected = (
       updater: (current: CatalogSelectedFiltersInterface) => CatalogSelectedFiltersInterface
-    ) => {
-      patchState(store, {
-        selected: updater(store.selected()),
-      })
+    ): void => {
+      patchState(store, { selected: updater(store.selected()) })
     }
 
-    const setPriceRange = (priceRange: [number, number]) => {
+    const setPriceRange = (priceRange: [number, number]): void => {
       updateSelected((f) => ({ ...f, priceRange }))
     }
 
-    const toggleArrayField = (key: ToggleArrayKey, value: string) => {
-      updateSelected((f) => ({
-        ...f,
-        [key]: toggle(f[key], value),
-      }))
+    const toggleArrayField = (key: ToggleArrayKey, value: string): void => {
+      updateSelected((f) => ({ ...f, [key]: toggle(f[key], value) }))
     }
 
-    const toggleSize = (size: string) => {
-      toggleArrayField('selectedSizes', size)
-    }
+    const toggleSize = (size: string): void => toggleArrayField('selectedSizes', size)
+    const toggleColor = (color: string): void => toggleArrayField('selectedColors', color)
 
-    const toggleColor = (color: string) => {
-      toggleArrayField('selectedColors', color)
-    }
-
-    const setCategory = (category: string | null) => {
+    const setCategory = (category: string | null): void => {
       updateSelected((f) => ({
         ...f,
         selectedCategory: category,
@@ -121,47 +108,35 @@ export const ProductFilterStore = signalStore(
       }))
     }
 
-    const toggleType = (type: string, brand: string) => {
+    const toggleType = (type: string, brand: string): void => {
       const key = `${type}:${brand}`
-
-      updateSelected((f) => {
-        const nextTypeKey = f.selectedTypeKey === key ? null : key
-
-        return {
-          ...f,
-          selectedTypeKey: nextTypeKey,
-          selectedStyleKey: null,
-        }
-      })
+      updateSelected((f) => ({
+        ...f,
+        selectedTypeKey: f.selectedTypeKey === key ? null : key,
+        selectedStyleKey: null,
+      }))
     }
 
-    const toggleStyle = (type: string, brand: string) => {
+    const toggleStyle = (type: string, brand: string): void => {
       const key = `${type}:${brand}`
-
-      updateSelected((f) => {
-        const nextStyleKey = f.selectedStyleKey === key ? null : key
-
-        return {
-          ...f,
-          selectedStyleKey: nextStyleKey,
-          selectedTypeKey: null,
-        }
-      })
+      updateSelected((f) => ({
+        ...f,
+        selectedStyleKey: f.selectedStyleKey === key ? null : key,
+        selectedTypeKey: null,
+      }))
     }
 
-    const setSearchQuery = (query: string) => {
+    const setSearchQuery = (query: string): void => {
       updateSelected((f) => ({ ...f, searchQuery: query }))
     }
 
-    const resetFilters = () => {
-      patchState(store, {
-        selected: initialState.selected,
-      })
+    const resetFilters = (): void => {
+      patchState(store, { selected: initialState.selected })
     }
 
-    const loadFilterData = rxMethod<void>((source$) =>
-      source$.pipe(
-        tap(() => startLoading()),
+    const loadFilterData: RxMethod<void> = rxMethod<void>(
+      pipe(
+        tap(() => setPending()),
         switchMap(() =>
           forkJoin({
             categories: productService.getCategories(),
@@ -171,25 +146,24 @@ export const ProductFilterStore = signalStore(
             colors: productService.getColors(),
             sizes: productService.getSizes(),
           }).pipe(
-            tap((data) =>
-              patchState(store, {
-                filterData: data,
-                isLoading: false,
-                error: null,
-                initialized: true,
-              })
-            ),
-            catchError((error) => {
-              handleHttpError(error)
-              return EMPTY
+            tapResponse({
+              next: (data) => {
+                patchState(store, {
+                  filterData: data,
+                  initialized: true,
+                  error: null,
+                })
+              },
+              error: (e) => setFailure(getErrorMessage(e)),
+              finalize: () => stop(),
             })
           )
         )
       )
     )
 
-    const ensureLoaded = rxMethod<void>((source$) =>
-      source$.pipe(
+    const ensureLoaded: RxMethod<void> = rxMethod<void>(
+      pipe(
         tap(() => {
           if (store.initialized() || store.isLoading()) return
           loadFilterData()
@@ -197,10 +171,12 @@ export const ProductFilterStore = signalStore(
       )
     )
 
+    const hydrateSelected = (selected: CatalogSelectedFiltersInterface): void => {
+      patchState(store, { selected })
+    }
+
     return {
-      hydrateSelected(selected: CatalogSelectedFiltersInterface) {
-        patchState(store, { selected })
-      },
+      hydrateSelected,
       setPriceRange,
       setCategory,
       toggleColor,
@@ -213,6 +189,7 @@ export const ProductFilterStore = signalStore(
       ensureLoaded,
     }
   }),
+
   withHooks({
     onInit(store) {
       store.ensureLoaded()

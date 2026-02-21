@@ -4,7 +4,6 @@ import { tapResponse } from '@ngrx/operators'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, exhaustMap, filter, map, of, pipe, switchMap, tap } from 'rxjs'
-
 import { LoadKindType } from '../../../shared/domain/types/load-kind.type'
 import { ProductQuestionService } from '../data-access/product-questions.service'
 import { CreateQuestionInterface } from '../domain/interfaces/create-questin.inteface'
