@@ -124,12 +124,12 @@
               <app-ui-rating [value]="facade.rantingAvg()" [readonly]="true" [stars]="5" />
 
               <span class="text-gray-500 font-family pl-3 font-medium text-xl">
-                {{ facade.rantingAvg() }}.0</span
+                {{ facade.rantingAvg() | number: '1.1-1' }}</span
               >
             </div>
             <button
               type="button"
-              (click)="scrollToComments()"
+              (click)="scrollToReviews()"
               class="flex items-start ml-4 flex items-center ml-4 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <div class="mr-2 text-lg font-family color-text-gray">reviews</div>
@@ -409,14 +409,16 @@
                   </div>
                 </p-tabpanel>
                 <p-tabpanel [value]="1">
-                  <div #commentsSection class="py-6">
+                  <div #reviewsSection class="py-6">
                     @if (facade.product(); as prod) {
                       <app-ui-reviews [productId]="prod.id" [initialSummary]="prod.ratingStats" />
                     }
                   </div>
                 </p-tabpanel>
                 <p-tabpanel [value]="2">
-                  <div class="py-6">text</div>
+                  @if (facade.product(); as prod) {
+                    <app-product-questions-section [productId]="prod.id" />
+                  }
                 </p-tabpanel>
               </p-tabpanels>
             </p-tabs>

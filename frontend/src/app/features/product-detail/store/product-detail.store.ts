@@ -1,13 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { computed, inject } from '@angular/core'
+import { tapResponse } from '@ngrx/operators'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs'
-import { ProductDetailInterface } from '../domain/interfaces/product-detail.interface'
+import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
+import { pipe, switchMap, tap } from 'rxjs'
 import { ReviewsStore } from '../../reviews/store/reviews.store'
 import { ProductsDetailService } from '../data-access/product-detail.service'
 import { ProductDetailGalleryInterface } from '../domain/interfaces/product-detail-gallery.interface'
 import { ProductDetailStateInterface } from '../domain/interfaces/product-detail-state.interface'
+import { ProductDetailInterface } from '../domain/interfaces/product-detail.interface'
 
 const initialState: ProductDetailStateInterface = {
   product: null,
@@ -22,8 +23,10 @@ const initialState: ProductDetailStateInterface = {
 export const ProductDetailStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
+
   withComputed((store) => {
     const reviewsStore = inject(ReviewsStore)
+
     const emptyDistribution = {
       '1': 0,
       '2': 0,
@@ -70,16 +73,14 @@ export const ProductDetailStore = signalStore(
 
     const activeImage = computed(() => galleryImages()[store.activeImageIndex()] ?? null)
 
-    const availableColors = computed(() => {
-      return store.product()?.colors ?? []
-    })
-
+    const availableColors = computed(() => store.product()?.colors ?? [])
     const hasMultipleColors = computed(() => availableColors().length > 1)
 
     return {
       hasProduct: computed(() => !!store.product()),
       productTitle: computed(() => store.product()?.title ?? ''),
       availableSizes: computed(() => store.product()?.sizes ?? []),
+
       ratingAvg: computed(() => ratingStats()?.avg ?? 0),
       ratingCount: computed(() => ratingStats()?.count ?? 0),
       ratingDistribution: computed(() => ratingStats()?.distribution ?? emptyDistribution),
@@ -88,46 +89,43 @@ export const ProductDetailStore = signalStore(
         const sizes = store.product()?.sizes ?? []
         const needSize = sizes.length > 0
         const needColor = hasMultipleColors()
-
         return (!needSize || !!store.selectedSize()) && (!needColor || !!store.selectedColor())
       }),
+
       galleryImages,
       activeImage,
       availableColors,
       hasMultipleColors,
     }
   }),
+
   withMethods((store, productDetailService = inject(ProductsDetailService)) => {
-    const setLoading = (): void => {
+    const setPending = (): void => {
       patchState(store, { isLoading: true, error: null, activeImageIndex: 0 })
     }
 
-    const setError = (error: string): void =>
-      patchState(store, {
-        isLoading: false,
-        error,
-      })
-
-    const handleHttpError = (error: unknown) => {
-      if (!(error instanceof HttpErrorResponse)) {
-        setError('Произошла ошибка')
-        return
-      }
-
-      const apiMessage = (error.error as { message?: unknown })?.message
-      const message =
-        typeof apiMessage === 'string'
-          ? apiMessage
-          : (error.message ?? `Request failed with status ${error.status}.`)
-
-      setError(message)
+    const stop = (): void => {
+      patchState(store, { isLoading: false })
     }
 
-    const setSuccess = (product: ProductDetailInterface) => {
+    const setFailure = (message: string): void => {
+      patchState(store, { error: message })
+    }
+
+    const getErrorMessage = (error: unknown): string => {
+      if (!(error instanceof HttpErrorResponse)) return 'Произошла ошибка'
+
+      const apiMessage: unknown = (error.error as { message?: unknown })?.message
+      if (typeof apiMessage === 'string') return apiMessage
+      if (Array.isArray(apiMessage)) return apiMessage.join(' ')
+
+      return error.message ?? `Request failed with status ${error.status}.`
+    }
+
+    const setSuccess = (product: ProductDetailInterface): void => {
       const defaultColor = product.colors.length === 1 ? product.colors[0] : null
       patchState(store, {
         product,
-        isLoading: false,
         error: null,
         selectedSize: null,
         selectedColor: defaultColor,
@@ -135,43 +133,43 @@ export const ProductDetailStore = signalStore(
         activeImageIndex: 0,
       })
     }
-    const reset = (): void => {
-      patchState(store, initialState)
-    }
 
-    return {
-      loadProduct: rxMethod<string>(
-        pipe(
-          tap(setLoading),
-          switchMap((id: string) =>
-            productDetailService.getProductById(id).pipe(
-              tap((product) => setSuccess(product)),
-              catchError((error) => {
-                handleHttpError(error)
-                return EMPTY
-              })
-            )
+    const loadProduct: RxMethod<string> = rxMethod<string>(
+      pipe(
+        tap(() => setPending()),
+        switchMap((id: string) =>
+          productDetailService.getProductById(id).pipe(
+            tapResponse({
+              next: (product) => setSuccess(product),
+              error: (e) => setFailure(getErrorMessage(e)),
+              finalize: () => stop(),
+            })
           )
         )
-      ),
-      selectSize(size: string | null) {
-        patchState(store, { selectedSize: size })
-      },
-      selectColor(color: string | null) {
-        patchState(store, { selectedColor: color })
-      },
-      setQuantity(quantity: number) {
-        patchState(store, { quantity: Math.max(1, quantity) })
-      },
-      incQty() {
-        patchState(store, { quantity: store.quantity() + 1 })
-      },
-      decQty() {
-        patchState(store, { quantity: Math.max(1, store.quantity() - 1) })
-      },
-      selectImage(index: number) {
-        patchState(store, { activeImageIndex: Math.max(0, index) })
-      },
+      )
+    )
+
+    const selectSize = (size: string | null): void => patchState(store, { selectedSize: size })
+    const selectColor = (color: string | null): void => patchState(store, { selectedColor: color })
+
+    const setQuantity = (quantity: number): void =>
+      patchState(store, { quantity: Math.max(1, quantity) })
+    const incQty = (): void => patchState(store, { quantity: store.quantity() + 1 })
+    const decQty = (): void => patchState(store, { quantity: Math.max(1, store.quantity() - 1) })
+
+    const selectImage = (index: number): void =>
+      patchState(store, { activeImageIndex: Math.max(0, index) })
+
+    const reset = (): void => patchState(store, initialState)
+
+    return {
+      loadProduct,
+      selectSize,
+      selectColor,
+      setQuantity,
+      incQty,
+      decQty,
+      selectImage,
       reset,
     }
   })

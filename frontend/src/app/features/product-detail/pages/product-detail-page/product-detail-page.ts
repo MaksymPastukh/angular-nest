@@ -1,4 +1,5 @@
-import { Reviews } from '@/features/reviews/pages/reviews/reviews'
+import { ProductQuestionsSectionComponent } from '@/features/product-questions/ui/product-questions-section'
+import { Reviews } from '@/features/reviews/ui/reviews/reviews'
 import { BreadcrumbItemInterface, UiBreadcrumbComponent, UiRatingComponent } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
 import {
@@ -16,6 +17,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
 import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
+import { ProductQuestionFacade } from '../../../product-questions/store/product-questions.facade'
 import { TabsInterface } from '../../domain/interfaces/tabs-info.interface'
 import { ProductDetailFacade } from '../../store/product-detail.facade'
 
@@ -33,6 +35,7 @@ import { ProductDetailFacade } from '../../store/product-detail.facade'
     UiBreadcrumbComponent,
     UiRatingComponent,
     Reviews,
+    ProductQuestionsSectionComponent,
   ],
   templateUrl: './product-detail-page.html',
   styleUrl: './product-detail-page.scss',
@@ -40,9 +43,10 @@ import { ProductDetailFacade } from '../../store/product-detail.facade'
 })
 export class ProductDetailPage {
   private readonly route = inject(ActivatedRoute)
-  readonly facade = inject(ProductDetailFacade)
+  public readonly facade = inject(ProductDetailFacade)
+  public readonly facadeQuestion = inject(ProductQuestionFacade)
 
-  private readonly commentsSection = viewChild<ElementRef<HTMLDivElement>>('commentsSection')
+  private readonly reviewsSection = viewChild<ElementRef<HTMLDivElement>>('reviewsSection')
   readonly selectedImageIndex = signal(0)
   private readonly imageErrorHandled = signal(false)
   readonly selectedSize = signal<string | null>(null)
@@ -69,7 +73,7 @@ export class ProductDetailPage {
       {
         title: 'Q&A',
         value: 2,
-        content: '',
+        content: this.facadeQuestion.total(),
       },
     ]
   })
@@ -91,10 +95,10 @@ export class ProductDetailPage {
     this.facade.nextImage()
   }
 
-  protected scrollToComments(): void {
+  protected scrollToReviews(): void {
     this.onTabChange(1)
     setTimeout(() => {
-      const elem = this.commentsSection()?.nativeElement
+      const elem = this.reviewsSection()?.nativeElement
 
       if (elem) {
         elem.scrollIntoView({
@@ -103,27 +107,6 @@ export class ProductDetailPage {
         })
       }
     }, 100)
-  }
-
-  addToCart(): void {
-    const product = this.facade.product()
-    if (!product) return
-
-    if (!this.canAddToCart()) {
-      console.warn('[ProductDetail] Cannot add to cart: choose required options', {
-        selectedSize: this.selectedSize(),
-        selectedColor: this.selectedColor(),
-      })
-      return
-    }
-
-    console.warn('[ProductDetail] Add to cart (stub)', {
-      productId: product.id,
-      title: product.title,
-      price: product.price,
-      size: this.selectedSize(),
-      color: this.selectedColor(),
-    })
   }
 
   readonly breadcrumbItems = computed<BreadcrumbItemInterface[]>(() => {

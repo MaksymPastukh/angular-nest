@@ -1,6 +1,7 @@
-import { computed, inject, Injectable } from '@angular/core'
+import { computed, effect, inject, Injectable, signal } from '@angular/core'
 import { AuthStateService } from '../../../core/auth/http/auth-state.service'
 import { CreateReviewInterface } from '../domain/interfaces/create-review.interface'
+import { ReviewsPageChangeInterface } from '../domain/interfaces/reviews-page-change.interface'
 import { ReviewsSummaryInterface } from '../domain/interfaces/reviews-summary'
 import { UpdateReviewInterface } from '../domain/interfaces/update-review.interface'
 import { RatingFilterType } from '../domain/types/reviews-rating.type'
@@ -31,7 +32,6 @@ export class ReviewsFacade {
 
   readonly hasProduct = this.store.hasProduct
   readonly hasMore = this.store.hasMore
-  readonly canLoadMore = this.store.canLoadMore
   readonly isEmpty = this.store.isEmpty
 
   readonly avg = this.store.avg
@@ -40,21 +40,27 @@ export class ReviewsFacade {
 
   readonly isAuthenticated = this.authState.isAuthenticated
   readonly isAdmin = this.authState.isAdmin
+  private readonly lastMyReviewPid = signal<string | null>(null)
+
+  constructor() {
+    effect(() => {
+      if (!this.authState.isAuthenticated()) return
+      const prodId = this.store.productId()
+      if (!prodId) return
+
+      if (this.lastMyReviewPid() === prodId) return
+      this.lastMyReviewPid.set(prodId)
+      this.store.loadMyReview()
+    })
+  }
 
   init(params: { productId: string; initialSummary?: ReviewsSummaryInterface }): void {
     this.store.setContext(params)
-    this.store.load()
-
-    if (this.authState.isAuthenticated()) {
-      this.store.loadMyReview()
-    }
+    this.store.goToPage({ page: 1, pageSize: this.store.pageSize() })
   }
 
-  refresh(): void {
-    this.store.load()
-    if (this.authState.isAuthenticated()) {
-      this.store.loadMyReview()
-    }
+  goToPage(params: ReviewsPageChangeInterface): void {
+    this.store.goToPage(params)
   }
 
   loadMore(): void {

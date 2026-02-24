@@ -22,14 +22,10 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
-            "polyfills": [
-              "@angular/localize/init"
-            ],
+            "polyfills": ["@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/assets/styles"
-              ]
+              "includePaths": ["src/assets/styles"]
             },
             "assets": [
               {
@@ -42,9 +38,7 @@
                 "output": "/assets"
               }
             ],
-            "styles": [
-              "src/assets/styles/styles.scss"
-            ]
+            "styles": ["src/assets/styles/styles.scss", "src/styles.css"]
           },
           "configurations": {
             "production": {

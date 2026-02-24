@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 
 @Component({
-  selector: 'app-wishlist',
+  selector: 'app-component',
   imports: [],
   templateUrl: './wishlist.html',
-  styleUrl: './wishlist.scss',
+  styleUrls: ['./wishlist.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Wishlist {}
+export class Wishlist {
+  constructor() {}
+}

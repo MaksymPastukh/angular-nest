@@ -371,67 +371,87 @@ export class ReviewsService {
    * @param userId - ID пользователя (строка)
    * @returns Обновленный отзыв с полями isLiked и likesCount
    */
+
   public async toggleLike(reviewId: string, userId: string): Promise<ReviewResponse> {
-    // Получаем с includeDeleted=true для корректной обработки статусов
-    const review = await this.findOne(reviewId, true);
+  // Берём с includeDeleted=true, чтобы корректно проверять статусы
+  const review = await this.findOne(reviewId, true);
 
-    // Проверяем статус: можно лайкнуть только PUBLISHED
-    if (review.status === ReviewStatus.DELETED) {
-      throw new ForbiddenException('Невозможно лайкнуть удаленный отзыв');
-    }
-    if (review.status === ReviewStatus.HIDDEN) {
-      throw new ForbiddenException('Невозможно лайкнуть скрытый отзыв');
-    }
+  if (review.status === ReviewStatus.DELETED) {
+    throw new ForbiddenException('Невозможно лайкнуть удаленный отзыв');
+  }
+  if (review.status === ReviewStatus.HIDDEN) {
+    throw new ForbiddenException('Невозможно лайкнуть скрытый отзыв');
+  }
 
-    // Преобразуем строки в ObjectId для работы с базой данных
-    const reviewObjectId = new Types.ObjectId(reviewId);
-    const userObjectId = new Types.ObjectId(userId);
+  const reviewObjectId = new Types.ObjectId(reviewId);
+  const userObjectId = new Types.ObjectId(userId);
 
-    let isLiked = false;
+  let isLiked: boolean;
 
-    try {
-      // Пытаемся создать лайк (атомарная операция благодаря unique index)
-      const newLike = new this.reviewLikeModel({ 
-        reviewId: reviewObjectId, 
-        userId: userObjectId 
-      });
-      await newLike.save();
-      
-      // Атомарный инкремент через $inc (избегает race conditions)
-      await this.reviewModel.updateOne(
-        { _id: reviewObjectId },
+  try {
+    // Пытаемся создать лайк (если лайк уже есть — будет E11000 из-за unique index)
+    await this.reviewLikeModel.create({
+      reviewId: reviewObjectId,
+      userId: userObjectId,
+    });
+
+    // Лайк поставлен → инкрементим счётчик
+    const updated = await this.reviewModel
+      .findByIdAndUpdate(
+        reviewObjectId,
         { $inc: { likesCount: 1 } },
-      ).exec();
-      
-      isLiked = true;
-    } catch (error: any) {
-      // Если duplicate key (код 11000) - лайк уже существует, удаляем его
-      if (error.code === 11000) {
-        await this.reviewLikeModel.deleteOne({ 
-          reviewId: reviewObjectId, 
-          userId: userObjectId 
-        }).exec();
-        
-        // Атомарный декремент с защитой от отрицательных значений
-        await this.reviewModel.updateOne(
-          { _id: reviewObjectId, likesCount: { $gt: 0 } },
-          { $inc: { likesCount: -1 } },
-        ).exec();
-        
-        isLiked = false;
-      } else {
-        throw error;
-      }
-    }
+        { new: true },
+      )
+      .exec();
 
-    // Перечитываем отзыв для получения актуального likesCount
-    const updatedReview = await this.reviewModel.findById(reviewId).exec();
-    if (!updatedReview) {
+    if (!updated) {
       throw new NotFoundException(`Отзыв с ID ${reviewId} не найден`);
     }
 
-    return this.mapToResponse(updatedReview, isLiked, userId);
+    isLiked = true;
+    return this.mapToResponse(updated, isLiked, userId);
+  } catch (error: unknown) {
+    // Если не дубль — пробрасываем
+    if (!this.isDuplicateKeyError(error)) {
+      throw error;
+    }
+
+    // Дубль → лайк уже был → снимаем лайк
+    await this.reviewLikeModel
+      .deleteOne({ reviewId: reviewObjectId, userId: userObjectId })
+      .exec();
+
+    // Декрементим (с защитой от отрицательных)
+    const updated = await this.reviewModel
+      .findOneAndUpdate(
+        { _id: reviewObjectId, likesCount: { $gt: 0 } },
+        { $inc: { likesCount: -1 } },
+        { new: true },
+      )
+      .exec();
+
+    if (!updated) {
+      // либо не найден, либо likesCount уже 0 (редкий рассинхрон)
+      // чтобы не падать — перечитаем документ и вернем текущее состояние
+      const fallback = await this.reviewModel.findById(reviewObjectId).exec();
+      if (!fallback) {
+        throw new NotFoundException(`Отзыв с ID ${reviewId} не найден`);
+      }
+      isLiked = false;
+      return this.mapToResponse(fallback, isLiked, userId);
+    }
+
+    isLiked = false;
+    return this.mapToResponse(updated, isLiked, userId);
   }
+}
+
+private isDuplicateKeyError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  return (error as { code?: unknown }).code === 11000;
+}
+
+
 
   /**
    * Проверка, лайкнул ли пользователь отзыв
