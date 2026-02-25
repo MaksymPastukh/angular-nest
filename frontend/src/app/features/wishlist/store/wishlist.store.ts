@@ -22,7 +22,7 @@ const initialState: WishListStateInterface = {
   itemsMap: {},
 }
 
-export const StoreName = signalStore(
+export const WishListStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => ({
