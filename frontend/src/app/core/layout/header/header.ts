@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterLink, RouterLinkActive } from '@angular/router'
-import { AuthStateService } from '../../auth/http/auth-state.service'
+import { AuthState } from '../../auth/http/auth-state.service'
 
 type Lang = 'en-US' | 'ru-RU'
 
@@ -15,7 +15,7 @@ type Lang = 'en-US' | 'ru-RU'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  readonly authState = inject(AuthStateService)
+  readonly authState = inject(AuthState)
   readonly searchQuery = signal<string>('')
   readonly selectedLanguage = signal('en-US')
 

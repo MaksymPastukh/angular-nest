@@ -4,6 +4,9 @@
     (click)="navigateToDetail()"
   >
     <div class="relative h-92.5 overflow-hidden rounded-lg">
+      <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
+        <app-wishlist-button [productId]="productIn().id" [source]="WishlistItemSource.CATALOG" />
+      </div>
       <img
         [src]="productIn().image | imageUrl"
         [alt]="productIn().title"

@@ -1,5 +1,5 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core'
-import { AuthStateService } from '../../../core/auth/http/auth-state.service'
+import { AuthState } from '../../../core/auth/http/auth-state.service'
 import { CreateReviewInterface } from '../domain/interfaces/create-review.interface'
 import { ReviewsPageChangeInterface } from '../domain/interfaces/reviews-page-change.interface'
 import { ReviewsSummaryInterface } from '../domain/interfaces/reviews-summary'
@@ -13,7 +13,7 @@ import { ReviewsStore } from './reviews.store'
 })
 export class ReviewsFacade {
   private readonly store = inject(ReviewsStore)
-  private readonly authState = inject(AuthStateService)
+  private readonly authState = inject(AuthState)
 
   readonly productId = this.store.productId
   readonly items = this.store.items

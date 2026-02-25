@@ -8,6 +8,7 @@ export interface WishListStateInterface {
   itemsMap: Record<string, boolean>
   isLoading: boolean
   isSubmitting?: boolean
+  submittingIds: Record<string, boolean>
   isLoadingMy?: boolean
   error: { message: string } | null
 }

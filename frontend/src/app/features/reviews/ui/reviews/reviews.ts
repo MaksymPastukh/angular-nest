@@ -12,7 +12,6 @@ import {
   ViewChild,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { AuthStateService } from '../../../../core/auth/http/auth-state.service'
 import { CreateReviewInterface } from '../../domain/interfaces/create-review.interface'
 import { SelectOption } from '../../domain/interfaces/reviews-sort-select.interface'
 import { ReviewsSummaryInterface } from '../../domain/interfaces/reviews-summary'
@@ -21,6 +20,7 @@ import { RatingFilterType } from '../../domain/types/reviews-rating.type'
 import { ReviewSortByType } from '../../domain/types/reviews-sortBy.type'
 import { ReviewsFacade } from '../../store/reviews.facade'
 import { ReviewFormComponent } from '../reviews-form/review-form'
+import { AuthState } from '../../../../core/auth/http/auth-state.service'
 @Component({
   selector: 'app-ui-reviews',
   imports: [
@@ -37,7 +37,7 @@ import { ReviewFormComponent } from '../reviews-form/review-form'
 })
 export class Reviews {
   readonly facade = inject(ReviewsFacade)
-  readonly authState = inject(AuthStateService)
+  readonly authState = inject(AuthState)
   productId = input.required<string>()
   initialSummary = input<ReviewsSummaryInterface>()
   @ViewChild('reviewsTop', { read: ElementRef })

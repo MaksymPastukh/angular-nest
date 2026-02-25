@@ -1,13 +1,14 @@
+import { WishlistButton } from '@/features/wishlist/ui/wishlist-button'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
-import { ProductsService } from '../../data-access/products.service'
 import { ProductInterface } from '../../../../shared/domain'
+import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
+import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule, ImageUrlPipe],
+  imports: [CommonModule, ImageUrlPipe, WishlistButton],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,23 +16,8 @@ import { ProductInterface } from '../../../../shared/domain'
 export class ProductCardComponent {
   productIn = input.required<ProductInterface>()
   readonly router: Router = inject(Router)
-  private readonly productService = inject(ProductsService)
-
-  isLiked = signal(false)
+  readonly WishlistItemSource = WISHLIST_ITEM_SOURCE
   private readonly imageErrorHandled = signal(false)
-
-  constructor() {
-    effect(() => {
-      this.isLiked.set(this.productIn().isLiked || false)
-    })
-  }
-
-  toggleLike(event: Event) {
-    event.stopPropagation()
-
-    const product = this.productIn()
-    if (!product?.id) return
-  }
 
   onImageError(event: Event): void {
     if (this.imageErrorHandled()) return // Предотвращаем бесконечный цикл

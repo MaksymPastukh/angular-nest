@@ -18,6 +18,7 @@ const initialState: WishListStateInterface = {
   total: 0,
   isLoading: false,
   isSubmitting: false,
+  submittingIds: {},
   error: null,
   itemsMap: {},
 }
@@ -31,6 +32,9 @@ export const WishListStore = signalStore(
     isInWishlist: computed(() => (productId: string) => store.itemsMap()[productId] ?? false),
     availableItems: computed(() => store.items().filter((x) => x.status === 'available')),
     canLoadMore: computed(() => store.hasMore() && !store.isLoading()),
+    isSubmittingItem: computed(
+      () => (productId: string) => store.submittingIds()[productId] ?? false
+    ),
   })),
   withMethods((store, wishListService = inject(WishlistService)) => {
     const setPending = (kind: LoadKind = 'list'): void => {
@@ -76,6 +80,13 @@ export const WishListStore = signalStore(
         total: res.total,
         itemsMap: rebuildItemsMap(res.items),
       })
+    }
+
+    const markSubmitting = (productId: string, value: boolean) => {
+      const next = { ...store.submittingIds() }
+      if (value) next[productId] = true
+      else delete next[productId]
+      patchState(store, { submittingIds: next })
     }
 
     const load: RxMethod<{ cursor?: string; reset?: boolean }> = rxMethod(
@@ -126,9 +137,8 @@ export const WishListStore = signalStore(
     const addItem: RxMethod<{ productId: string; source?: WishlistItemSource; note?: string }> =
       rxMethod(
         pipe(
-          tap(() => {
-            setPending('submit')
-            patchState(store, { isLoading: true })
+          tap(({ productId }) => {
+            markSubmitting(productId, true)
           }),
           switchMap(({ productId, source, note }) =>
             wishListService.addItem(productId, { source, note }).pipe(
@@ -137,8 +147,7 @@ export const WishListStore = signalStore(
                 next: (res) => applyListResponse(res),
                 error: (e) => setFailure(getErrorMessage(e)),
                 finalize: () => {
-                  stop('submit')
-                  patchState(store, { isLoading: false })
+                  markSubmitting(productId, false)
                 },
               })
             )
@@ -148,9 +157,8 @@ export const WishListStore = signalStore(
 
     const removeItem: RxMethod<string> = rxMethod(
       pipe(
-        tap(() => {
-          setPending('submit')
-          patchState(store, { isLoading: true })
+        tap((productId) => {
+          markSubmitting(productId, true)
         }),
         switchMap((productId) =>
           wishListService.removeItem(productId).pipe(
@@ -159,8 +167,7 @@ export const WishListStore = signalStore(
               next: (res) => applyListResponse(res),
               error: (e) => setFailure(getErrorMessage(e)),
               finalize: () => {
-                stop('submit')
-                patchState(store, { isLoading: false })
+                markSubmitting(productId, false)
               },
             })
           )

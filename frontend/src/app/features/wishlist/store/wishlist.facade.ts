@@ -22,6 +22,8 @@ export class WishListFacade {
   readonly availableItems = this.store.availableItems
   readonly canLoadMore = this.store.canLoadMore
 
+  private lastContainsKey: string = ''
+
   readonly isInWishList = computed(() => {
     const fn = this.store.isInWishlist()
     return (productId: string): boolean => fn(productId)
@@ -48,7 +50,13 @@ export class WishListFacade {
   }
 
   syncContains(productIds: string[]): void {
-    this.store.syncContains(productIds)
+    const ids: string[] = productIds.filter(Boolean).slice(0, 200)
+    const key: string = ids.join(',')
+
+    if (!ids.length || key === this.lastContainsKey) return
+    this.lastContainsKey = key
+
+    this.store.syncContains(ids)
   }
 
   loadCount(): void {
