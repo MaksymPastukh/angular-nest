@@ -1,28 +1,28 @@
-@if (productIn()) {
+@if (product()) {
   <div
     class="w-70.5 h-auto xs:w-full xs:h-auto overflow-hidden cursor-pointer hover:border-gray-600"
     (click)="navigateToDetail()"
   >
     <div class="relative h-92.5 overflow-hidden rounded-lg">
       <div class="absolute top-2 right-2 z-10" (click)="$event.stopPropagation()">
-        <app-wishlist-button [productId]="productIn().id" [source]="WishlistItemSource.CATALOG" />
+        <app-wishlist-button [productId]="product().id" [source]="WishlistItemSource.CATALOG" />
       </div>
       <img
-        [src]="productIn().image | imageUrl"
-        [alt]="productIn().title"
+        [src]="product().images[0]"
+        [alt]="product().title"
         (error)="onImageError($event)"
         class="w-full h-full object-cover"
       />
     </div>
     <div class="flex justify-between items-center mt-7.5">
       <div>
-        <h2 class="font-bold text-[#3c4242] text-lg">{{ productIn().title }}</h2>
-        <h3 class="font-medium text-sm text-[#807d7e] mt-2">{{ productIn().brand }}</h3>
+        <h2 class="font-bold text-[#3c4242] text-lg">{{ product().title }}</h2>
+        <h3 class="font-medium text-sm text-[#807d7e] mt-2">{{ product().brand }}</h3>
       </div>
       <span
         class="inline-block w-20.5 h-9 rounded-lg bg-gray-100 text-center leading-9 text-sm font-medium"
       >
-        {{ productIn().price | currency: 'USD' : 'symbol-narrow' : '1.2-2' }}
+        {{ product().price | currency: 'USD' : 'symbol-narrow' : '1.2-2' }}
       </span>
     </div>
   </div>

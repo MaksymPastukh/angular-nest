@@ -129,7 +129,7 @@
             <div class="label">Цвет *</div>
             <app-ui-select
               [options]="store.options().colors"
-              [formField]="productForm.color"
+              [formField]="productForm.colors"
               optionLabel="name"
               optionValue="name"
               placeholder="Выберите цвет"
@@ -141,7 +141,7 @@
             <div class="label">Размеры *</div>
             <p-multiselect
               [options]="store.options().sizes"
-              [formField]="productForm.size"
+              [formField]="productForm.sizes"
               optionLabel="label"
               optionValue="value"
               display="chip"
@@ -185,41 +185,80 @@
         </div>
 
         <div class="space-y-2">
-          <div class="label">Изображение *</div>
+          <div class="label">Изображения * (до {{ MAX_IMAGES }} штук)</div>
 
-          @if (!model().image) {
+          @if (selectedFiles().length < MAX_IMAGES) {
             <p-fileUpload
               mode="basic"
-              chooseLabel="Выбрать изображение"
+              chooseLabel="Выбрать изображения"
               accept="image/*"
               [maxFileSize]="5000000"
               (onSelect)="onImageSelect($event)"
               [auto]="false"
-              [disabled]="store.isUploadingImage()"
+              [multiple]="true"
+              [disabled]="store.isUploadingImages()"
             />
-            <p class="hint-text mt-2">JPG, PNG, WEBP — до 5 МБ</p>
+            <p class="hint-text mt-2">
+              JPG, PNG, WEBP — до 5 МБ каждое. Выбрано: {{ selectedFiles().length }} /
+              {{ MAX_IMAGES }}
+            </p>
           } @else {
-            <div
-              class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 flex items-center justify-between"
-            >
-              <div class="flex items-center gap-2">
-                <i class="pi pi-check-circle text-green-600"></i>
-                <span class="text-sm text-green-800 font-medium">Изображение выбрано</span>
-              </div>
-              <button
-                type="button"
-                (click)="removeImage()"
-                class="text-green-600 hover:text-green-800 transition-colors"
-                title="Удалить изображение"
-              >
-                <i class="pi pi-times"></i>
-              </button>
-            </div>
-            <p class="hint-text">Изображение будет загружено при создании продукта</p>
+            <p class="hint-text text-orange-600">
+              Достигнут максимум изображений ({{ MAX_IMAGES }})
+            </p>
           }
 
-          @if (productForm.image().touched() && productForm.image().invalid()) {
-            <p class="error-text">{{ productForm.image().errors()[0].message }}</p>
+          @if (selectedFiles().length > 0) {
+            <div class="mt-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-700">
+                  Выбранные изображения ({{ selectedFiles().length }})
+                </span>
+                @if (selectedFiles().length > 1) {
+                  <button
+                    type="button"
+                    (click)="clearAllImages()"
+                    class="text-sm text-red-600 hover:text-red-800 transition-colors"
+                  >
+                    Удалить все
+                  </button>
+                }
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                @for (file of selectedFiles(); track file.name; let i = $index) {
+                  <div
+                    class="relative rounded-lg border-2 border-green-200 bg-green-50 p-3 flex flex-col gap-2"
+                  >
+                    <div class="flex items-start justify-between gap-2">
+                      <i class="pi pi-image text-green-600 text-xl"></i>
+                      <button
+                        type="button"
+                        (click)="removeImage(i)"
+                        class="text-red-600 hover:text-red-800 transition-colors"
+                        title="Удалить изображение"
+                      >
+                        <i class="pi pi-times"></i>
+                      </button>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-xs text-gray-700 font-medium truncate" [title]="file.name">
+                        {{ file.name }}
+                      </p>
+                      <p class="text-xs text-gray-500">{{ (file.size / 1024).toFixed(1) }} KB</p>
+                    </div>
+                    <div class="flex items-center gap-1 text-xs text-green-600">
+                      <i class="pi pi-check-circle"></i>
+                      <span>Готово к загрузке</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (productForm.images().touched() && productForm.images().invalid()) {
+            <p class="error-text">{{ productForm.images().errors()[0].message }}</p>
           }
         </div>
       </section>

@@ -1,22 +1,19 @@
 export interface CreateProductFormDataInterface {
+  images: string[]
   title: string
   rating: number
   brand: string
-  image: string
   price: number
-  fabric: string
-  pattern: string
-  fit: string
-  neck: string
-  sleeve: string
   comment: string
   category: string
   productType: string
   dressStyle: string
-  color: string | string[]
-  size: string[]
-  isLiked: boolean
   description: string
-  userComments: string
-  questionsAnswers: string
+  fabric: string
+  fit: string
+  neck: string
+  pattern: string
+  sleeve: string
+  colors: string[]
+  sizes: string[]
 }

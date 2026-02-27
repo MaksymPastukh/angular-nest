@@ -8,12 +8,12 @@ import {
 
 export interface CreateProductStoreStateInterface {
   options: CreateProductOptionsInterface
-  uploadedImagePath: string | null
-  isUploadingImage: boolean
+  uploadedImagePaths: string[]
+  isUploadingImages: boolean
   isLoading: boolean
   error: string | null
   success: boolean
-  event: { type: string; message?: string; productTitle?: string } | null
+  event: { type: string; message?: string; productTitle?: string; count?: number } | null
 }
 
 export interface CreateProductOptionsInterface {

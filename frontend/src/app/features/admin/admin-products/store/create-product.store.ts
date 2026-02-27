@@ -16,8 +16,8 @@ import {
 import { CreateProductFormDataInterface } from '../domain/interfaces/create-product-formData.interface'
 import { CreateProductResponseInterface } from '../domain/interfaces/create-product-response.interface'
 import { CreateProductStoreStateInterface } from '../domain/interfaces/create-product-storeState.interface'
-import { UploadEventType } from '../domain/types/upload-event.type'
 import { CreateEventType } from '../domain/types/create-event.type'
+import { UploadEventType } from '../domain/types/upload-event.type'
 
 const initialState: CreateProductStoreStateInterface = {
   options: {
@@ -27,8 +27,8 @@ const initialState: CreateProductStoreStateInterface = {
     colors: COLORS,
     sizes: SIZES,
   },
-  uploadedImagePath: null,
-  isUploadingImage: false,
+  uploadedImagePaths: [],
+  isUploadingImages: false,
   isLoading: false,
   error: null,
   success: false,
@@ -42,15 +42,15 @@ export const CreateProductStore = signalStore(
   withMethods((store, productService = inject(AdminShopService)) => {
     const setUploadPending = (): void => {
       patchState(store, {
-        isUploadingImage: true,
+        isUploadingImages: true,
         error: null,
-        uploadedImagePath: null,
+        uploadedImagePaths: [],
         event: null,
       })
     }
 
     const stopUpload = (): void => {
-      patchState(store, { isUploadingImage: false })
+      patchState(store, { isUploadingImages: false })
     }
 
     const setCreatePending = (): void => {
@@ -78,24 +78,26 @@ export const CreateProductStore = signalStore(
       return error.message ?? fallback
     }
 
-    const uploadImage: RxMethod<File> = rxMethod<File>(
+    const uploadImages: RxMethod<File[]> = rxMethod<File[]>(
       pipe(
         tap(() => setUploadPending()),
-        switchMap((file: File) =>
-          productService.uploadImage(file).pipe(
+        switchMap((files: File[]) =>
+          productService.uploadImages(files).pipe(
             tapResponse({
-              next: (response: { imagePath: string }) => {
+              next: (response: { imagePaths: string[] }) => {
                 patchState(store, {
-                  uploadedImagePath: response.imagePath,
-                  event: { type: 'imageUploaded' } satisfies UploadEventType,
+                  uploadedImagePaths: response.imagePaths,
+                  event: {
+                    type: 'imagesUploaded',
+                    count: response.imagePaths.length,
+                  } satisfies UploadEventType,
                 })
               },
               error: (e) => {
-                const message = getErrorMessage(e, 'Не удалось загрузить изображение')
-                // keep domain-specific event
+                const message = getErrorMessage(e, 'Не удалось загрузить изображения')
                 patchState(store, {
-                  uploadedImagePath: null,
-                  event: { type: 'imageUploadError', message } satisfies UploadEventType,
+                  uploadedImagePaths: [],
+                  event: { type: 'imagesUploadError', message } satisfies UploadEventType,
                 })
                 setFailure(message)
               },
@@ -139,11 +141,11 @@ export const CreateProductStore = signalStore(
 
     const resetState = (): void => {
       patchState(store, {
-        uploadedImagePath: null,
+        uploadedImagePaths: [],
         error: null,
         success: false,
         isLoading: false,
-        isUploadingImage: false,
+        isUploadingImages: false,
         event: null,
       })
     }
@@ -153,7 +155,7 @@ export const CreateProductStore = signalStore(
     }
 
     return {
-      uploadImage,
+      uploadImages,
       createProduct,
       resetState,
       clearEvent,

@@ -6,13 +6,11 @@ import { form, FormField, minLength, required, submit } from '@angular/forms/sig
 import { MessageService } from 'primeng/api'
 import { Button } from 'primeng/button'
 import { FileUpload } from 'primeng/fileupload'
-import { InputNumber } from 'primeng/inputnumber'
 import { MultiSelect } from 'primeng/multiselect'
 import { Rating } from 'primeng/rating'
-import { Select } from 'primeng/select'
 import { Toast } from 'primeng/toast'
 import { CreateProductFormDataInterface } from '../../domain/interfaces/create-product-formData.interface'
-import { CreateProductStore } from '../../store/create.store'
+import { CreateProductStore } from '../../store/create-product.store'
 
 @Component({
   selector: 'app-create-product',
@@ -37,14 +35,14 @@ export class CreateProductPage {
   protected readonly store = inject(CreateProductStore)
   private readonly messageService = inject(MessageService)
 
-  /** Выбранный файл изображения (до загрузки на сервер) */
-  protected readonly selectedFile = signal<File | null>(null)
+  protected readonly selectedFiles = signal<File[]>([])
+  protected readonly MAX_IMAGES = 3
 
   protected readonly model = signal<CreateProductFormDataInterface>({
     title: '',
     rating: 0,
     brand: '',
-    image: '',
+    images: [],
     price: 0,
     fabric: '',
     pattern: '',
@@ -55,78 +53,98 @@ export class CreateProductPage {
     category: '',
     productType: '',
     dressStyle: '',
-    color: '',
-    size: [],
-    isLiked: false,
+    colors: [''],
+    sizes: [''],
     description: '',
-    userComments: '',
-    questionsAnswers: '',
   })
 
   protected productForm = form(this.model, (schema) => {
     required(schema.title, { message: 'Это поле обязательно' })
     minLength(schema.title, 3, { message: 'Минимум 3 символа' })
     required(schema.brand, { message: 'Это поле обязательно' })
-    required(schema.image, { message: 'Это поле обязательно' })
+    required(schema.images, { message: 'Это поле обязательно' })
     required(schema.price, { message: 'Это поле обязательно' })
     required(schema.comment, { message: 'Это поле обязательно' })
     required(schema.category, { message: 'Это поле обязательно' })
     required(schema.productType, { message: 'Это поле обязательно' })
     required(schema.dressStyle, { message: 'Это поле обязательно' })
-    required(schema.color, { message: 'Это поле обязательно' })
-    required(schema.size, { message: 'Это поле обязательно' })
+    required(schema.colors, { message: 'Это поле обязательно' })
+    required(schema.sizes, { message: 'Это поле обязательно' })
     required(schema.description, { message: 'Это поле обязательно' })
     minLength(schema.description, 10, { message: 'Минимум 10 символов' })
   })
 
   constructor() {
     effect(() => {
-      const uploadedPath = this.store.uploadedImagePath()
-      if (uploadedPath && this.model().image !== uploadedPath) {
-        this.model.update((m) => ({ ...m, image: uploadedPath }))
+      const uploadedPaths = this.store.uploadedImagePaths()
+      if (uploadedPaths.length > 0) {
+        this.model.update((m) => ({ ...m, images: uploadedPaths }))
       }
     })
   }
 
   /**
-   * Обработчик выбора изображения (не загружает на сервер сразу)
+   * Обработчик выбора изображений (не загружает на сервер сразу)
    */
   protected onImageSelect(event: { files: File[] }): void {
-    const file = event.files[0]
-    if (!file) return
+    const newFiles = event.files
+    if (!newFiles || newFiles.length === 0) return
 
-    // Сохраняем файл локально
-    this.selectedFile.set(file)
+    const currentFiles = this.selectedFiles()
+    const totalFiles = currentFiles.length + newFiles.length
 
-    // Временно отмечаем поле как заполненное
-    this.model.update((m) => ({ ...m, image: 'pending' }))
+    // Проверяем лимит
+    if (totalFiles > this.MAX_IMAGES) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Превышен лимит',
+        detail: `Можно загрузить максимум ${this.MAX_IMAGES} изображения`,
+        life: 3000,
+      })
+      // Добавляем только те, которые помещаются в лимит
+      const allowedCount = this.MAX_IMAGES - currentFiles.length
+      const filesToAdd = newFiles.slice(0, allowedCount)
+      this.selectedFiles.set([...currentFiles, ...filesToAdd])
+      return
+    }
+
+    // Сохраняем файлы локально
+    this.selectedFiles.set([...currentFiles, ...newFiles])
   }
 
   /**
-   * Удаление выбранного изображения
+   * Удаление конкретного изображения
    */
-  protected removeImage(): void {
-    this.selectedFile.set(null)
-    this.model.update((m) => ({ ...m, image: '' }))
+  protected removeImage(index: number): void {
+    const files = this.selectedFiles()
+    this.selectedFiles.set(files.filter((_, i) => i !== index))
+  }
+
+  /**
+   * Удаление всех выбранных изображений
+   */
+  protected clearAllImages(): void {
+    this.selectedFiles.set([])
+    this.model.update((m) => ({ ...m, images: [] }))
   }
 
   protected onSubmit(event: Event): void {
     event.preventDefault()
 
     submit(this.productForm, async () => {
-      // Если есть выбранный файл, сначала загружаем его
-      const file = this.selectedFile()
+      // Если есть выбранные файлы, сначала загружаем их
+      const files = this.selectedFiles()
 
-      if (file) {
-        // Загружаем изображение на сервер
-        this.store.uploadImage(file)
+      if (files.length > 0) {
+        // Загружаем изображения на сервер
+        this.store.uploadImages(files)
 
-        // Ждем пока uploadedImagePath обновится
-        // Effect выше автоматически обновит model().image
+        // Ждем пока uploadedImagePaths обновится
+        // Effect выше автоматически обновит model().images
         await new Promise<void>((resolve) => {
           const checkInterval = setInterval(() => {
-            const path = this.store.uploadedImagePath()
-            if (path && !this.store.isUploadingImage()) {
+            const paths = this.store.uploadedImagePaths()
+            if (paths.length > 0 && !this.store.isUploadingImages()) {
               clearInterval(checkInterval)
               resolve()
             }
@@ -151,31 +169,28 @@ export class CreateProductPage {
   }
 
   protected onReset(): void {
-    // Сбрасываем файл
-    this.selectedFile.set(null)
+    // Сбрасываем файлы
+    this.selectedFiles.set([])
 
     // Сбрасываем модель формы
     this.model.set({
       title: '',
       rating: 0,
       brand: '',
-      image: '',
+      images: [],
       price: 0,
       comment: '',
       category: '',
       productType: '',
       dressStyle: '',
-      color: '',
-      size: [],
+      colors: [''],
+      sizes: [''],
       fabric: '',
-      isLiked: false,
       pattern: '',
       fit: '',
       neck: '',
       sleeve: '',
       description: '',
-      userComments: '',
-      questionsAnswers: '',
     })
 
     // Сбрасываем состояние store

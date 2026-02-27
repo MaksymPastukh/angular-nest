@@ -1,4 +1,4 @@
-import { RatingStatsInterface } from './product-rating-stats.interface'
+import { RatingStatsInterface } from '../../../../shared/domain/interfaces/product-rating-stats.interface'
 
 export interface ProductDetailInterface {
   images: string[]

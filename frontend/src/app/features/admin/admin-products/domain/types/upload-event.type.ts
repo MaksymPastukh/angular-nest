@@ -1,3 +1,3 @@
 export type UploadEventType =
-  | { type: 'imageUploaded' }
-  | { type: 'imageUploadError'; message: string }
+  | { type: 'imagesUploaded'; count: number }
+  | { type: 'imagesUploadError'; message: string }

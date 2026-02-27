@@ -385,9 +385,9 @@
     <h2 class="text-4xl ml-4 font-semibold text-[#3c4242]">In The Limelight</h2>
   </div>
   <div class="w-full flex justify-center">
-    <div class="flex flex-wrap gap-[50px]">
+    <div class="flex flex-wrap gap-12.5">
       @for (product of productsInTheLimelight; track $index) {
-        <app-product-card [productIn]="product" />
+        <app-product-card [product]="product" />
       }
     </div>
   </div>

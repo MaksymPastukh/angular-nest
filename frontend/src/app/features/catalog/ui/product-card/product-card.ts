@@ -1,20 +1,19 @@
-import { WishlistButton } from '@/features/wishlist/ui/wishlist-button'
+import { WishlistButton } from '@/features/wishlist/ui/wishlist-toggle-button'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { ProductInterface } from '../../../../shared/domain'
-import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
 import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule, ImageUrlPipe, WishlistButton],
+  imports: [CommonModule, WishlistButton],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
-  productIn = input.required<ProductInterface>()
+  readonly product = input.required<ProductInterface>()
   readonly router: Router = inject(Router)
   readonly WishlistItemSource = WISHLIST_ITEM_SOURCE
   private readonly imageErrorHandled = signal(false)
@@ -30,7 +29,7 @@ export class ProductCardComponent {
   }
 
   navigateToDetail(): void {
-    const product = this.productIn()
+    const product = this.product()
     if (product?.id) {
       void this.router.navigate(['/product', product.id])
     } else {
