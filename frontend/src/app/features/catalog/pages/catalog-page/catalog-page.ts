@@ -4,7 +4,7 @@ import { ActivatedRoute, Params } from '@angular/router'
 import { distinctUntilChanged, map } from 'rxjs'
 import { AuthState } from '../../../../core/auth/http/auth-state.service'
 import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
-import { WishListFacade } from '../../../wishlist/store/wishlist.facade'
+import { WishlistFacade } from '../../../wishlist/store/wishlist.facade'
 import { TableBestPriceInterface } from '../../domain/interfaces/table-best-price.interface'
 import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
 import { ProductsPageFacade } from '../../store/products.facade'
@@ -21,7 +21,7 @@ import { extractBrand } from '../../utils/extract-brand'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogPage {
-  private readonly wishListFacade = inject(WishListFacade)
+  private readonly wishListFacade = inject(WishlistFacade)
   private readonly authState = inject(AuthState)
   readonly productFacade = inject(ProductsPageFacade)
   private readonly route = inject(ActivatedRoute)

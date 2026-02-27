@@ -6,7 +6,7 @@ import {
 import { WishListStore } from './wishlist.store'
 
 @Injectable({ providedIn: 'root' })
-export class WishListFacade {
+export class WishlistFacade {
   private readonly store = inject(WishListStore)
 
   readonly items = this.store.items

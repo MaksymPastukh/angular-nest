@@ -4,7 +4,7 @@ import {
   WISHLIST_ITEM_SOURCE,
   WishlistItemSource,
 } from '../domain/constants/wishlist-item-sourse.constants'
-import { WishListFacade } from '../store/wishlist.facade'
+import { WishlistFacade } from '../store/wishlist.facade'
 
 @Component({
   selector: 'app-wishlist-button',
@@ -23,7 +23,7 @@ import { WishListFacade } from '../store/wishlist.facade'
   ></p-button>`,
 })
 export class WishlistButton {
-  private readonly facade = inject(WishListFacade)
+  private readonly facade = inject(WishlistFacade)
 
   readonly productId = input.required<string>()
   readonly source = input<WishlistItemSource>(WISHLIST_ITEM_SOURCE.CATALOG)

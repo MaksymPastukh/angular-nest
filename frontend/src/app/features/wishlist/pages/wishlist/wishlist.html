@@ -1,3 +1,8 @@
-<section class="container mx-auto flex px-7 py-10.5">
-  <h1 class="font-coresans font-semibold text-3xl color-text-base">Wishlist</h1>
+<section class="container mx-auto px-7 py-10.5">
+  <app-ui-breadcrumb [items]="breadcrumbItems()" />
+  <div class="mt-8">
+    @for (item of facadeWishlist.items(); track item.productId) {
+      <app-wishlist-item [item]="item" />
+    }
+  </div>
 </section>
