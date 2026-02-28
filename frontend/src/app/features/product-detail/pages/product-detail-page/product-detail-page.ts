@@ -118,6 +118,7 @@ export class ProductDetailPage {
   constructor() {
     effect(() => {
       const id = this.productId()
+
       if (id) {
         this.facade.load(id)
       }
