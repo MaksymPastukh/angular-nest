@@ -15,12 +15,14 @@
     </svg>
   </button>
   <div class="h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-slate-100">
-    <img
-      class="h-full w-full object-cover"
-      [src]="imageSrc() | imageUrl"
-      [alt]="title()"
-      (error)="onImageError($event)"
-    />
+    <div class="w-full max-w-xl aspect-4/5 overflow-hidden">
+      <img
+        class="h-full w-full object-cover"
+        [src]="imageSrc() | imageUrl"
+        [alt]="title()"
+        (error)="onImageError($event)"
+      />
+    </div>
   </div>
   <div class="min-w-0 flex-1">
     <div
