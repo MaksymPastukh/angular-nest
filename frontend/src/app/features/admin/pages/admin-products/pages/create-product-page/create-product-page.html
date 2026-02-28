@@ -4,14 +4,14 @@
   <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 sm:p-8 lg:p-10">
     <form (submit)="onSubmit($event)" novalidate class="space-y-10">
       <section>
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Создать новый продукт</h2>
-        <p class="text-sm text-gray-500 mt-1">Заполните основную информацию о товаре</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Create product</h2>
+        <p class="text-sm text-gray-500 mt-1">Fill in the basic information about the product</p>
       </section>
 
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="md:col-span-2 space-y-1">
           <label for="title" class="label">
-            Название продукта <span class="text-red-500">*</span>
+            Name product <span class="text-red-500">*</span>
           </label>
 
           <input
@@ -28,12 +28,12 @@
               {{ productForm.title().errors()[0].message }}
             </p>
           } @else {
-            <p class="hint-text">Минимум 3 символа</p>
+            <p class="hint-text">Min 3 words</p>
           }
         </div>
 
         <div class="space-y-1">
-          <label for="brand" class="label"> Бренд <span class="text-red-500">*</span> </label>
+          <label for="brand" class="label"> Brend <span class="text-red-500">*</span> </label>
 
           <input
             id="brand"
@@ -52,7 +52,7 @@
         </div>
 
         <div class="space-y-1">
-          <label for="price" class="label"> Цена <span class="text-red-500">*</span> </label>
+          <label for="price" class="label"> Price $ <span class="text-red-500">*</span> </label>
 
           <input
             id="price"
@@ -73,8 +73,8 @@
 
       <section class="space-y-6">
         <div>
-          <h3 class="section-title">Категории и классификация</h3>
-          <p class="section-subtitle">Определите, где будет отображаться товар</p>
+          <h3 class="section-title">Categories and classification</h3>
+          <p class="section-subtitle">Determite where the product will be displaed</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -85,7 +85,7 @@
               [formField]="productForm.category"
               optionLabel="label"
               optionValue="value"
-              placeholder="Выберите категорию"
+              placeholder="Select a category"
               class="w-full"
             />
             @if (productForm.category().touched() && productForm.category().invalid()) {
@@ -94,38 +94,38 @@
           </div>
 
           <div class="space-y-1">
-            <div class="label">Тип продукта *</div>
+            <div class="label">Type product *</div>
             <app-ui-select
               [options]="store.options().productTypes"
               [formField]="productForm.productType"
               optionLabel="label"
               optionValue="value"
-              placeholder="Выберите тип"
+              placeholder="Select type"
               class="w-full"
             />
           </div>
 
           <div class="space-y-1">
-            <div class="label">Стиль *</div>
+            <div class="label">Style *</div>
             <app-ui-select
               [options]="dressStyleGroups()"
               [formField]="productForm.dressStyle"
               optionLabel="label"
               optionValue="value"
-              placeholder="Выберите стиль"
+              placeholder="Select style"
               class="w-full"
             />
           </div>
 
           <div class="space-y-1">
-            <div class="label">Цвета</div>
+            <div class="label">Colors</div>
 
             <p-multiselect
               [formControl]="model().colors"
               [options]="store.options().colors"
               optionLabel="name"
               optionValue="id"
-              placeholder="Выберите цвета"
+              placeholder="Select color"
               display="chip"
               [showClear]="true"
               [filter]="true"
@@ -144,19 +144,19 @@
             </p-multiselect>
 
             @if (productForm.colors().touched()) {
-              <p class="text-sm text-red-600">Выберите хотя бы один цвет</p>
+              <p class="text-sm text-red-600">Select at least one color</p>
             }
           </div>
 
           <div class="space-y-1">
-            <div class="label">Размеры</div>
+            <div class="label">Sizes</div>
 
             <p-multiselect
               [formControl]="model().sizes"
               [options]="store.options().sizes"
               optionLabel="label"
               optionValue="id"
-              placeholder="Выберите размеры"
+              placeholder="Select sizes"
               display="chip"
               [showClear]="true"
               [filter]="false"
@@ -165,7 +165,7 @@
             />
 
             @if (productForm.sizes().touched()) {
-              <p class="text-sm text-red-600">Выберите хотя бы один размер</p>
+              <p class="text-sm text-red-600">Select at least one size</p>
             }
           </div>
         </div>
@@ -173,15 +173,15 @@
 
       <section class="space-y-6">
         <div>
-          <h3 class="section-title">Описание и медиа</h3>
-          <p class="section-subtitle">Добавьте описание и изображение товара</p>
+          <h3 class="section-title">Description and media</h3>
+          <p class="section-subtitle">Add a description and image of the product</p>
         </div>
 
         <div class="space-y-1">
-          <div class="label">Краткое описание *</div>
+          <div class="label">Short description *</div>
           <input
             type="text"
-            placeholder="Короткое описание"
+            placeholder="Short description"
             [formField]="productForm.comment"
             class="input"
             [class.input-error]="productForm.comment().touched() && productForm.comment().invalid()"
@@ -189,28 +189,26 @@
         </div>
 
         <div class="space-y-1">
-          <div class="label">Полное описание *</div>
+          <div class="label">Full description *</div>
           <textarea
             rows="6"
-            placeholder="Подробное описание продукта..."
+            placeholder="Full description product..."
             [formField]="productForm.description"
             class="input resize-none"
             [class.input-error]="
               productForm.description().touched() && productForm.description().invalid()
             "
           ></textarea>
-          <p class="hint-text">Минимум 10 символов</p>
+          <p class="hint-text">Min 10 words</p>
         </div>
 
         <div class="space-y-2">
-          <div class="label">
-            Изображения * (минимум {{ MIN_IMAGES }}, максимум {{ MAX_IMAGES }})
-          </div>
+          <div class="label">Images * (min {{ MIN_IMAGES }}, max {{ MAX_IMAGES }})</div>
 
           @if (selectedFiles().length < MAX_IMAGES) {
             <p-fileUpload
               mode="basic"
-              chooseLabel="Выбрать изображения"
+              chooseLabel="Select Image"
               accept="image/*"
               [maxFileSize]="5000000"
               (onSelect)="onImageSelect($event)"
@@ -219,12 +217,12 @@
               [disabled]="store.isUploadingImages()"
             />
             <p class="hint-text mt-2">
-              JPG, PNG, WEBP — до 5 МБ каждое. Выбрано: {{ selectedFiles().length }} (минимум
-              {{ MIN_IMAGES }}, максимум {{ MAX_IMAGES }})
+              JPG, PNG, WEBP — up to 5 MB each. Selected: {{ selectedFiles().length }} (minimum
+              {{ MIN_IMAGES }}, maximum {{ MAX_IMAGES }})
             </p>
           } @else {
             <p class="hint-text text-orange-600">
-              Достигнут максимум изображений ({{ MAX_IMAGES }})
+              Maximum number of images reached ({{ MAX_IMAGES }})
             </p>
           }
 
@@ -232,7 +230,7 @@
             <div class="mt-4 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700">
-                  Выбранные изображения ({{ selectedFiles().length }})
+                  Selected images ({{ selectedFiles().length }})
                 </span>
                 @if (selectedFiles().length > 1) {
                   <button
@@ -240,7 +238,7 @@
                     (click)="clearAllImages()"
                     class="text-sm text-red-600 hover:text-red-800 transition-colors"
                   >
-                    Удалить все
+                    Delete all
                   </button>
                 }
               </div>
@@ -256,7 +254,7 @@
                         type="button"
                         (click)="removeImage(i)"
                         class="text-red-600 hover:text-red-800 transition-colors"
-                        title="Удалить изображение"
+                        title="Delete image"
                       >
                         <i class="pi pi-times"></i>
                       </button>
@@ -269,7 +267,7 @@
                     </div>
                     <div class="flex items-center gap-1 text-xs text-green-600">
                       <i class="pi pi-check-circle"></i>
-                      <span>Готово к загрузке</span>
+                      <span>Ready to download</span>
                     </div>
                   </div>
                 }
@@ -285,14 +283,14 @@
 
       <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200">
         <p-button
-          label="Сбросить"
+          label="Reset"
           severity="secondary"
           [outlined]="true"
           type="button"
           (onClick)="onReset()"
         />
         <p-button
-          label="Создать продукт"
+          label="Create product"
           severity="success"
           type="submit"
           [loading]="store.isLoading()"

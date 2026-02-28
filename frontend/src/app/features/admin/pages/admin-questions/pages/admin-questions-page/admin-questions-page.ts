@@ -6,7 +6,7 @@ import { PaginatorModule } from 'primeng/paginator'
 import { Select, SelectChangeEvent } from 'primeng/select'
 import { TableModule } from 'primeng/table'
 
-import { ProductQuestionInterface } from '../../../../product-questions/domain/interfaces/product-question.interface'
+import { ProductQuestionInterface } from '../../../../../product-questions/domain/interfaces'
 import { AdminQuestionsFacade } from '../../store/admin-questions.facade'
 import { AnswerQuestionDialogComponent } from '../../ui/answer-question-dialog'
 
@@ -35,15 +35,13 @@ export class AdminQuestionsPageComponent implements OnInit {
     label: string
     value: 'PENDING' | 'ANSWERED' | 'HIDDEN' | 'DELETED'
   }> = [
-    { label: 'Ожидают ответа', value: 'PENDING' },
-    { label: 'Отвеченные', value: 'ANSWERED' },
-    { label: 'Скрытые', value: 'HIDDEN' },
-    { label: 'Удаленные', value: 'DELETED' },
+    { label: 'Pending answer', value: 'PENDING' },
+    { label: 'Answered', value: 'ANSWERED' },
+    { label: 'Hidden', value: 'HIDDEN' },
+    { label: 'Deleted', value: 'DELETED' },
   ]
 
   ngOnInit(): void {
-    // Загружаем все вопросы при инициализации страницы
-    // productId = null означает "показать все вопросы"
     this.facade.setContext(null)
     this.facade.load()
   }

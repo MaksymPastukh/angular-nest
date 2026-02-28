@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { QuestionsPageInterface } from '@features/product-questions/domain/interfaces'
 import { ProductQuestionInterface } from '@features/product-questions/domain/interfaces/product-question.interface'
 import { Observable } from 'rxjs'
-import { environment } from '../../../../../environments/environment'
+import { environment } from '../../../../../../environments/environment'
 
 @Injectable({ providedIn: 'root' })
 export class AdminQuestionsService {

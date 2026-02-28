@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
-import { environment } from '../../../../../environments/environment'
-import { ProductInterface } from '../../../../shared/domain/interfaces/product.interface'
 import { CreateProductFormDataInterface } from '../domain/interfaces/create-product-formData.interface'
+import { environment } from '../../../../../../environments/environment'
+import { ProductInterface } from '../../../../../shared/domain'
 
 @Injectable({
   providedIn: 'root',

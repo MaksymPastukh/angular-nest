@@ -1,4 +1,4 @@
-import { ProductQuestionInterface } from '../../../../product-questions/domain/interfaces/product-question.interface'
+import { ProductQuestionInterface } from '../../../../../product-questions/domain/interfaces'
 import { AdminQuestionsFilterInterface } from './admin-questions-filter.interface'
 
 export interface AdminQuestionsStateInterface {
