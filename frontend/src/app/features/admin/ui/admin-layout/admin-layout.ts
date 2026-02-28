@@ -29,7 +29,7 @@ export class AdminLayout {
     const items: BreadcrumbItemInterface[] = [
       { label: 'Home', icon: 'pi pi-home', routerLink: '/' },
       { label: 'My Account', routerLink: '/account/info' },
-      { label: 'Admin panel' },
+      { label: 'Admin panel', routerLink: '/admin/panel' },
     ]
 
     let current = this.activeRoute.root

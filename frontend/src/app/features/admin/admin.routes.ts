@@ -11,7 +11,7 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'info',
+        redirectTo: 'admin',
       },
       {
         path: 'create-product-page',
