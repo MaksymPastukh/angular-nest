@@ -4,10 +4,11 @@ import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angu
 import { Router } from '@angular/router'
 import { ProductInterface } from '../../../../shared/domain'
 import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
+import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule, WishlistButton],
+  imports: [CommonModule, WishlistButton, ImageUrlPipe],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
