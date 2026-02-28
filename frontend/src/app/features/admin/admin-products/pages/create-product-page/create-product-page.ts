@@ -23,7 +23,6 @@ import { CreateProductStore } from '../../store/create-product.store'
     Button,
     FileUpload,
     Toast,
-    Rating,
     UISelect,
   ],
   templateUrl: './create-product-page.html',
