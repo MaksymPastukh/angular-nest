@@ -53,8 +53,8 @@ export class CreateProductPage {
     category: '',
     productType: '',
     dressStyle: '',
-    colors: [''],
-    sizes: [''],
+    colors: [],
+    sizes: [],
     description: '',
   })
 
@@ -68,8 +68,6 @@ export class CreateProductPage {
     required(schema.category, { message: 'Это поле обязательно' })
     required(schema.productType, { message: 'Это поле обязательно' })
     required(schema.dressStyle, { message: 'Это поле обязательно' })
-    required(schema.colors, { message: 'Это поле обязательно' })
-    required(schema.sizes, { message: 'Это поле обязательно' })
     required(schema.description, { message: 'Это поле обязательно' })
     minLength(schema.description, 10, { message: 'Минимум 10 символов' })
   })

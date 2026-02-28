@@ -1,14 +1,15 @@
 import { Type } from 'class-transformer';
 import {
-    ArrayMaxSize,
-    ArrayMinSize,
-    IsArray,
-    IsNotEmpty,
-    IsNumber,
-    IsString,
-    Max,
-    Min,
-    MinLength,
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  MinLength,
 } from 'class-validator';
 
 /**
@@ -98,19 +99,19 @@ export class CreateProductDto {
    * Доступные цвета продукта
    * @example ["Black", "White"]
    */
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @IsString({ each: true })
-  color: string[];
+  colors?: string[];
 
   /**
    * Доступные размеры продукта
    * @example ["S", "M", "L", "XL"]
    */
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @IsString({ each: true })
-  size: string[];
+  sizes?: string[];
 
   /**
    * Подробное описание продукта

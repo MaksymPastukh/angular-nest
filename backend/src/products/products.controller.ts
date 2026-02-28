@@ -1,18 +1,18 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Param,
-    Patch,
-    Post,
-    Query,
-    Request,
-    UploadedFiles,
-    UseGuards,
-    UseInterceptors
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -70,13 +70,13 @@ export class ProductsController {
           callback(null, filename);
         },
       }),
-      fileFilter: (_req, file, callback) => {
-        // Разрешаем только изображения
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
-          return callback(new Error('Только изображения разрешены!'), false);
-        }
-        callback(null, true);
-      },
+     fileFilter: (_req, file, callback) => {
+  // Разрешаем только изображения
+  if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp|avif)$/)) {
+    return callback(new Error('Только изображения разрешены!'), false);
+  }
+  callback(null, true);
+},
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB на файл
       },

@@ -52,15 +52,6 @@ export class ProductRatingStats {
       }
       delete ret._id; // Удаляем _id
       
-      // Переименовываем поля для публичного API
-      if (ret.color) {
-        ret.colors = ret.color;
-        delete ret.color;
-      }
-      if (ret.size) {
-        ret.sizes = ret.size;
-        delete ret.size;
-      }
       // image удаляется (устаревшее поле, используем images)
       delete ret.image;
       
@@ -75,15 +66,6 @@ export class ProductRatingStats {
       }
       delete ret._id;
       
-      // Переименовываем поля для публичного API
-      if (ret.color) {
-        ret.colors = ret.color;
-        delete ret.color;
-      }
-      if (ret.size) {
-        ret.sizes = ret.size;
-        delete ret.size;
-      }
       // image удаляется (устаревшее поле, используем images)
       delete ret.image;
       
@@ -166,15 +148,15 @@ export class Product {
    * Доступные цвета продукта
    * @example ["Black", "White", "Red"]
    */
-  @Prop({ required: true, type: [String], index: true })
-  public color: string[];
+  @Prop({ required: false, type: [String], index: true, default: [] })
+  public colors: string[];
 
   /**
    * Доступные размеры продукта
    * @example ["S", "M", "L", "XL"]
    */
-  @Prop({ required: true, type: [String], index: true })
-  public size: string[];
+  @Prop({ required: false, type: [String], index: true, default: [] })
+  public sizes: string[];
 
   /**
    * Подробное описание продукта
