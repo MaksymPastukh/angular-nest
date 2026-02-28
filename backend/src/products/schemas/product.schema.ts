@@ -103,10 +103,10 @@ export class Product {
   public brand: string;
 
   /**
-   * Массив путей к изображениям продукта (до 3 изображений)
+   * Массив путей к изображениям продукта (минимум 3, максимум 10 изображений)
    * @example ["/images/products/nike-air-shirt-1.jpg", "/images/products/nike-air-shirt-2.jpg"]
    */
-  @Prop({ required: true, type: [String], validate: [(val: string[]) => val.length <= 3, 'Maximum 3 images allowed'] })
+  @Prop({ required: true, type: [String], validate: [(val: string[]) => val.length >= 3 && val.length <= 10, 'Minimum 3 and maximum 10 images allowed'] })
   public images: string[];
 
   /**

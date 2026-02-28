@@ -43,7 +43,8 @@ export class CreateProductPage {
   private readonly messageService = inject(MessageService)
 
   protected readonly selectedFiles = signal<File[]>([])
-  protected readonly MAX_IMAGES = 3
+  protected readonly MIN_IMAGES = 3
+  protected readonly MAX_IMAGES = 10
 
   readonly dressStyleGroups = computed(() => {
     const map = new Map<string, FormSelectOptionInterface[]>()
@@ -151,9 +152,19 @@ export class CreateProductPage {
     event.preventDefault()
 
     submit(this.productForm, async () => {
-      // Если есть выбранные файлы, сначала загружаем их
+      // Проверяем минимальное количество изображений
       const files = this.selectedFiles()
+      if (files.length < this.MIN_IMAGES) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Недостаточно изображений',
+          detail: `Необходимо загрузить минимум ${this.MIN_IMAGES} изображения`,
+          life: 3000,
+        })
+        return Promise.reject('Недостаточно изображений')
+      }
 
+      // Если есть выбранные файлы, сначала загружаем их
       if (files.length > 0) {
         // Загружаем изображения на сервер
         this.store.uploadImages(files)

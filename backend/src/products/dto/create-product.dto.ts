@@ -1,15 +1,15 @@
 import { Type } from 'class-transformer';
 import {
-  ArrayMaxSize,
-  ArrayMinSize,
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-  MinLength,
+    ArrayMaxSize,
+    ArrayMinSize,
+    IsArray,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Max,
+    Min,
+    MinLength,
 } from 'class-validator';
 
 /**
@@ -45,12 +45,12 @@ export class CreateProductDto {
   brand: string;
 
   /**
-   * Массив путей к изображениям продукта (максимум 3)
+   * Массив путей к изображениям продукта (минимум 3, максимум 10)
    * @example ["/images/products/nike-air-shirt-1.jpg", "/images/products/nike-air-shirt-2.jpg"]
    */
   @IsArray()
-  @ArrayMinSize(1)
-  @ArrayMaxSize(3)
+  @ArrayMinSize(3)
+  @ArrayMaxSize(10)
   @IsString({ each: true })
   images: string[];
 

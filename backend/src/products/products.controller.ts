@@ -1,18 +1,18 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Request,
-  UploadedFiles,
-  UseGuards,
-  UseInterceptors
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Request,
+    UploadedFiles,
+    UseGuards,
+    UseInterceptors
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -51,7 +51,7 @@ export class ProductsController {
   }
 
   /**
-   * Загрузка изображений для продукта (до 3 изображений)
+   * Загрузка изображений для продукта (минимум 3, максимум 10 изображений)
    * POST /products/upload-images
    * @param files - Массив файлов изображений
    * @returns Массив путей к загруженным изображениям
@@ -59,7 +59,7 @@ export class ProductsController {
   @Post('upload-images')
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
-    FilesInterceptor('images', 3, {
+    FilesInterceptor('images', 10, {
       storage: diskStorage({
         destination: './public/images/products',
         filename: (_req, file, callback) => {
@@ -89,8 +89,12 @@ export class ProductsController {
       throw new Error('Файлы не загружены');
     }
 
-    if (files.length > 3) {
-      throw new Error('Максимум 3 изображения разрешены');
+    if (files.length < 3) {
+      throw new Error('Минимум 3 изображения требуются');
+    }
+
+    if (files.length > 10) {
+      throw new Error('Максимум 10 изображений разрешены');
     }
 
     // Возвращаем пути относительно public директории

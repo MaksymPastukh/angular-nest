@@ -203,7 +203,9 @@
         </div>
 
         <div class="space-y-2">
-          <div class="label">Изображения * (до {{ MAX_IMAGES }} штук)</div>
+          <div class="label">
+            Изображения * (минимум {{ MIN_IMAGES }}, максимум {{ MAX_IMAGES }})
+          </div>
 
           @if (selectedFiles().length < MAX_IMAGES) {
             <p-fileUpload
@@ -217,8 +219,8 @@
               [disabled]="store.isUploadingImages()"
             />
             <p class="hint-text mt-2">
-              JPG, PNG, WEBP — до 5 МБ каждое. Выбрано: {{ selectedFiles().length }} /
-              {{ MAX_IMAGES }}
+              JPG, PNG, WEBP — до 5 МБ каждое. Выбрано: {{ selectedFiles().length }} (минимум
+              {{ MIN_IMAGES }}, максимум {{ MAX_IMAGES }})
             </p>
           } @else {
             <p class="hint-text text-orange-600">
