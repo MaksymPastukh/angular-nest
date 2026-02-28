@@ -1,16 +1,23 @@
 import { UISelect } from '@/shared/ui'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core'
-import { ReactiveFormsModule } from '@angular/forms'
-import { form, FormField, minLength, required, submit } from '@angular/forms/signals'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core'
+import { FormControl, ReactiveFormsModule } from '@angular/forms'
+import { FormField, minLength, required, submit } from '@angular/forms/signals'
+import { compatForm } from '@angular/forms/signals/compat'
 import { MessageService } from 'primeng/api'
 import { Button } from 'primeng/button'
 import { FileUpload } from 'primeng/fileupload'
 import { MultiSelect } from 'primeng/multiselect'
-import { Rating } from 'primeng/rating'
 import { Toast } from 'primeng/toast'
+import { DRESS_STYLE_GROUPS, DRESS_STYLES } from '../../domain/constants/create-product.canstants'
 import { CreateProductFormDataInterface } from '../../domain/interfaces/create-product-formData.interface'
+import { FormSelectOptionInterface } from '../../domain/interfaces/form-select-option.interface'
 import { CreateProductStore } from '../../store/create-product.store'
+
+type CreateProductFormModel = Omit<CreateProductFormDataInterface, 'colors' | 'sizes'> & {
+  colors: FormControl<string[]>
+  sizes: FormControl<string[]>
+}
 
 @Component({
   selector: 'app-create-product',
@@ -19,10 +26,11 @@ import { CreateProductStore } from '../../store/create-product.store'
     CommonModule,
     ReactiveFormsModule,
     FormField,
-    MultiSelect,
     Button,
     FileUpload,
     Toast,
+    FormField,
+    MultiSelect,
     UISelect,
   ],
   templateUrl: './create-product-page.html',
@@ -37,7 +45,21 @@ export class CreateProductPage {
   protected readonly selectedFiles = signal<File[]>([])
   protected readonly MAX_IMAGES = 3
 
-  protected readonly model = signal<CreateProductFormDataInterface>({
+  readonly dressStyleGroups = computed(() => {
+    const map = new Map<string, FormSelectOptionInterface[]>()
+
+    for (const o of DRESS_STYLES) {
+      const g = o.group ?? 'core'
+      map.set(g, [...(map.get(g) ?? []), o])
+    }
+
+    return Array.from(map.entries()).map(([g, items]) => ({
+      label: DRESS_STYLE_GROUPS[g as keyof typeof DRESS_STYLE_GROUPS] ?? g,
+      items,
+    }))
+  })
+
+  protected readonly model = signal<CreateProductFormModel>({
     title: '',
     rating: 0,
     brand: '',
@@ -52,12 +74,12 @@ export class CreateProductPage {
     category: '',
     productType: '',
     dressStyle: '',
-    colors: [],
-    sizes: [],
+    colors: new FormControl<string[]>([], { nonNullable: true }),
+    sizes: new FormControl<string[]>([], { nonNullable: true }),
     description: '',
   })
 
-  protected productForm = form(this.model, (schema) => {
+  protected productForm = compatForm(this.model, (schema) => {
     required(schema.title, { message: 'Это поле обязательно' })
     minLength(schema.title, 3, { message: 'Минимум 3 символа' })
     required(schema.brand, { message: 'Это поле обязательно' })
@@ -156,10 +178,18 @@ export class CreateProductPage {
       }
 
       // Получаем данные из модели формы
-      const formData: CreateProductFormDataInterface = this.model()
+      const m = this.model()
+
+      const formData: CreateProductFormDataInterface = {
+        ...m,
+        colors: m.colors.value,
+        sizes: m.sizes.value,
+      }
 
       // Отправляем через store
       this.store.createProduct(formData)
+
+      return Promise.resolve(undefined)
     }).catch((error) => {
       console.error('❌ Form submission error:', error)
     })
@@ -180,8 +210,8 @@ export class CreateProductPage {
       category: '',
       productType: '',
       dressStyle: '',
-      colors: [''],
-      sizes: [''],
+      colors: new FormControl<string[]>([], { nonNullable: true }),
+      sizes: new FormControl<string[]>([], { nonNullable: true }),
       fabric: '',
       pattern: '',
       fit: '',

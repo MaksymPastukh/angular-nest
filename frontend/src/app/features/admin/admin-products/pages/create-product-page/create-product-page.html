@@ -108,7 +108,7 @@
           <div class="space-y-1">
             <div class="label">Стиль *</div>
             <app-ui-select
-              [options]="store.options().dressStyles"
+              [options]="dressStyleGroups()"
               [formField]="productForm.dressStyle"
               optionLabel="label"
               optionValue="value"
@@ -119,30 +119,54 @@
 
           <div class="space-y-1">
             <div class="label">Цвета</div>
+
             <p-multiselect
+              [formControl]="model().colors"
               [options]="store.options().colors"
-              [formField]="productForm.colors"
               optionLabel="name"
-              optionValue="name"
-              display="chip"
+              optionValue="id"
               placeholder="Выберите цвета"
-              class="w-full"
-            />
-            <p class="hint-text">Можно выбрать несколько цветов</p>
+              display="chip"
+              [showClear]="true"
+              [filter]="true"
+              styleClass="w-full"
+              panelStyleClass="w-full"
+            >
+              <ng-template pTemplate="item" let-color>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="h-4 w-4 rounded-full border border-gray-200"
+                    [style.backgroundColor]="color.hex"
+                  ></span>
+                  <span>{{ color.name }}</span>
+                </div>
+              </ng-template>
+            </p-multiselect>
+
+            @if (productForm.colors().touched()) {
+              <p class="text-sm text-red-600">Выберите хотя бы один цвет</p>
+            }
           </div>
 
-          <div class="md:col-span-2 space-y-1">
+          <div class="space-y-1">
             <div class="label">Размеры</div>
+
             <p-multiselect
+              [formControl]="model().sizes"
               [options]="store.options().sizes"
-              [formField]="productForm.sizes"
               optionLabel="label"
-              optionValue="value"
-              display="chip"
+              optionValue="id"
               placeholder="Выберите размеры"
-              class="w-full"
+              display="chip"
+              [showClear]="true"
+              [filter]="false"
+              styleClass="w-full"
+              panelStyleClass="w-full"
             />
-            <p class="hint-text">Можно выбрать несколько размеров</p>
+
+            @if (productForm.sizes().touched()) {
+              <p class="text-sm text-red-600">Выберите хотя бы один размер</p>
+            }
           </div>
         </div>
       </section>

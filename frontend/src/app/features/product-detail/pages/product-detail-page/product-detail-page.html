@@ -39,10 +39,8 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex flex-col gap-4 sm:flex-row">
-            <!-- Main image -->
             <div class="order-1 flex-1 sm:order-2">
               @if (facade.activeImage(); as img) {
-                <!-- choose one: aspect-square / aspect-[4/5] / aspect-[3/4] -->
                 <div
                   class="w-full max-w-xl aspect-4/5 overflow-hidden rounded-3xl border border-gray-100"
                 >
@@ -235,7 +233,7 @@
               type="button"
               (click)="facade.addToCart()"
               [disabled]="!facade.canAddToCart()"
-              class="flex w-3xs items-center font-causten font-bold text-lg cursor-pointer gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200"
+              class="flex w-3xs items-center font-causten text-lg cursor-pointer gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200"
               [class.bg-purple-600]="facade.canAddToCart()"
               [class.text-white]="facade.canAddToCart()"
               [class.hover:bg-purple-700]="facade.canAddToCart()"
@@ -276,7 +274,7 @@
           </div>
 
           <div
-            class="grid grid-cols-2 gap-4 text-sm pt-6 border-t border-gray-400 font-causten font-medium text-lg"
+            class="grid grid-cols-2 gap-4 text-sm pt-6 border-t border-gray-400 font-causten font-medium"
           >
             <div class="flex gap-2 items-center text-gray-600">
               <svg
