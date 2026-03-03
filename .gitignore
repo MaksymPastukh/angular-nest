@@ -1,1 +1,7 @@
 .idea
+/angular-nest-marketplace
+/node_modules/
+.nx/cache
+.nx/workspace-data
+vitest.config.*.timestamp*
+.angular

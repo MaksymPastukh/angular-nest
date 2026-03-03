@@ -14,6 +14,8 @@ export default tseslint.config(
   {
     // Файлы и папки, которые не нужно проверять ESLint
     ignores: [
+      'apps/marketplace-api/jest.config.cjs',
+      '**/*.cjs',
       'eslint.config.mjs', // Сам конфиг файл
       'dist/**', // Скомпилированный код
       'node_modules/**', // Зависимости
