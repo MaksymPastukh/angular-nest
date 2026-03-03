@@ -430,13 +430,10 @@ export class ProductsService {
     }
 
     // Удаляем служебные поля и устаревшие данные
-    // color/size → colors/sizes для соответствия фронтенд-интерфейсам
-    const { likedBy, userComments, questionsAnswers, reviews, color, size, ...rest } = productObj;
-
+    const { likedBy, userComments, questionsAnswers, reviews, ...rest } = productObj;
+    
     return {
       ...rest,
-      colors: Array.isArray(color) ? color : [],
-      sizes: Array.isArray(size) ? size : [],
       isLiked,
     };
   }
