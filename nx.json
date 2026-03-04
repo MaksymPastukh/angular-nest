@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    }
+  ],
+  "targetDefaults": {
+    "@nx/vitest:test": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^default"
+      ]
+    }
+  },
+  "nxCloudId": "69a71a8510aeb8fa2b6a803b"
+}
