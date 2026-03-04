@@ -1,37 +1,23 @@
+import { WishlistButton } from '@/features/wishlist/ui/wishlist-toggle-button'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
-import { ProductsService } from '../../data-access/products.service'
 import { ProductInterface } from '../../../../shared/domain'
+import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
+import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule, ImageUrlPipe],
+  imports: [CommonModule, WishlistButton, ImageUrlPipe],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
-  productIn = input.required<ProductInterface>()
+  readonly product = input.required<ProductInterface>()
   readonly router: Router = inject(Router)
-  private readonly productService = inject(ProductsService)
-
-  isLiked = signal(false)
+  readonly WishlistItemSource = WISHLIST_ITEM_SOURCE
   private readonly imageErrorHandled = signal(false)
-
-  constructor() {
-    effect(() => {
-      this.isLiked.set(this.productIn().isLiked || false)
-    })
-  }
-
-  toggleLike(event: Event) {
-    event.stopPropagation()
-
-    const product = this.productIn()
-    if (!product?.id) return
-  }
 
   onImageError(event: Event): void {
     if (this.imageErrorHandled()) return // Предотвращаем бесконечный цикл
@@ -44,7 +30,7 @@ export class ProductCardComponent {
   }
 
   navigateToDetail(): void {
-    const product = this.productIn()
+    const product = this.product()
     if (product?.id) {
       void this.router.navigate(['/product', product.id])
     } else {

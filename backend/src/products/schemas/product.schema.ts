@@ -52,15 +52,6 @@ export class ProductRatingStats {
       }
       delete ret._id; // Удаляем _id
       
-      // Переименовываем поля для публичного API
-      if (ret.color) {
-        ret.colors = ret.color;
-        delete ret.color;
-      }
-      if (ret.size) {
-        ret.sizes = ret.size;
-        delete ret.size;
-      }
       // image удаляется (устаревшее поле, используем images)
       delete ret.image;
       
@@ -75,15 +66,6 @@ export class ProductRatingStats {
       }
       delete ret._id;
       
-      // Переименовываем поля для публичного API
-      if (ret.color) {
-        ret.colors = ret.color;
-        delete ret.color;
-      }
-      if (ret.size) {
-        ret.sizes = ret.size;
-        delete ret.size;
-      }
       // image удаляется (устаревшее поле, используем images)
       delete ret.image;
       
@@ -121,10 +103,10 @@ export class Product {
   public brand: string;
 
   /**
-   * Массив путей к изображениям продукта (до 3 изображений)
+   * Массив путей к изображениям продукта (минимум 3, максимум 10 изображений)
    * @example ["/images/products/nike-air-shirt-1.jpg", "/images/products/nike-air-shirt-2.jpg"]
    */
-  @Prop({ required: true, type: [String], validate: [(val: string[]) => val.length <= 3, 'Maximum 3 images allowed'] })
+  @Prop({ required: true, type: [String], validate: [(val: string[]) => val.length >= 3 && val.length <= 10, 'Minimum 3 and maximum 10 images allowed'] })
   public images: string[];
 
   /**
@@ -166,15 +148,15 @@ export class Product {
    * Доступные цвета продукта
    * @example ["Black", "White", "Red"]
    */
-  @Prop({ required: true, type: [String], index: true })
-  public color: string[];
+  @Prop({ required: false, type: [String], index: true, default: [] })
+  public colors: string[];
 
   /**
    * Доступные размеры продукта
    * @example ["S", "M", "L", "XL"]
    */
-  @Prop({ required: true, type: [String], index: true })
-  public size: string[];
+  @Prop({ required: false, type: [String], index: true, default: [] })
+  public sizes: string[];
 
   /**
    * Подробное описание продукта

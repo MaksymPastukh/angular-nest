@@ -287,7 +287,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Nike Air Max 2023\",\n  \"description\": \"Стильные кроссовки Nike Air Max с отличной амортизацией\",\n  \"price\": 12999,\n  \"category\": \"Casual\",\n  \"brand\": \"Nike\",\n  \"color\": [\"White\", \"Black\"],\n  \"size\": [\"39\", \"40\", \"41\", \"42\"],\n  \"images\": [\"/images/products/example-1.jpg\"],\n  \"stock\": 50,\n  \"productType\": \"Shoes\",\n  \"dressStyle\": \"Casual\"\n}"
+							"raw": "{\n  \"title\": \"Nike Air Max 2023\",\n  \"rating\": 4.5,\n  \"brand\": \"Nike\",\n  \"images\": [\"/images/products/example-1.jpg\"],\n  \"price\": 12999,\n  \"comment\": \"Стильные кроссовки с отличной амортизацией\",\n  \"category\": \"Casual\",\n  \"productType\": \"Shoes\",\n  \"dressStyle\": \"Casual\",\n  \"colors\": [\"White\", \"Black\"],\n  \"sizes\": [\"39\", \"40\", \"41\", \"42\"],\n  \"description\": \"Стильные кроссовки Nike Air Max с отличной амортизацией и удобной посадкой\",\n  \"fabric\": \"Synthetic\",\n  \"pattern\": \"Solid\",\n  \"fit\": \"Regular Fit\",\n  \"neck\": \"Round\",\n  \"sleeve\": \"No Sleeve\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/products",

@@ -1,0 +1,301 @@
+<div class="container mx-auto px-4 py-8">
+  <p-toast />
+
+  <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 sm:p-8 lg:p-10">
+    <form (submit)="onSubmit($event)" novalidate class="space-y-10">
+      <section>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Create product</h2>
+        <p class="text-sm text-gray-500 mt-1">Fill in the basic information about the product</p>
+      </section>
+
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2 space-y-1">
+          <label for="title" class="label">
+            Name product <span class="text-red-500">*</span>
+          </label>
+
+          <input
+            id="title"
+            type="text"
+            placeholder="Например: Футболка Nike Air"
+            [formField]="productForm.title"
+            class="input"
+            [class.input-error]="productForm.title().touched() && productForm.title().invalid()"
+          />
+
+          @if (productForm.title().touched() && productForm.title().invalid()) {
+            <p class="error-text">
+              {{ productForm.title().errors()[0].message }}
+            </p>
+          } @else {
+            <p class="hint-text">Min 3 words</p>
+          }
+        </div>
+
+        <div class="space-y-1">
+          <label for="brand" class="label"> Brend <span class="text-red-500">*</span> </label>
+
+          <input
+            id="brand"
+            type="text"
+            placeholder="Nike"
+            [formField]="productForm.brand"
+            class="input"
+            [class.input-error]="productForm.brand().touched() && productForm.brand().invalid()"
+          />
+
+          @if (productForm.brand().touched() && productForm.brand().invalid()) {
+            <p class="error-text">
+              {{ productForm.brand().errors()[0].message }}
+            </p>
+          }
+        </div>
+
+        <div class="space-y-1">
+          <label for="price" class="label"> Price $ <span class="text-red-500">*</span> </label>
+
+          <input
+            id="price"
+            type="number"
+            placeholder="0.00"
+            [formField]="productForm.price"
+            class="input"
+            [class.input-error]="productForm.price().touched() && productForm.price().invalid()"
+          />
+
+          @if (productForm.price().touched() && productForm.price().invalid()) {
+            <p class="error-text">
+              {{ productForm.price().errors()[0].message }}
+            </p>
+          }
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <div>
+          <h3 class="section-title">Categories and classification</h3>
+          <p class="section-subtitle">Determite where the product will be displaed</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-1">
+            <div class="label">Категория *</div>
+            <app-ui-select
+              [options]="store.options().categories"
+              [formField]="productForm.category"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select a category"
+              class="w-full"
+            />
+            @if (productForm.category().touched() && productForm.category().invalid()) {
+              <p class="error-text">{{ productForm.category().errors()[0].message }}</p>
+            }
+          </div>
+
+          <div class="space-y-1">
+            <div class="label">Type product *</div>
+            <app-ui-select
+              [options]="store.options().productTypes"
+              [formField]="productForm.productType"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select type"
+              class="w-full"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <div class="label">Style *</div>
+            <app-ui-select
+              [options]="dressStyleGroups()"
+              [formField]="productForm.dressStyle"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select style"
+              class="w-full"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <div class="label">Colors</div>
+
+            <p-multiselect
+              [formControl]="model().colors"
+              [options]="store.options().colors"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Select color"
+              display="chip"
+              [showClear]="true"
+              [filter]="true"
+              styleClass="w-full"
+              panelStyleClass="w-full"
+            >
+              <ng-template pTemplate="item" let-color>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="h-4 w-4 rounded-full border border-gray-200"
+                    [style.backgroundColor]="color.hex"
+                  ></span>
+                  <span>{{ color.name }}</span>
+                </div>
+              </ng-template>
+            </p-multiselect>
+
+            @if (productForm.colors().touched()) {
+              <p class="text-sm text-red-600">Select at least one color</p>
+            }
+          </div>
+
+          <div class="space-y-1">
+            <div class="label">Sizes</div>
+
+            <p-multiselect
+              [formControl]="model().sizes"
+              [options]="store.options().sizes"
+              optionLabel="label"
+              optionValue="id"
+              placeholder="Select sizes"
+              display="chip"
+              [showClear]="true"
+              [filter]="false"
+              styleClass="w-full"
+              panelStyleClass="w-full"
+            />
+
+            @if (productForm.sizes().touched()) {
+              <p class="text-sm text-red-600">Select at least one size</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <div>
+          <h3 class="section-title">Description and media</h3>
+          <p class="section-subtitle">Add a description and image of the product</p>
+        </div>
+
+        <div class="space-y-1">
+          <div class="label">Short description *</div>
+          <input
+            type="text"
+            placeholder="Short description"
+            [formField]="productForm.comment"
+            class="input"
+            [class.input-error]="productForm.comment().touched() && productForm.comment().invalid()"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <div class="label">Full description *</div>
+          <textarea
+            rows="6"
+            placeholder="Full description product..."
+            [formField]="productForm.description"
+            class="input resize-none"
+            [class.input-error]="
+              productForm.description().touched() && productForm.description().invalid()
+            "
+          ></textarea>
+          <p class="hint-text">Min 10 words</p>
+        </div>
+
+        <div class="space-y-2">
+          <div class="label">Images * (min {{ MIN_IMAGES }}, max {{ MAX_IMAGES }})</div>
+
+          @if (selectedFiles().length < MAX_IMAGES) {
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Select Image"
+              accept="image/*"
+              [maxFileSize]="5000000"
+              (onSelect)="onImageSelect($event)"
+              [auto]="false"
+              [multiple]="true"
+              [disabled]="store.isUploadingImages()"
+            />
+            <p class="hint-text mt-2">
+              JPG, PNG, WEBP — up to 5 MB each. Selected: {{ selectedFiles().length }} (minimum
+              {{ MIN_IMAGES }}, maximum {{ MAX_IMAGES }})
+            </p>
+          } @else {
+            <p class="hint-text text-orange-600">
+              Maximum number of images reached ({{ MAX_IMAGES }})
+            </p>
+          }
+
+          @if (selectedFiles().length > 0) {
+            <div class="mt-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-700">
+                  Selected images ({{ selectedFiles().length }})
+                </span>
+                @if (selectedFiles().length > 1) {
+                  <button
+                    type="button"
+                    (click)="clearAllImages()"
+                    class="text-sm text-red-600 hover:text-red-800 transition-colors"
+                  >
+                    Delete all
+                  </button>
+                }
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                @for (file of selectedFiles(); track file.name; let i = $index) {
+                  <div
+                    class="relative rounded-lg border-2 border-green-200 bg-green-50 p-3 flex flex-col gap-2"
+                  >
+                    <div class="flex items-start justify-between gap-2">
+                      <i class="pi pi-image text-green-600 text-xl"></i>
+                      <button
+                        type="button"
+                        (click)="removeImage(i)"
+                        class="text-red-600 hover:text-red-800 transition-colors"
+                        title="Delete image"
+                      >
+                        <i class="pi pi-times"></i>
+                      </button>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-xs text-gray-700 font-medium truncate" [title]="file.name">
+                        {{ file.name }}
+                      </p>
+                      <p class="text-xs text-gray-500">{{ (file.size / 1024).toFixed(1) }} KB</p>
+                    </div>
+                    <div class="flex items-center gap-1 text-xs text-green-600">
+                      <i class="pi pi-check-circle"></i>
+                      <span>Ready to download</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (productForm.images().touched() && productForm.images().invalid()) {
+            <p class="error-text">{{ productForm.images().errors()[0].message }}</p>
+          }
+        </div>
+      </section>
+
+      <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200">
+        <p-button
+          label="Reset"
+          severity="secondary"
+          [outlined]="true"
+          type="button"
+          (onClick)="onReset()"
+        />
+        <p-button
+          label="Create product"
+          severity="success"
+          type="submit"
+          [loading]="store.isLoading()"
+        />
+      </div>
+    </form>
+  </div>
+</div>

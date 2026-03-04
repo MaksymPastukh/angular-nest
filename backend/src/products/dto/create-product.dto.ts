@@ -5,6 +5,7 @@ import {
     IsArray,
     IsNotEmpty,
     IsNumber,
+    IsOptional,
     IsString,
     Max,
     Min,
@@ -44,12 +45,12 @@ export class CreateProductDto {
   brand: string;
 
   /**
-   * Массив путей к изображениям продукта (максимум 3)
+   * Массив путей к изображениям продукта (минимум 3, максимум 10)
    * @example ["/images/products/nike-air-shirt-1.jpg", "/images/products/nike-air-shirt-2.jpg"]
    */
   @IsArray()
-  @ArrayMinSize(1)
-  @ArrayMaxSize(3)
+  @ArrayMinSize(3)
+  @ArrayMaxSize(10)
   @IsString({ each: true })
   images: string[];
 
@@ -98,19 +99,19 @@ export class CreateProductDto {
    * Доступные цвета продукта
    * @example ["Black", "White"]
    */
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @IsString({ each: true })
-  color: string[];
+  colors?: string[];
 
   /**
    * Доступные размеры продукта
    * @example ["S", "M", "L", "XL"]
    */
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @IsString({ each: true })
-  size: string[];
+  sizes?: string[];
 
   /**
    * Подробное описание продукта

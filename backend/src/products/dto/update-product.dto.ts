@@ -1,14 +1,14 @@
 import { Type } from 'class-transformer';
 import {
-    ArrayMaxSize,
-    ArrayMinSize,
-    IsArray,
-    IsNumber,
-    IsOptional,
-    IsString,
-    Max,
-    Min,
-    MinLength,
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  MinLength,
 } from 'class-validator';
 
 /**
@@ -103,9 +103,8 @@ export class UpdateProductDto {
    */
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @IsString({ each: true })
-  color?: string[];
+  colors?: string[];
 
   /**
    * Доступные размеры продукта
@@ -113,9 +112,8 @@ export class UpdateProductDto {
    */
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @IsString({ each: true })
-  size?: string[];
+  sizes?: string[];
 
   /**
    * Подробное описание продукта

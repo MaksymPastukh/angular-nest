@@ -4,7 +4,7 @@ import { Router } from '@angular/router'
 import { catchError, switchMap, throwError } from 'rxjs'
 import { AuthService } from '../../../features/auth/data-access/auth.api'
 import { CurrentUserResponseInterface } from '../../../features/auth/domain/interfaces/current-user.interface'
-import { AuthStateService } from './auth-state.service'
+import { AuthState } from './auth-state.service'
 import { AuthSessionService } from './auth.session.service'
 
 const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/refresh'] as const
@@ -12,7 +12,7 @@ const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/refresh'] as con
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const session = inject(AuthSessionService)
   const authService = inject(AuthService)
-  const authState = inject(AuthStateService)
+  const authState = inject(AuthState)
   const router = inject(Router)
 
   const isAuthEndpoint = AUTH_ENDPOINTS.some((endpoint) => req.url.includes(endpoint))

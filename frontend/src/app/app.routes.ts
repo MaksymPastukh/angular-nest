@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router'
 import { authForwardGuard } from './core/auth/guards/auth-forward.guard'
+import { authGuard } from './core/auth/guards/auth.guard'
 import { LayoutComponent } from './core/layout/layout'
 import { MainComponent } from './features/main/main'
 
@@ -40,6 +41,7 @@ export const routes: Routes = [
       },
       {
         path: 'wishlist',
+        canActivate: [authGuard],
         loadChildren: () =>
           import('./features/wishlist/wishlist.routes').then((m) => m.WISHLIST_ROUTES),
       },

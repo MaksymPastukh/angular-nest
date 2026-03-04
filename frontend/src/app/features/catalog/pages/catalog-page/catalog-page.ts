@@ -2,13 +2,16 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Params } from '@angular/router'
 import { distinctUntilChanged, map } from 'rxjs'
+import { AuthState } from '../../../../core/auth/http/auth-state.service'
+import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
+import { WishlistFacade } from '../../../wishlist/store/wishlist.facade'
 import { TableBestPriceInterface } from '../../domain/interfaces/table-best-price.interface'
 import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
 import { ProductsPageFacade } from '../../store/products.facade'
 import { CatalogFilterComponent } from '../../ui/catalog-filter/catalog-filter'
+import { ProductCardComponent } from '../../ui/product-card/product-card'
 import { TableBestPrice } from '../../ui/table-best-price/table-best-price'
 import { extractBrand } from '../../utils/extract-brand'
-import { ProductCardComponent } from '../../ui/product-card/product-card'
 
 @Component({
   selector: 'app-catalog',
@@ -18,10 +21,12 @@ import { ProductCardComponent } from '../../ui/product-card/product-card'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogPage {
+  private readonly wishListFacade = inject(WishlistFacade)
+  private readonly authState = inject(AuthState)
   readonly productFacade = inject(ProductsPageFacade)
   private readonly route = inject(ActivatedRoute)
   private readonly catalogFilterFacade = inject(CatalogFilterFacade)
-
+  readonly WishlistItemSource = WISHLIST_ITEM_SOURCE
   readonly products = this.productFacade.products
   readonly filters = this.productFacade.filters
 
@@ -46,7 +51,6 @@ export class CatalogPage {
 
   private readonly queryParams = toSignal(
     this.route.queryParams.pipe(
-      // простая защита от дублей
       map((p: Params) => JSON.stringify(p)),
       distinctUntilChanged(),
       map((s) => JSON.parse(s) as Params)
@@ -57,6 +61,11 @@ export class CatalogPage {
   constructor() {
     effect(() => {
       this.productFacade.restoreFiltersFromUrl(this.queryParams())
+    })
+    effect(() => {
+      if (!this.authState.isAuthenticated()) return
+      const ids = this.products().map((p) => p.id)
+      if (ids.length) this.wishListFacade.syncContains(ids)
     })
   }
 

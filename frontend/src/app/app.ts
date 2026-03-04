@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { RouterOutlet } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
-import { AuthStateService } from './core/auth/http/auth-state.service'
-import { CreateProductStore } from './features/admin/admin-products/store/create.store'
+import { AuthState } from './core/auth/http/auth-state.service'
+import { CreateProductStore } from './features/admin/pages/admin-products/store/create-product.store'
 
 @Component({
   selector: 'app-root',
@@ -16,7 +16,7 @@ export class App {
   protected readonly productStore = inject(CreateProductStore)
   protected readonly title = signal('Euphoria')
   private readonly messageService = inject(MessageService)
-  private readonly authState = inject(AuthStateService)
+  private readonly authState = inject(AuthState)
 
   constructor() {
     // Восстанавливаем сессию пользователя из localStorage при старте приложения

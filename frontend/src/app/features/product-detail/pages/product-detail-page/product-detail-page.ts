@@ -6,6 +6,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -45,6 +46,7 @@ export class ProductDetailPage {
   private readonly route = inject(ActivatedRoute)
   public readonly facade = inject(ProductDetailFacade)
   public readonly facadeQuestion = inject(ProductQuestionFacade)
+  private readonly destroyRef = inject(DestroyRef)
 
   private readonly reviewsSection = viewChild<ElementRef<HTMLDivElement>>('reviewsSection')
   readonly selectedImageIndex = signal(0)
@@ -53,10 +55,45 @@ export class ProductDetailPage {
   readonly selectedColor = signal<string | null>(null)
   readonly activeTabIndex = signal(0)
   readonly productId = toSignal(this.route.params.pipe(map((params) => params['id'] as string)))
+  private hoverTimer: number | null = null
+  private lastHoverIndex: number | null = null
 
   readonly canAddToCart = computed(() => {
     return this.selectedSize() !== null && this.selectedColor() !== null
   })
+
+  private isPointerFine(): boolean {
+    return window.matchMedia?.('(hover: hover) and (pointer: fine)').matches ?? true
+  }
+
+  onThumbHover(index: number): void {
+    if (!this.isPointerFine()) return
+    this.scheduleActivate(index)
+  }
+
+  onThumbFocus(index: number): void {
+    this.activate(index)
+  }
+
+  onThumbClick(index: number): void {
+    this.activate(index)
+  }
+
+  private scheduleActivate(index: number): void {
+    if (this.lastHoverIndex === index) return
+    this.lastHoverIndex = index
+
+    if (this.hoverTimer !== null) window.clearTimeout(this.hoverTimer)
+
+    this.hoverTimer = window.setTimeout(() => {
+      this.activate(index)
+      this.hoverTimer = null
+    }, 60)
+  }
+
+  private activate(index: number): void {
+    this.facade.selectImage(index)
+  }
 
   readonly tabss = computed<TabsInterface[]>((): TabsInterface[] => {
     return [
@@ -81,9 +118,14 @@ export class ProductDetailPage {
   constructor() {
     effect(() => {
       const id = this.productId()
+
       if (id) {
         this.facade.load(id)
       }
+    })
+
+    this.destroyRef.onDestroy(() => {
+      if (this.hoverTimer !== null) window.clearTimeout(this.hoverTimer)
     })
   }
 

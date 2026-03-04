@@ -1,6 +1,6 @@
 <div class="container mx-auto px-4 py-8">
   @if (facade.isLoading()) {
-    <div class="flex items-center justify-center min-h-[400px]">
+    <div class="flex items-center justify-center min-h-100">
       <div class="text-center">
         <div
           class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"
@@ -9,7 +9,7 @@
       </div>
     </div>
   } @else if (facade.error()) {
-    <div class="flex items-center justify-center min-h-[400px]">
+    <div class="flex items-center justify-center min-h-100">
       <div class="text-center">
         <svg
           class="w-16 h-16 text-red-500 mx-auto mb-4"
@@ -38,80 +38,94 @@
     <div class="container mx-auto px-4 py-10">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div class="flex flex-col sm:flex-row gap-4">
-          <div class="flex-1 order-1 sm:order-2">
-            @if (facade.activeImage(); as img) {
-              <img
-                class="w-lg h-auto rounded-3xl object-cover max-h-full border border-gray-100"
-                [src]="img.image | imageUrl"
-                [alt]="img.alt"
-                (error)="onImageError($event)"
-              />
-            }
-          </div>
-
-          <div class="flex sm:flex-col gap-3 order-2 sm:order-1">
-            <div class="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
-              @for (img of facade.galleryImages(); track $index) {
-                <img
-                  class="w-20 h-24 sm:w-20 sm:h-24 flex-shrink-0 object-cover rounded-lg border-2 cursor-pointer transition-all duration-200"
-                  [class.border-gray-200]="facade.activeImageIndex() !== $index"
-                  [class.opacity-60]="facade.activeImageIndex() !== $index"
-                  [class.hover:opacity-100]="facade.activeImageIndex() !== $index"
-                  [class.hover:border-purple-400]="facade.activeImageIndex() !== $index"
-                  [class.border-purple-600]="facade.activeImageIndex() === $index"
-                  (click)="facade.selectImage($index)"
-                  [src]="img.image | imageUrl"
-                  [alt]="img.alt"
-                />
+          <div class="flex flex-col gap-4 sm:flex-row">
+            <div class="order-1 flex-1 sm:order-2">
+              @if (facade.activeImage(); as img) {
+                <div
+                  class="w-full max-w-xl aspect-4/5 overflow-hidden rounded-3xl border border-gray-100"
+                >
+                  <img
+                    class="h-full w-full object-cover"
+                    [src]="img.image | imageUrl"
+                    [alt]="img.alt"
+                    (error)="onImageError($event)"
+                  />
+                </div>
               }
             </div>
 
-            <div class="flex flex-col gap-2 mt-2 items-center">
-              <button
-                type="button"
-                class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
-                (click)="facade.prevImage()"
-                aria-label="Previous image"
-              >
-                <svg
-                  class="w-5 h-5 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
-              </button>
+            <div class="order-2 flex gap-3 sm:order-1 sm:flex-col">
+              <div class="flex gap-3 overflow-x-auto sm:flex-col sm:overflow-visible">
+                @for (img of facade.galleryImages(); track img.image) {
+                  <button
+                    type="button"
+                    class="group shrink-0 rounded-lg border-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+                    [class.border-transparent]="facade.activeImageIndex() === $index"
+                    [class.border-gray-200]="facade.activeImageIndex() !== $index"
+                    [attr.aria-current]="facade.activeImageIndex() === $index ? 'true' : null"
+                    [attr.aria-label]="'Open image ' + ($index + 1)"
+                    (mouseenter)="onThumbHover($index)"
+                    (focus)="onThumbFocus($index)"
+                    (click)="onThumbClick($index)"
+                  >
+                    <img
+                      class="h-24 w-20 rounded-md object-cover transition-opacity duration-200"
+                      [class.opacity-60]="facade.activeImageIndex() !== $index"
+                      [class.group-hover:opacity-100]="facade.activeImageIndex() !== $index"
+                      [src]="img.image | imageUrl"
+                      [alt]="img.alt"
+                    />
+                  </button>
+                }
+              </div>
 
-              <button
-                type="button"
-                class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 bg-white hover:border-purple-600 hover:bg-purple-50 active:scale-95 transition-all duration-200"
-                (click)="facade.nextImage()"
-                aria-label="Next image"
-              >
-                <svg
-                  class="w-5 h-5 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <!-- Arrow controls -->
+              <div class="mt-2 flex items-center justify-center gap-2 sm:flex-col sm:gap-2">
+                <button
+                  type="button"
+                  class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white transition-all duration-200 hover:border-purple-600 hover:bg-purple-50 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+                  (click)="facade.prevImage()"
+                  aria-label="Previous image"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    class="h-5 w-5 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white transition-all duration-200 hover:border-purple-600 hover:bg-purple-50 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+                  (click)="facade.nextImage()"
+                  aria-label="Next image"
+                >
+                  <svg
+                    class="h-5 w-5 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
         <div class="space-y-6">
           <app-ui-breadcrumb [items]="breadcrumbItems()" />
 
@@ -130,7 +144,7 @@
             <button
               type="button"
               (click)="scrollToReviews()"
-              class="flex items-start ml-4 flex items-center ml-4 cursor-pointer hover:opacity-80 transition-opacity"
+              class="flex items-center ml-4 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <div class="mr-2 text-lg font-family color-text-gray">reviews</div>
 
@@ -219,7 +233,7 @@
               type="button"
               (click)="facade.addToCart()"
               [disabled]="!facade.canAddToCart()"
-              class="flex w-3xs items-center font-causten font-bold text-lg cursor-pointer gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200"
+              class="flex w-3xs items-center font-causten text-lg cursor-pointer gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200"
               [class.bg-purple-600]="facade.canAddToCart()"
               [class.text-white]="facade.canAddToCart()"
               [class.hover:bg-purple-700]="facade.canAddToCart()"
@@ -260,7 +274,7 @@
           </div>
 
           <div
-            class="grid grid-cols-2 gap-4 text-sm pt-6 border-t border-gray-400 font-causten font-medium text-lg"
+            class="grid grid-cols-2 gap-4 text-sm pt-6 border-t border-gray-400 font-causten font-medium"
           >
             <div class="flex gap-2 items-center text-gray-600">
               <svg

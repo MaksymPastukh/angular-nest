@@ -40,6 +40,8 @@ const toggle = (list: string[], value: string): string[] =>
   list.includes(value) ? list.filter((v) => v !== value) : [...list, value]
 
 const getColorHex = (name: string): string => {
+  if (!name || typeof name !== 'string') return '#9e9e9e'
+
   const predefined = COLOR_MAP[name]
   if (predefined) return predefined
 
@@ -57,10 +59,12 @@ export const ProductFilterStore = signalStore(
   withComputed((store) => ({
     sizes: computed(() => store.filterData()?.sizes ?? []),
     colors: computed(() =>
-      (store.filterData()?.colors ?? []).map((name: string) => ({
-        name,
-        value: getColorHex(name),
-      }))
+      (store.filterData()?.colors ?? [])
+        .filter((name): name is string => typeof name === 'string' && name.trim().length > 0)
+        .map((name) => ({
+          name,
+          value: getColorHex(name),
+        }))
     ),
     brands: computed(() => store.filterData()?.brands ?? []),
     productTypes: computed(() => store.filterData()?.productTypes ?? []),

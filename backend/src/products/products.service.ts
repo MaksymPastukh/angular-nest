@@ -161,7 +161,7 @@ export class ProductsService {
    * @returns Список всех уникальных цветов
    */
   public async getColors(): Promise<string[]> {
-    const colors = await this.productModel.distinct('color').exec();
+    const colors = await this.productModel.distinct('colors').exec();
     // Цвета могут быть массивами, поэтому собираем все уникальные значения
     return [...new Set(colors.flat())];
   }
@@ -171,7 +171,7 @@ export class ProductsService {
    * @returns Список всех уникальных размеров
    */
   public async getSizes(): Promise<string[]> {
-    const sizes = await this.productModel.distinct('size').exec();
+    const sizes = await this.productModel.distinct('sizes').exec();
     // Размеры могут быть массивами, поэтому собираем все уникальные значения
     return [...new Set(sizes.flat())];
   }
@@ -249,7 +249,7 @@ export class ProductsService {
       filter.rating = { $gte: minRating };
     }
 
-    if (color && !excludeFields.includes('color')) {
+    if (color && !excludeFields.includes('colors')) {
       // color может прийти как строка "Black", массив ["Black", "Red"] или строка с запятыми "Black,Red"
       let colors: string[];
       if (Array.isArray(color)) {
@@ -260,12 +260,12 @@ export class ProductsService {
       } else {
         colors = [color];
       }
-      // color в схеме это массив строк ["Black", "White", "Red"]
-      // $in найдёт продукты где хотя бы один элемент массива color совпадает с запрошенными
-      filter.color = { $in: colors };
+      // colors в схеме это массив строк ["Black", "White", "Red"]
+      // $in найдёт продукты где хотя бы один элемент массива colors совпадает с запрошенными
+      filter.colors = { $in: colors };
     }
 
-    if (size && !excludeFields.includes('size')) {
+    if (size && !excludeFields.includes('sizes')) {
       // size может прийти как строка "M", массив ["M", "L"] или строка с запятыми "M,L"
       let sizes: string[];
       if (Array.isArray(size)) {
@@ -276,9 +276,9 @@ export class ProductsService {
       } else {
         sizes = [size];
       }
-      // size в схеме это массив строк ["S", "M", "L", "XL"]
-      // $in найдёт продукты где хотя бы один элемент массива size совпадает с запрошенными
-      filter.size = { $in: sizes };
+      // sizes в схеме это массив строк ["S", "M", "L", "XL"]
+      // $in найдёт продукты где хотя бы один элемент массива sizes совпадает с запрошенными
+      filter.sizes = { $in: sizes };
     }
 
     if (search && !excludeFields.includes('search')) {
@@ -356,17 +356,17 @@ export class ProductsService {
    * @returns Массив фасетов размеров с количеством
    */
   private async calculateSizeFacet(filterDto: FilterProductDto): Promise<IFacetItem[]> {
-    // Строим фильтр, исключая size (self-excluding)
-    const filter = this.buildFilter(filterDto, ['size']);
+    // Строим фильтр, исключая sizes (self-excluding)
+    const filter = this.buildFilter(filterDto, ['sizes']);
 
     // Используем $unwind для развертывания массива размеров
     const result = await this.productModel
       .aggregate([
         { $match: filter },
-        { $unwind: '$size' }, // Разворачиваем массив размеров
+        { $unwind: '$sizes' }, // Разворачиваем массив размеров
         {
           $group: {
-            _id: '$size',
+            _id: '$sizes',
             count: { $sum: 1 },
           },
         },
@@ -388,17 +388,17 @@ export class ProductsService {
    * @returns Массив фасетов цветов с количеством
    */
   private async calculateColorFacet(filterDto: FilterProductDto): Promise<IFacetItem[]> {
-    // Строим фильтр, исключая color (self-excluding)
-    const filter = this.buildFilter(filterDto, ['color']);
+    // Строим фильтр, исключая colors (self-excluding)
+    const filter = this.buildFilter(filterDto, ['colors']);
 
     // Используем $unwind для развертывания массива цветов
     const result = await this.productModel
       .aggregate([
         { $match: filter },
-        { $unwind: '$color' }, // Разворачиваем массив цветов
+        { $unwind: '$colors' }, // Разворачиваем массив цветов
         {
           $group: {
-            _id: '$color',
+            _id: '$colors',
             count: { $sum: 1 },
           },
         },

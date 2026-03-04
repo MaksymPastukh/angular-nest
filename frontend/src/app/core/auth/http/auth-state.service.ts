@@ -10,7 +10,7 @@ import { AuthSessionService } from './auth.session.service'
 @Injectable({
   providedIn: 'root',
 })
-export class AuthStateService {
+export class AuthState {
   private readonly session = inject(AuthSessionService)
   private readonly _curerentUser = signal<User | null>(null)
   private readonly _accessToken = signal<string | null>(null)

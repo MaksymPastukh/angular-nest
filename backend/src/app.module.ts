@@ -5,12 +5,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { CartModule } from './cart/cart.module';
 import { ProductsModule } from './products/products.module';
+import { QuestionsModule } from './questions/questions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StaticModule } from './static/static.module';
 import { UsersModule } from './users/users.module';
-import { QuestionsModule } from './questions/questions.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 /**
  * Главный модуль приложения
@@ -46,7 +46,7 @@ import { QuestionsModule } from './questions/questions.module';
     ProductsModule, // Модуль управления продуктами магазина
     ReviewsModule, // Модуль управления отзывами и рейтингами
     QuestionsModule, // Модуль управления вопросами о продуктах
-    CartModule, // Модуль корзины покупок
+    WishlistModule, // Модуль wishlist (избранное)
   ],
   controllers: [AppController],
   providers: [AppService],
