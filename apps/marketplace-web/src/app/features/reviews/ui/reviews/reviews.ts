@@ -1,5 +1,5 @@
-import { Paginator, PaginatorState, Select, UiRatingComponent } from '@/shared/ui'
-import { UiIconComponent } from '@/shared/ui/ui-icon'
+import { Paginator, PaginatorState, Select, UiRatingComponent } from '@marketplace/frontend-shared-ui'
+import { UiIconComponent } from '@marketplace/frontend-shared-ui'
 import { DatePipe } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -20,7 +20,7 @@ import { RatingFilterType } from '../../domain/types/reviews-rating.type'
 import { ReviewSortByType } from '../../domain/types/reviews-sortBy.type'
 import { ReviewsFacade } from '../../store/reviews.facade'
 import { ReviewFormComponent } from '../reviews-form/review-form'
-import { AuthState } from '../../../../core/auth/http/auth-state.service'
+import { AuthState } from '@marketplace/frontend-core-auth'
 @Component({
   selector: 'app-ui-reviews',
   imports: [
@@ -129,3 +129,4 @@ export class Reviews {
     this.facade.removeReview(reviewId)
   }
 }
+

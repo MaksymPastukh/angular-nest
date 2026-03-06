@@ -1,5 +1,5 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core'
-import { AuthState } from '../../../core/auth/http/auth-state.service'
+import { AuthState } from '@marketplace/frontend-core-auth'
 import { CreateReviewInterface } from '../domain/interfaces/create-review.interface'
 import { ReviewsPageChangeInterface } from '../domain/interfaces/reviews-page-change.interface'
 import { ReviewsSummaryInterface } from '../domain/interfaces/reviews-summary'
@@ -92,3 +92,4 @@ export class ReviewsFacade {
     this.store.toggleLike({ id })
   }
 }
+

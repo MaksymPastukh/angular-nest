@@ -1,4 +1,4 @@
-import { UiRatingComponent } from '@/shared/ui'
+import { UiRatingComponent } from '@marketplace/frontend-shared-ui'
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core'
 import {
   form,
@@ -84,3 +84,4 @@ export class ReviewFormComponent {
     this.delete.emit(review.id)
   }
 }
+

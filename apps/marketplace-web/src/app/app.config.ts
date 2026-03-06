@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api'
 import { providePrimeNG } from 'primeng/config'
 import { AuraLight } from '../assets/theme/aura-light'
 import { routes } from './app.routes'
-import { authInterceptor } from './core/auth/http/auth.interceptor'
+import { authInterceptor } from '@marketplace/frontend-core-http'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,3 +35,4 @@ export const appConfig: ApplicationConfig = {
     MessageService,
   ],
 }
+

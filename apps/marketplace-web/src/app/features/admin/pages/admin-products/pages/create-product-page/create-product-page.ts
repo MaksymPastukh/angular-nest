@@ -1,4 +1,4 @@
-import { UISelect } from '@/shared/ui'
+import { UISelect } from '@marketplace/frontend-shared-ui'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
@@ -241,3 +241,4 @@ export class CreateProductPage {
     })
   }
 }
+

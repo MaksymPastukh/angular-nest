@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["apps/marketplace-web/src/app/features/auth/pages/reset/reset.scss", "apps/marketplace-web/src/app/features/auth/pages/reset/reset.scss"],
+  "sourcesContent": [".create-new-pass {\n  position: relative;\n  button {\n    position: absolute;\n    top: 58px;\n    right: 15px;\n  }\n}\n", ".create-new-pass {\n  position: relative;\n}\n.create-new-pass button {\n  position: absolute;\n  top: 58px;\n  right: 15px;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0Q6L0Zyb250ZW5kJTIwRGV2ZWxvcGVyL0FuZ3VsYXIvTWFya2V0cGxhY2UvYXBwcy9tYXJrZXRwbGFjZS13ZWIvc3JjL2FwcC9mZWF0dXJlcy9hdXRoL3BhZ2VzL3Jlc2V0L3Jlc2V0LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRTs7QUFDQTtFQUNFO0VBQ0E7RUFDQSIsInNvdXJjZXNDb250ZW50IjpbIi5jcmVhdGUtbmV3LXBhc3Mge1xuICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gIGJ1dHRvbiB7XG4gICAgcG9zaXRpb246IGFic29sdXRlO1xuICAgIHRvcDogNThweDtcbiAgICByaWdodDogMTVweDtcbiAgfVxufVxuIl19 */"],
+  "mappings": ";AAAA,CAAA;AACE,YAAA;ACCF;ADAE,CAFF,gBAEE;AACE,YAAA;AACA,OAAA;AACA,SAAA;ACEJ;",
+  "names": []
+}

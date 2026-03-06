@@ -1,4 +1,4 @@
-import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@/shared/ui'
+import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@marketplace/frontend-shared-ui'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
@@ -49,3 +49,4 @@ export class Wishlist {
     return items
   })
 }
+

@@ -4,6 +4,7 @@
   "projectType": "application",
   "root": "apps/marketplace-api",
   "sourceRoot": "apps/marketplace-api/src",
+  "tags": ["scope:backend", "type:app"],
   "targets": {
     "serve": {
       "executor": "nx:run-commands",

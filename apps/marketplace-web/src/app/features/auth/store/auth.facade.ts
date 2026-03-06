@@ -1,8 +1,8 @@
 import { effect, inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { MessageService } from 'primeng/api'
-import { AuthState } from '../../../core/auth/http/auth-state.service'
-import { AuthSessionService } from '../../../core/auth/http/auth.session.service'
+import { AuthState } from '@marketplace/frontend-core-auth'
+import { AuthSessionService } from '@marketplace/frontend-core-auth'
 import { AUTH_MESSAGES } from '../domain/constants/auth-event-messages.constants'
 import { AuthEventInterface } from '../domain/interfaces/auth-event.interface'
 import { LoginDataInterface } from '../domain/interfaces/loginData.interface'
@@ -83,3 +83,4 @@ export class AuthFacade {
     }
   }
 }
+

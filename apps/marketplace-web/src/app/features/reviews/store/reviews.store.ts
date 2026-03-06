@@ -15,7 +15,7 @@ import { ReviewsSummaryInterface } from '../domain/interfaces/reviews-summary'
 import { UpdateReviewInterface } from '../domain/interfaces/update-review.interface'
 import { RatingFilterType } from '../domain/types/reviews-rating.type'
 import { ReviewSortByType } from '../domain/types/reviews-sortBy.type'
-import { LoadKindType } from '../../../shared/domain/types/load-kind.type'
+import { LoadKindType } from '@marketplace/frontend-shared-types'
 
 const initialState: ReviewsStateInterface = {
   productId: null,
@@ -329,3 +329,4 @@ export const ReviewsStore = signalStore(
     }
   })
 )
+

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["apps/marketplace-web/src/app/features/wishlist/pages/wishlist/wishlist.scss", "apps/marketplace-web/src/app/features/wishlist/pages/wishlist/wishlist.scss"],
+  "sourcesContent": [":host {\n  display: block;\n}\n", ":host {\n  display: block;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0Q6L0Zyb250ZW5kJTIwRGV2ZWxvcGVyL0FuZ3VsYXIvTWFya2V0cGxhY2UvYXBwcy9tYXJrZXRwbGFjZS13ZWIvc3JjL2FwcC9mZWF0dXJlcy93aXNobGlzdC9wYWdlcy93aXNobGlzdC93aXNobGlzdC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UiLCJzb3VyY2VzQ29udGVudCI6WyI6aG9zdCB7XG4gIGRpc3BsYXk6IGJsb2NrO1xufVxuIl19 */"],
+  "mappings": ";AAAA;AACE,WAAA;ACCF;",
+  "names": []
+}

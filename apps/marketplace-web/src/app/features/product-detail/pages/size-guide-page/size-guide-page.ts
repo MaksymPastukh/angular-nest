@@ -1,4 +1,4 @@
-import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@/shared/ui'
+import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@marketplace/frontend-shared-ui'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
@@ -54,3 +54,4 @@ export class SizeGuidePage {
     })
   }
 }
+

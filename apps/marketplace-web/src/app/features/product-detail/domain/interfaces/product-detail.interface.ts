@@ -1,4 +1,4 @@
-import { RatingStatsInterface } from '../../../../shared/domain/interfaces/product-rating-stats.interface'
+import { RatingStatsInterface } from '@marketplace/frontend-shared-types'
 
 export interface ProductDetailInterface {
   images: string[]
@@ -24,3 +24,4 @@ export interface ProductDetailInterface {
   sizes: string[]
   isLiked: boolean
 }
+

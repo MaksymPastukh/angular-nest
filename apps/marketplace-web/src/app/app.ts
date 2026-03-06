@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { RouterOutlet } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
-import { AuthState } from './core/auth/http/auth-state.service'
+import { AuthState } from '@marketplace/frontend-core-auth'
 import { CreateProductStore } from './features/admin/pages/admin-products/store/create-product.store'
 
 @Component({
@@ -69,3 +69,4 @@ export class App {
     })
   }
 }
+

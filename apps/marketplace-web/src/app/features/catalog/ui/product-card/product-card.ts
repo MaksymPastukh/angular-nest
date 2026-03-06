@@ -2,9 +2,9 @@ import { WishlistButton } from '@/features/wishlist/ui/wishlist-toggle-button'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { ProductInterface } from '../../../../shared/domain'
+import { ProductInterface } from '@marketplace/frontend-shared-types'
 import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
-import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
+import { ImageUrlPipe } from '@marketplace/frontend-shared-util'
 
 @Component({
   selector: 'app-product-card',
@@ -38,3 +38,4 @@ export class ProductCardComponent {
     }
   }
 }
+

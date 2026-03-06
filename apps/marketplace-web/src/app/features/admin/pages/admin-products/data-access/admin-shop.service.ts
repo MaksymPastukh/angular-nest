@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { CreateProductFormDataInterface } from '../domain/interfaces/create-product-formData.interface'
 import { environment } from '../../../../../../environments/environment'
-import { ProductInterface } from '../../../../../shared/domain'
+import { ProductInterface } from '@marketplace/frontend-shared-types'
 
 @Injectable({
   providedIn: 'root',
@@ -32,3 +32,4 @@ export class AdminShopService {
     return this.http.post<{ imagePaths: string[] }>(`${this.apiUrl}/upload-images`, formData)
   }
 }
+

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { AuthCoreFacade } from '../../../../core/auth/http/auth-core.facade'
+import { AuthCoreFacade } from '@marketplace/frontend-core-auth'
 
 @Component({
   selector: 'app-root',
@@ -15,3 +15,4 @@ export class InfoPage {
     this.authFacade.logout()
   }
 }
+

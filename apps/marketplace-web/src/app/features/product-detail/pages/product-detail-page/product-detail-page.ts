@@ -1,6 +1,6 @@
 import { ProductQuestionsSectionComponent } from '@/features/product-questions/ui/product-questions-section'
 import { Reviews } from '@/features/reviews/ui/reviews/reviews'
-import { BreadcrumbItemInterface, UiBreadcrumbComponent, UiRatingComponent } from '@/shared/ui'
+import { BreadcrumbItemInterface, UiBreadcrumbComponent, UiRatingComponent } from '@marketplace/frontend-shared-ui'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -17,7 +17,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { map } from 'rxjs'
-import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
+import { ImageUrlPipe } from '@marketplace/frontend-shared-util'
 import { ProductQuestionFacade } from '../../../product-questions/store/product-questions.facade'
 import { TabsInterface } from '../../domain/interfaces/tabs-info.interface'
 import { ProductDetailFacade } from '../../store/product-detail.facade'
@@ -193,3 +193,4 @@ export class ProductDetailPage {
     this.imageErrorHandled.set(true)
   }
 }
+

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router'
-import { adminGuard } from '../../core/auth/guards/admin.guard'
+import { adminGuard } from '@marketplace/frontend-core-auth'
 import { AdminLayout } from './ui/admin-layout/admin-layout'
 
 export const ADMIN_ROUTES: Routes = [
@@ -32,3 +32,4 @@ export const ADMIN_ROUTES: Routes = [
     ],
   },
 ]
+

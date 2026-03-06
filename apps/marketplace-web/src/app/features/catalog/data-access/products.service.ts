@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment'
-import { ProductInterface } from '../../../shared/domain/interfaces/product.interface'
+import { ProductInterface } from '@marketplace/frontend-shared-types'
 import { FacetsResponseInterface } from '../domain/interfaces/catalog-facets.interface'
 import { CatalogFilterParamsInterface } from '../domain/interfaces/catalog-filter-params.interface'
 import { ProductsResponseInterface } from '../domain/interfaces/products-response.interface'
@@ -144,3 +144,4 @@ export class ProductsService {
     return this.http.get<ProductInterface[]>(`${this.apiUrl}/liked/me`)
   }
 }
+

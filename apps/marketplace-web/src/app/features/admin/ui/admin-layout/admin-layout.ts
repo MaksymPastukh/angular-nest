@@ -1,4 +1,4 @@
-import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@/shared/ui'
+import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@marketplace/frontend-shared-ui'
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router'
@@ -44,3 +44,4 @@ export class AdminLayout {
     }
   )
 }
+

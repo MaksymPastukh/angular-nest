@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Params } from '@angular/router'
 import { distinctUntilChanged, map } from 'rxjs'
-import { AuthState } from '../../../../core/auth/http/auth-state.service'
+import { AuthState } from '@marketplace/frontend-core-auth'
 import { WISHLIST_ITEM_SOURCE } from '../../../wishlist/domain/constants/wishlist-item-sourse.constants'
 import { WishlistFacade } from '../../../wishlist/store/wishlist.facade'
 import { TableBestPriceInterface } from '../../domain/interfaces/table-best-price.interface'
@@ -97,3 +97,4 @@ export class CatalogPage {
     },
   ]
 }
+

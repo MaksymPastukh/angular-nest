@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { ImageUrlPipe } from '../../../../shared/pipes/image-url.pipe'
+import { ImageUrlPipe } from '@marketplace/frontend-shared-util'
 import { CategoriesInterface } from '../../domain/interfaces/categories.interface'
 
 @Component({
@@ -13,3 +13,4 @@ import { CategoriesInterface } from '../../domain/interfaces/categories.interfac
 export class CategoriesCardComponent {
   @Input() category!: CategoriesInterface
 }
+

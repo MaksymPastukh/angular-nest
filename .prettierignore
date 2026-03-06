@@ -26,3 +26,5 @@ pnpm-lock.yaml
 *.generated.ts
 *.generated.js
 CHANGELOG.md
+
+.angular

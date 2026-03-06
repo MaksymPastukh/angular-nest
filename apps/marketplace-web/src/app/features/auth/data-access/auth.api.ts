@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { catchError, finalize, map, Observable, shareReplay, throwError } from 'rxjs'
 import { environment } from '../../../../environments/environment'
-import { AuthSessionService } from '../../../core/auth/http/auth.session.service'
+import { AuthSessionService } from '@marketplace/frontend-core-auth'
 import { CurrentUserResponseInterface } from '../domain/interfaces/current-user.interface'
 import { DefaultResponseInterface } from '../domain/interfaces/default-response.interface'
 import { LoginDataInterface } from '../domain/interfaces/loginData.interface'
@@ -79,3 +79,4 @@ export class AuthService {
     return error.message || `Error during ${context}. Please try again.`
   }
 }
+

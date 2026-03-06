@@ -17,6 +17,10 @@
       "root": "apps/marketplace-web",
       "sourceRoot": "apps/marketplace-web/src",
       "prefix": "app",
+      "tags": [
+        "scope:frontend",
+        "type:app"
+      ],
       "architect": {
         "build": {
           "builder": "@angular/build:application",

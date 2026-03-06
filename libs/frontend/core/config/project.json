@@ -1,0 +1,13 @@
+{
+  "name": "frontend-core-config",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/core/config/src",
+  "prefix": "app",
+  "projectType": "library",
+  "tags": ["scope:frontend", "type:core", "domain:shared"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

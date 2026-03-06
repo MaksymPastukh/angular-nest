@@ -1,4 +1,4 @@
-import { ErrorResponseInterface } from '../../../../shared/domain'
+import { ErrorResponseInterface } from '@marketplace/frontend-shared-types'
 import { RatingFilterType } from '../types/reviews-rating.type'
 import { ReviewSortByType } from '../types/reviews-sortBy.type'
 import { ReviewResponseInterface } from './reviews-response.interface'
@@ -19,3 +19,4 @@ export interface ReviewsStateInterface {
   isLoadingMy: boolean
   error: ErrorResponseInterface | null
 }
+

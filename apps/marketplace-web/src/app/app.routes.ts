@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router'
-import { authForwardGuard } from './core/auth/guards/auth-forward.guard'
-import { authGuard } from './core/auth/guards/auth.guard'
-import { LayoutComponent } from './core/layout/layout'
+import { authForwardGuard } from '@marketplace/frontend-core-auth'
+import { authGuard } from '@marketplace/frontend-core-auth'
+import { LayoutComponent } from '@marketplace/frontend-core-layout'
 import { MainComponent } from './features/main/main'
 
 export const routes: Routes = [
@@ -48,3 +48,4 @@ export const routes: Routes = [
     ],
   },
 ]
+

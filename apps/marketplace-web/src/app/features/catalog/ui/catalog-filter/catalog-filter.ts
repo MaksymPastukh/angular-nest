@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 
-import { Accordion, AccordionContent, AccordionHeader, AccordionPanel, Slider } from '@/shared/ui'
+import { Accordion, AccordionContent, AccordionHeader, AccordionPanel, Slider } from '@marketplace/frontend-shared-ui'
 import { CatalogFilterFacade } from '../../store/catalog-filter.facade'
 import { BrandsDropdownComponent } from '../brands-dropdown/brands-dropdown'
 
@@ -205,3 +205,4 @@ export class CatalogFilterComponent {
     this.filterFacade.reloadFilterData()
   }
 }
+

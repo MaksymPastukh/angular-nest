@@ -1,0 +1,17 @@
+{
+  "name": "frontend-shared-ui",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/shared/ui/src",
+  "prefix": "app",
+  "projectType": "library",
+  "tags": [
+    "scope:frontend",
+    "type:ui",
+    "domain:shared"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

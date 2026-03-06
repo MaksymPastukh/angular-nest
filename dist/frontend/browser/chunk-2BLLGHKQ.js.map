@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["apps/marketplace-web/src/app/features/cart/pages/card/cart.ts", "apps/marketplace-web/src/app/features/cart/pages/card/cart.html"],
+  "sourcesContent": ["import { ChangeDetectionStrategy, Component } from '@angular/core'\n\n@Component({\n  selector: 'app-cart',\n  imports: [],\n  templateUrl: './cart.html',\n  styleUrl: './cart.scss',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n})\nexport class Cart {}\n", "<p>Component is work</p>\n"],
+  "mappings": ";;;;;;;;;;;;;AASM,IAAO,OAAP,MAAO,MAAI;;qCAAJ,OAAI;EAAA;yEAAJ,OAAI,WAAA,CAAA,CAAA,UAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,cAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;ACTjB,MAAA,4BAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,mBAAA;AAAiB,MAAA,0BAAA;;;;;sEDSP,MAAI,CAAA;UAPhB;uBACW,YAAU,SACX,CAAA,GAAE,iBAGM,wBAAwB,QAAM,UAAA,8BAAA,QAAA,CAAA,8IAAA,EAAA,CAAA;;;;6EAEpC,MAAI,EAAA,WAAA,QAAA,UAAA,iEAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": []
+}

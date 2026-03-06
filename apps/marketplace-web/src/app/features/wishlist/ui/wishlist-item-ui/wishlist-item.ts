@@ -1,4 +1,4 @@
-import { ImageUrlPipe } from '@/shared/pipes/image-url.pipe'
+import { ImageUrlPipe } from '@marketplace/frontend-shared-util'
 import { CurrencyPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core'
 import { Router } from '@angular/router'
@@ -42,3 +42,4 @@ export class WishlistItem {
     }
   }
 }
+

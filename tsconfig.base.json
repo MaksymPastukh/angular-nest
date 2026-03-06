@@ -5,12 +5,24 @@
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "Bundler",
-    "lib": ["ES2022", "DOM"],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
     "strict": true,
     "skipLibCheck": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@marketplace/frontend-core-auth": ["libs/frontend/core/auth/src/index.ts"],
+      "@marketplace/frontend-core-config": ["libs/frontend/core/config/src/index.ts"],
+      "@marketplace/frontend-core-http": ["libs/frontend/core/http/src/index.ts"],
+      "@marketplace/frontend-core-layout": ["libs/frontend/core/layout/src/index.ts"],
+      "@marketplace/frontend-shared-types": ["libs/frontend/shared/types/src/index.ts"],
+      "@marketplace/frontend-shared-ui": ["libs/frontend/shared/ui/src/index.ts"],
+      "@marketplace/frontend-shared-util": ["libs/frontend/shared/util/src/index.ts"]
+    }
   }
 }

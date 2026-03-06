@@ -1,5 +1,5 @@
 import { computed, inject, Injectable } from '@angular/core'
-import { PrimePaginatorEvent } from '../../../shared/domain/interfaces/prime-pagination.interface'
+import { PrimePaginatorEvent } from '@marketplace/frontend-shared-types'
 import { CreateQuestionInterface } from '../domain/interfaces/create-questin.inteface'
 import { QuestionsPageChangeInterface } from '../domain/interfaces/question-page-change.interface'
 import { ProductQuestionStore } from './product-questions.store'
@@ -63,3 +63,4 @@ export class ProductQuestionFacade {
     this.store.remove({ id })
   }
 }
+

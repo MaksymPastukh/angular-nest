@@ -1,0 +1,13 @@
+{
+  "name": "frontend-shared-types",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/shared/types/src",
+  "prefix": "app",
+  "projectType": "library",
+  "tags": ["scope:frontend", "type:util", "domain:shared"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

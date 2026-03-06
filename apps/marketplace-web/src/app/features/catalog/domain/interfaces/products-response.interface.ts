@@ -1,4 +1,4 @@
-import { ProductInterface } from '../../../../shared/domain/interfaces/product.interface'
+import { ProductInterface } from '@marketplace/frontend-shared-types'
 import { FacetItemInterface } from './catalog-facets.interface'
 
 export interface ProductsFacets {
@@ -15,3 +15,4 @@ export interface ProductsResponseInterface {
   totalPages: number
   facets?: ProductsFacets
 }
+

@@ -1,4 +1,4 @@
-import { ProductInterface } from '../../../../shared/domain/interfaces/product.interface'
+import { ProductInterface } from '@marketplace/frontend-shared-types'
 import { CatalogFilterParamsInterface } from './catalog-filter-params.interface'
 import { ProductsFacets } from './products-response.interface'
 
@@ -11,3 +11,4 @@ export interface ShopStateInterface {
   totalPages: number
   facets: ProductsFacets | null
 }
+

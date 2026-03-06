@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterLink, RouterLinkActive } from '@angular/router'
-import { AuthCoreFacade } from '../../../../core/auth/http/auth-core.facade'
-import { AuthState } from '../../../../core/auth/http/auth-state.service'
+import { AuthCoreFacade } from '@marketplace/frontend-core-auth'
+import { AuthState } from '@marketplace/frontend-core-auth'
 
 @Component({
   selector: 'app-admin-nav',
@@ -18,3 +18,4 @@ export class AdminNav {
     this.authCoreFacade.logout()
   }
 }
+
