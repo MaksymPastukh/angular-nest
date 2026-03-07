@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../libs/frontend/core/config/src/index.ts"],"names":[],"mappings":"AAAA,cAAc,uBAAuB,CAAA","sourcesContent":["export * from './lib/frontend-config'\n"]}

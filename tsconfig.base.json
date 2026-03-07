@@ -16,13 +16,75 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@marketplace/frontend-core-auth": ["libs/frontend/core/auth/src/index.ts"],
-      "@marketplace/frontend-core-config": ["libs/frontend/core/config/src/index.ts"],
-      "@marketplace/frontend-core-http": ["libs/frontend/core/http/src/index.ts"],
-      "@marketplace/frontend-core-layout": ["libs/frontend/core/layout/src/index.ts"],
-      "@marketplace/frontend-shared-types": ["libs/frontend/shared/types/src/index.ts"],
-      "@marketplace/frontend-shared-ui": ["libs/frontend/shared/ui/src/index.ts"],
-      "@marketplace/frontend-shared-util": ["libs/frontend/shared/util/src/index.ts"]
+      "@marketplace/frontend-auth-data-access": [
+        "libs/frontend/auth/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-auth-feature-login": [
+        "libs/frontend/auth/feature-login/src/index.ts"
+      ],
+      "@marketplace/frontend-auth-feature-register": [
+        "libs/frontend/auth/feature-register/src/index.ts"
+      ],
+      "@marketplace/frontend-auth-ui": [
+        "libs/frontend/auth/ui/src/index.ts"
+      ],
+      "@marketplace/frontend-core-auth": [
+        "libs/frontend/core/auth/src/index.ts"
+      ],
+      "@marketplace/frontend-core-config": [
+        "libs/frontend/core/config/src/index.ts"
+      ],
+      "@marketplace/frontend-core-http": [
+        "libs/frontend/core/http/src/index.ts"
+      ],
+      "@marketplace/frontend-core-layout": [
+        "libs/frontend/core/layout/src/index.ts"
+      ],
+      "@marketplace/frontend-shared-types": [
+        "libs/frontend/shared/types/src/index.ts"
+      ],
+      "@marketplace/frontend-shared-ui": [
+        "libs/frontend/shared/ui/src/index.ts"
+      ],
+      "@marketplace/frontend-shared-util": [
+        "libs/frontend/shared/util/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-data-access": [
+        "libs/frontend/catalog/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-feature-catalog-page": [
+        "libs/frontend/catalog/feature-catalog-page/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-feature-filters": [
+        "libs/frontend/catalog/feature-filters/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-ui": [
+        "libs/frontend/catalog/ui/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-util": [
+        "libs/frontend/catalog/util/src/index.ts"
+      ],
+      "@marketplace/frontend-product-data-access": [
+        "libs/frontend/product/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-product-feature-product-detail": [
+        "libs/frontend/product/feature-product-detail/src/index.ts"
+      ],
+      "@marketplace/frontend-product-feature-product-questions": [
+        "libs/frontend/product/feature-product-questions/src/index.ts"
+      ],
+      "@marketplace/frontend-product-ui": [
+        "libs/frontend/product/ui/src/index.ts"
+      ],
+      "@marketplace/frontend-product-util": [
+        "libs/frontend/product/util/src/index.ts"
+      ],
+      "@marketplace/frontend-wishlist-data-access": [
+        "libs/frontend/wishlist/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-wishlist-ui": [
+        "libs/frontend/wishlist/ui/src/index.ts"
+      ]
     }
   }
 }

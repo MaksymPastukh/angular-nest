@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { filter, map } from 'rxjs'
-import { WishlistFacade } from '../../store/wishlist.facade'
-import { WishlistItem } from '../../ui/wishlist-item-ui/wishlist-item'
+import { WishlistFacade } from '@marketplace/frontend-wishlist-data-access'
+import { WishlistItem } from '@marketplace/frontend-wishlist-ui'
 
 @Component({
   selector: 'app-component',

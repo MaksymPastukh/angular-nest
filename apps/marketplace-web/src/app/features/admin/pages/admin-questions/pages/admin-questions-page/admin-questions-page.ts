@@ -5,8 +5,8 @@ import { ButtonModule } from 'primeng/button'
 import { PaginatorModule } from 'primeng/paginator'
 import { Select, SelectChangeEvent } from 'primeng/select'
 import { TableModule } from 'primeng/table'
+import { ProductQuestionInterface } from '@marketplace/frontend-product-util'
 
-import { ProductQuestionInterface } from '../../../../../product-questions/domain/interfaces'
 import { AdminQuestionsFacade } from '../../store/admin-questions.facade'
 import { AnswerQuestionDialogComponent } from '../../ui/answer-question-dialog'
 

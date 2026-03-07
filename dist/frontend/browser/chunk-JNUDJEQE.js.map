@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["apps/marketplace-web/src/app/features/catalog/catalog.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router'\n\nexport const CATALOG_ROUTES: Routes = [\n  {\n    path: '',\n    loadComponent: () =>\n      import('../catalog/pages/catalog-page/catalog-page').then((c) => c.CatalogPage),\n  },\n]\n"],
-  "mappings": ";;;AAEO,IAAM,iBAAyB;EACpC;IACE,MAAM;IACN,eAAe,MACb,OAAO,qBAA4C,EAAE,KAAK,CAAC,MAAM,EAAE,WAAW;;;",
-  "names": []
-}

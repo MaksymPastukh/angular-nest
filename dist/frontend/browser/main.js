@@ -1,39 +1,48 @@
 import {
-  FocusTrap
-} from "./chunk-G36E6KPD.js";
-import {
-  ChevronLeftIcon
-} from "./chunk-KVYMSTMG.js";
-import {
   ProductCardComponent
-} from "./chunk-D7DESRAX.js";
-import "./chunk-EWMRC4OU.js";
+} from "./chunk-VRCWIN7C.js";
 import {
   ImageUrlPipe
-} from "./chunk-SKS7KXOA.js";
+} from "./chunk-SLKINVPH.js";
 import {
   AuthSessionService,
   AuthState,
   authForwardGuard,
   authGuard
-} from "./chunk-7HICPFIX.js";
+} from "./chunk-Q4357RD3.js";
 import {
   CreateProductStore
-} from "./chunk-BKOUHSSR.js";
+} from "./chunk-2MM3HFU6.js";
 import {
   Toast
-} from "./chunk-PJ62HP3G.js";
-import {
-  Button,
-  ButtonModule
-} from "./chunk-VT55VVTS.js";
+} from "./chunk-7TLDGY6A.js";
 import {
   AccordionModule,
   UISelect,
   UiAccordionComponent,
   UiAccordionContentSlot,
   UiAccordionHeaderSlot
-} from "./chunk-CYXE43MA.js";
+} from "./chunk-N33NCBGJ.js";
+import {
+  DomRendererFactory2,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+  bootstrapApplication,
+  provideRouter,
+  withInMemoryScrolling
+} from "./chunk-FFJL2FAH.js";
+import {
+  FocusTrap
+} from "./chunk-XFEF75Y4.js";
+import {
+  ChevronLeftIcon
+} from "./chunk-M7LHTB6X.js";
+import {
+  Button,
+  ButtonModule
+} from "./chunk-U35Y4BQQ.js";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -41,10 +50,10 @@ import {
   Ripple,
   blockBodyScroll,
   unblockBodyScroll
-} from "./chunk-LJIN2HB3.js";
+} from "./chunk-67PJZ4DZ.js";
 import {
   FRONTEND_CONFIG
-} from "./chunk-DOCLYP45.js";
+} from "./chunk-XI24UWMS.js";
 import {
   BaseComponent,
   BaseStyle,
@@ -66,17 +75,7 @@ import {
   s,
   z,
   zindexutils
-} from "./chunk-BEJS4TLU.js";
-import {
-  DomRendererFactory2,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-  bootstrapApplication,
-  provideRouter,
-  withInMemoryScrolling
-} from "./chunk-JD54KQF2.js";
+} from "./chunk-ZZ37GBKC.js";
 import {
   CommonModule,
   Footer,
@@ -93,7 +92,7 @@ import {
   isPlatformBrowser,
   provideHttpClient,
   withInterceptors
-} from "./chunk-SLVXWW7T.js";
+} from "./chunk-VRGFCTSI.js";
 import {
   ANIMATION_MODULE_TYPE,
   ChangeDetectionScheduler,
@@ -193,7 +192,7 @@ import {
   ɵɵtwoWayListener,
   ɵɵtwoWayProperty,
   ɵɵviewQuery
-} from "./chunk-IPMWBXXP.js";
+} from "./chunk-SMFOV6AR.js";
 import {
   __spreadValues
 } from "./chunk-GOMI4DH3.js";
@@ -224,7 +223,7 @@ var AsyncAnimationRendererFactory = class _AsyncAnimationRendererFactory {
     this._engine?.flush();
   }
   loadImpl() {
-    const loadFn = () => this.moduleImpl ?? import("./chunk-DKE3CIEA.js").then((m5) => m5);
+    const loadFn = () => this.moduleImpl ?? import("./chunk-HNGHKOM5.js").then((m5) => m5);
     let moduleImplPromise;
     if (this.loadingSchedulerFn) {
       moduleImplPromise = this.loadingSchedulerFn(loadFn);
@@ -7466,34 +7465,55 @@ var routes = [
       { path: "", component: MainComponent },
       {
         path: "auth",
-        loadChildren: () => import("./chunk-ZGIATP73.js").then((m5) => m5.AUTH_ROUTES),
         canActivate: [authForwardGuard],
-        data: { hideFooter: true }
+        data: { hideFooter: true },
+        children: [
+          {
+            path: "login",
+            loadComponent: () => import("./chunk-C6W7KYR4.js").then((m5) => m5.LoginPage)
+          },
+          {
+            path: "register",
+            loadComponent: () => import("./chunk-GWU3QAE6.js").then((m5) => m5.RegisterPage)
+          },
+          {
+            path: "request-reset-password",
+            loadComponent: () => import("./chunk-C6W7KYR4.js").then((m5) => m5.RequestResetPassword)
+          },
+          {
+            path: "reset",
+            loadComponent: () => import("./chunk-C6W7KYR4.js").then((m5) => m5.ResetComponent)
+          },
+          {
+            path: "verification",
+            loadComponent: () => import("./chunk-C6W7KYR4.js").then((m5) => m5.Verification)
+          }
+        ]
       },
       {
         path: "catalog",
-        loadChildren: () => import("./chunk-JNUDJEQE.js").then((m5) => m5.CATALOG_ROUTES)
+        loadChildren: () => import("./chunk-WW7GMLT3.js").then((m5) => m5.CATALOG_ROUTES)
       },
       {
         path: "admin",
-        loadChildren: () => import("./chunk-3WKBXFP4.js").then((m5) => m5.ADMIN_ROUTES)
+        loadChildren: () => import("./chunk-MR7TEBI6.js").then((m5) => m5.ADMIN_ROUTES)
       },
       {
         path: "product",
-        loadChildren: () => import("./chunk-SIJRNP3J.js").then((m5) => m5.PRODUCTS_ROUTES)
+        loadChildren: () => import("./chunk-JGONPI2C.js").then((m5) => m5.PRODUCTS_ROUTES)
       },
       {
         path: "",
-        loadChildren: () => import("./chunk-SVMRSFN6.js").then((m5) => m5.PERSONAL_ROUTES)
+        loadChildren: () => import("./chunk-NZ4NE2QC.js").then((m5) => m5.PERSONAL_ROUTES)
       },
       {
         path: "cart",
-        loadChildren: () => import("./chunk-E3JK2FVJ.js").then((m5) => m5.CART_ROUTES)
+        loadChildren: () => import("./chunk-BBW2DXLF.js").then((m5) => m5.CART_ROUTES)
       },
       {
         path: "wishlist",
         canActivate: [authGuard],
-        loadChildren: () => import("./chunk-BSF4XEGX.js").then((m5) => m5.WISHLIST_ROUTES)
+        loadChildren: () => import("./chunk-LIR2PKPK.js").then((m5) => m5.WISHLIST_ROUTES)
       }
     ]
   }

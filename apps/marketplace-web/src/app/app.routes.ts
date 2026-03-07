@@ -12,14 +12,40 @@ export const routes: Routes = [
       { path: '', component: MainComponent },
       {
         path: 'auth',
-        loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
         canActivate: [authForwardGuard],
         data: { hideFooter: true },
+        children: [
+          {
+            path: 'login',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.LoginPage),
+          },
+          {
+            path: 'register',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-register').then((m) => m.RegisterPage),
+          },
+          {
+            path: 'request-reset-password',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.RequestResetPassword),
+          },
+          {
+            path: 'reset',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.ResetComponent),
+          },
+          {
+            path: 'verification',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.Verification),
+          },
+        ],
       },
       {
         path: 'catalog',
         loadChildren: () =>
-          import('./features/catalog/catalog.routes').then((m) => m.CATALOG_ROUTES),
+          import('@marketplace/frontend-catalog-feature-catalog-page').then((m) => m.CATALOG_ROUTES),
       },
       {
         path: 'admin',
@@ -28,7 +54,7 @@ export const routes: Routes = [
       {
         path: 'product',
         loadChildren: () =>
-          import('./features/product-detail/product-detail.routes').then((m) => m.PRODUCTS_ROUTES),
+          import('@marketplace/frontend-product-feature-product-detail').then((m) => m.PRODUCTS_ROUTES),
       },
       {
         path: '',

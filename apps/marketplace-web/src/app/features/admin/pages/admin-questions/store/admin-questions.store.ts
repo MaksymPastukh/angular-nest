@@ -5,7 +5,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { exhaustMap, pipe, switchMap, tap } from 'rxjs'
 
-import { QuestionsPageInterface } from '../../../../product-questions/domain/interfaces'
+import { QuestionsPageInterface } from '@marketplace/frontend-product-util'
 import { AdminQuestionsService } from '../data-access/admin-questions.service'
 import type { AdminQuestionsFilterInterface } from '../domain/interfaces/admin-questions-filter.interface'
 import type { AdminQuestionsPageChangeInterface } from '../domain/interfaces/admin-questions-page-change.interface'

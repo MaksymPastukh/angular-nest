@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core'
 import { form, FormField, maxLength, minLength, required } from '@angular/forms/signals'
-import { ProductQuestionInterface } from '@features/product-questions/domain/interfaces/product-question.interface'
+import { ProductQuestionInterface } from '@marketplace/frontend-product-util'
 import { ButtonModule } from 'primeng/button'
 import { DialogModule } from 'primeng/dialog'
 import { AnswerModelInterface } from '../domain/interfaces/admin-answer-question.interface'

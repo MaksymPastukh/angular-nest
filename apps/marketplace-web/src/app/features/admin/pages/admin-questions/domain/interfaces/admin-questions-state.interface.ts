@@ -1,4 +1,4 @@
-import { ProductQuestionInterface } from '../../../../../product-questions/domain/interfaces'
+import { ProductQuestionInterface } from '@marketplace/frontend-product-util'
 import { AdminQuestionsFilterInterface } from './admin-questions-filter.interface'
 
 export interface AdminQuestionsStateInterface {

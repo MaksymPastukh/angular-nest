@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["libs/frontend/product/feature-product-detail/src/lib/product-detail.routes.ts"],
+  "sourcesContent": ["import { Routes } from '@angular/router'\n\nexport const PRODUCTS_ROUTES: Routes = [\n  {\n    path: ':id',\n    children: [\n      {\n        path: '',\n        loadComponent: () =>\n          import('./pages/product-detail-page/product-detail-page').then(\n            (c) => c.ProductDetailPage\n          ),\n        pathMatch: 'full',\n      },\n      {\n        path: 'size-guide',\n        loadComponent: () =>\n          import('./pages/size-guide-page/size-guide-page').then((c) => c.SizeGuidePage),\n      },\n    ],\n  },\n]\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;AAEO,IAAM,kBAA0B;EACrC;IACE,MAAM;IACN,UAAU;MACR;QACE,MAAM;QACN,eAAe,MACb,OAAO,qBAAiD,EAAE,KACxD,CAAC,MAAM,EAAE,iBAAiB;QAE9B,WAAW;;MAEb;QACE,MAAM;QACN,eAAe,MACb,OAAO,qBAAyC,EAAE,KAAK,CAAC,MAAM,EAAE,aAAa;;;;;",
+  "names": []
+}

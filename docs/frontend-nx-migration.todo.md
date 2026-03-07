@@ -22,14 +22,14 @@
   - `nx run-many -t lint -p frontend-core-auth,frontend-core-http,frontend-core-layout,frontend-core-config,frontend-shared-ui,frontend-shared-util,frontend-shared-types`
   - `nx build frontend --configuration=development`
 
-## Phase 2 - Auth domain (next)
-- [ ] Create and move:
+## Phase 2 - Auth domain
+- [x] Create and move:
   - `frontend-auth-data-access`
   - `frontend-auth-feature-login`
   - `frontend-auth-feature-register`
   - `frontend-auth-ui`
-- [ ] Remove remaining auth code from `apps/marketplace-web/src/app/features/auth`.
-- [ ] Replace lazy route import in `app.routes.ts` with auth feature-lib exports.
+- [x] Remove remaining auth code from `apps/marketplace-web/src/app/features/auth`.
+- [x] Replace auth routes in `app.routes.ts` with lazy auth feature-lib components.
 
 ## Phase 3 - Catalog + Product
 - [ ] Create and move:

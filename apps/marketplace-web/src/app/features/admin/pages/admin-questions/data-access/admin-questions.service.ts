@@ -1,14 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
-import { QuestionsPageInterface } from '@features/product-questions/domain/interfaces'
-import { ProductQuestionInterface } from '@features/product-questions/domain/interfaces/product-question.interface'
+import { FRONTEND_CONFIG } from '@marketplace/frontend-core-config'
+import { ProductQuestionInterface, QuestionsPageInterface } from '@marketplace/frontend-product-util'
 import { Observable } from 'rxjs'
-import { environment } from '../../../../../../environments/environment'
 
 @Injectable({ providedIn: 'root' })
 export class AdminQuestionsService {
   private readonly http = inject(HttpClient)
-  private readonly apiUrl = `${environment.api}questions`
+  private readonly apiUrl = `${FRONTEND_CONFIG.api}questions`
 
   public getQuestions(params: {
     page: number

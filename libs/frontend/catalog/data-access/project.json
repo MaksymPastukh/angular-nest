@@ -1,0 +1,18 @@
+{
+  "name": "frontend-catalog-data-access",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/catalog/data-access/src",
+  "prefix": "app",
+  "projectType": "library",
+  "tags": [
+    "scope:frontend",
+    "type:data-access",
+    "domain:catalog"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
+
