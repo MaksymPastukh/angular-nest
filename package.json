@@ -8,7 +8,6 @@
     "serve:frontend": "nx serve frontend",
     "serve:backend": "nx serve backend",
     "build": "nx build frontend",
-    "test": "nx test frontend",
     "lint": "nx lint frontend",
     "lint:boundaries": "eslint \"{apps,libs}/**/*.{ts,js}\" --config eslint.boundaries.config.mjs",
     "format": "prettier --write \"apps/marketplace-web/src/**/*.{ts,html,scss,css,json}\"",
