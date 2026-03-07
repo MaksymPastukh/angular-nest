@@ -204,5 +204,13 @@ export class CatalogFilterComponent {
   reloadFilterData(): void {
     this.filterFacade.reloadFilterData()
   }
+
+  protected formatFacetLabel(value: string): string {
+    return value
+      .trim()
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  }
 }
 

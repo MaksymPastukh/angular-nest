@@ -1,0 +1,1 @@
+{"version":3,"file":"update-review.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/reviews/domain/interfaces/update-review.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface UpdateReviewInterface {\n  id: string\n  rating: number\n  text: string\n}\n"]}

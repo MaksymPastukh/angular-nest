@@ -1,0 +1,10 @@
+export { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
+export { AutoCompleteModule } from 'primeng/autocomplete';
+export { Paginator } from 'primeng/paginator';
+export { Select } from 'primeng/select';
+export { Slider } from 'primeng/slider';
+export * from './accordion';
+export * from './breadcrumb';
+export * from './rating';
+export * from './select';
+export * from './ui-icon';

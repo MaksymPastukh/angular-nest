@@ -1,0 +1,1 @@
+{"version":3,"file":"upload-event.type.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/admin/data-access/src/lib/admin-products/domain/types/upload-event.type.ts"],"names":[],"mappings":"","sourcesContent":["export type UploadEventType =\n  | { type: 'imagesUploaded'; count: number }\n  | { type: 'imagesUploadError'; message: string }\n"]}

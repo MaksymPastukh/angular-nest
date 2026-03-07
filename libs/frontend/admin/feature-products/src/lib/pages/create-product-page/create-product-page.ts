@@ -1,6 +1,6 @@
 import { UISelect } from '@marketplace/frontend-shared-ui'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { FormField, minLength, required, submit } from '@angular/forms/signals'
 import { compatForm } from '@angular/forms/signals/compat'
@@ -12,9 +12,6 @@ import { Toast } from 'primeng/toast'
 import {
   CreateProductFormDataInterface,
   CreateProductStore,
-  DRESS_STYLE_GROUPS,
-  DRESS_STYLES,
-  FormSelectOptionInterface,
 } from '@marketplace/frontend-admin-data-access'
 
 type CreateProductFormModel = Omit<CreateProductFormDataInterface, 'colors' | 'sizes'> & {
@@ -48,20 +45,6 @@ export class CreateProductPage {
   protected readonly selectedFiles = signal<File[]>([])
   protected readonly MIN_IMAGES = 3
   protected readonly MAX_IMAGES = 10
-
-  readonly dressStyleGroups = computed(() => {
-    const map = new Map<string, FormSelectOptionInterface[]>()
-
-    for (const o of DRESS_STYLES) {
-      const g = o.group ?? 'core'
-      map.set(g, [...(map.get(g) ?? []), o])
-    }
-
-    return Array.from(map.entries()).map(([g, items]) => ({
-      label: DRESS_STYLE_GROUPS[g as keyof typeof DRESS_STYLE_GROUPS] ?? g,
-      items,
-    }))
-  })
 
   protected readonly model = signal<CreateProductFormModel>({
     title: '',

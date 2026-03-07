@@ -1,0 +1,1 @@
+{"version":3,"file":"reviews-page-change.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/reviews/domain/interfaces/reviews-page-change.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface ReviewsPageChangeInterface {\n  page: number\n  pageSize: number\n}\n"]}

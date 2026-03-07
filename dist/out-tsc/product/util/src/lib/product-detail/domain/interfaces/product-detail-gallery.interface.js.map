@@ -1,0 +1,1 @@
+{"version":3,"file":"product-detail-gallery.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/product-detail/domain/interfaces/product-detail-gallery.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface ProductDetailGalleryInterface {\n  image: string\n  alt: string\n}\n"]}

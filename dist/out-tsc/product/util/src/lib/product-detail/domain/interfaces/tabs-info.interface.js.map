@@ -1,0 +1,1 @@
+{"version":3,"file":"tabs-info.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/product-detail/domain/interfaces/tabs-info.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface TabsInterface {\n  title: string\n  value: number\n  content: string | number\n}\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"reviews-sort-select.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/reviews/domain/interfaces/reviews-sort-select.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface SelectOption<T> {\n  label: string\n  value: T\n}\n"]}

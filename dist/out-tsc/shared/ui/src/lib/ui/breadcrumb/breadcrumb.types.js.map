@@ -1,0 +1,1 @@
+{"version":3,"file":"breadcrumb.types.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/ui/src/lib/ui/breadcrumb/breadcrumb.types.ts"],"names":[],"mappings":"","sourcesContent":["export interface BreadcrumbItemInterface {\n  label: string\n  routerLink?: string\n  icon?: string\n  queryParams?: Record<string, unknown>\n  isActive?: boolean\n}\n"]}

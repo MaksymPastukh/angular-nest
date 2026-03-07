@@ -1,0 +1,1 @@
+{"version":3,"file":"reviews-sortBy.type.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/reviews/domain/types/reviews-sortBy.type.ts"],"names":[],"mappings":"","sourcesContent":["export type ReviewSortByType = 'newest' | 'oldest' | 'rating_desc' | 'rating_asc' | 'most_liked'\n"]}

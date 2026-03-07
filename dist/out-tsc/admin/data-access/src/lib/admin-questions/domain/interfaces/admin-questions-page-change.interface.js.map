@@ -1,0 +1,1 @@
+{"version":3,"file":"admin-questions-page-change.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/admin/data-access/src/lib/admin-questions/domain/interfaces/admin-questions-page-change.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface AdminQuestionsPageChangeInterface {\n  page: number\n  pageSize: number\n}\n"]}

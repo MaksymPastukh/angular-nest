@@ -45,14 +45,16 @@ const toggle = (list: string[], value: string): string[] =>
 const getColorHex = (name: string): string => {
   if (!name || typeof name !== 'string') return '#9e9e9e'
 
-  const predefined = COLOR_MAP[name]
+  const normalizedName = name.trim().toLowerCase()
+
+  const predefined = COLOR_MAP[normalizedName]
   if (predefined) return predefined
 
-  const cached = COLOR_HEX_CACHE.get(name)
+  const cached = COLOR_HEX_CACHE.get(normalizedName)
   if (cached) return cached
 
-  const hex = generateColorHex(name)
-  COLOR_HEX_CACHE.set(name, hex)
+  const hex = generateColorHex(normalizedName)
+  COLOR_HEX_CACHE.set(normalizedName, hex)
   return hex
 }
 

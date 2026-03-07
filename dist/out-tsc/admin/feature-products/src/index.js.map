@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../libs/frontend/admin/feature-products/src/index.ts"],"names":[],"mappings":"AAAA,cAAc,qDAAqD,CAAA","sourcesContent":["export * from './lib/pages/create-product-page/create-product-page'\r\n"]}

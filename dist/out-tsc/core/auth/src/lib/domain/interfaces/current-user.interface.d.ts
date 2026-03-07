@@ -1,0 +1,13 @@
+import { UserRole } from '../enums/user-role.enum';
+export interface CurrentUserResponseInterface {
+    access_token: string;
+    refresh_token: string;
+    user: User;
+}
+export interface User {
+    id: string;
+    firstName: string;
+    email: string;
+    role: UserRole;
+}
+//# sourceMappingURL=current-user.interface.d.ts.map

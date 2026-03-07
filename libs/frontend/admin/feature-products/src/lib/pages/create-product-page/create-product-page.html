@@ -108,7 +108,7 @@
           <div class="space-y-1">
             <div class="label">Style *</div>
             <app-ui-select
-              [options]="dressStyleGroups()"
+              [options]="store.options().dressStyles"
               [formField]="productForm.dressStyle"
               optionLabel="label"
               optionValue="value"
@@ -142,10 +142,6 @@
                 </div>
               </ng-template>
             </p-multiselect>
-
-            @if (productForm.colors().touched()) {
-              <p class="text-sm text-red-600">Select at least one color</p>
-            }
           </div>
 
           <div class="space-y-1">
@@ -155,7 +151,7 @@
               [formControl]="model().sizes"
               [options]="store.options().sizes"
               optionLabel="label"
-              optionValue="id"
+              optionValue="value"
               placeholder="Select sizes"
               display="chip"
               [showClear]="true"
@@ -163,10 +159,6 @@
               styleClass="w-full"
               panelStyleClass="w-full"
             />
-
-            @if (productForm.sizes().touched()) {
-              <p class="text-sm text-red-600">Select at least one size</p>
-            }
           </div>
         </div>
       </section>

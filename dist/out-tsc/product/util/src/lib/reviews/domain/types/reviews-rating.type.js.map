@@ -1,0 +1,1 @@
+{"version":3,"file":"reviews-rating.type.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/reviews/domain/types/reviews-rating.type.ts"],"names":[],"mappings":"","sourcesContent":["export type RatingFilterType = 1 | 2 | 3 | 4 | 5 | null\n"]}

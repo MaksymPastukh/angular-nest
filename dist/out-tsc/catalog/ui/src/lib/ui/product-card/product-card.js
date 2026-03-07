@@ -1,0 +1,51 @@
+import { __decorate } from "tslib";
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { ImageUrlPipe } from '@marketplace/frontend-shared-util';
+import { ButtonModule } from 'primeng/button';
+let ProductCardComponent = class ProductCardComponent {
+    product = input.required();
+    inWishlist = input(false);
+    wishlistLoading = input(false);
+    wishlistDisabled = input(false);
+    toggleWishlist = output();
+    router = inject(Router);
+    imageErrorHandled = signal(false);
+    wishlistIcon = computed(() => this.inWishlist() ? 'pi pi-heart-fill' : 'pi pi-heart');
+    wishlistAriaLabel = computed(() => this.inWishlist() ? 'Remove from wishlist' : 'Add to wishlist');
+    onToggleWishlist(event) {
+        event.stopPropagation();
+        if (this.wishlistDisabled())
+            return;
+        this.toggleWishlist.emit();
+    }
+    onImageError(event) {
+        if (this.imageErrorHandled())
+            return; // РџСЂРµРґРѕС‚РІСЂР°С‰Р°РµРј Р±РµСЃРєРѕРЅРµС‡РЅС‹Р№ С†РёРєР»
+        const img = event.target;
+        // РЎРµСЂС‹Р№ placeholder РєР°Рє data URI (1x1 СЃРµСЂС‹Р№ РєРІР°РґСЂР°С‚ SVG)
+        img.src =
+            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="24" fill="%239ca3af"%3ENo Image%3C/text%3E%3C/svg%3E';
+        this.imageErrorHandled.set(true);
+    }
+    navigateToDetail() {
+        const product = this.product();
+        if (product?.id) {
+            void this.router.navigate(['/product', product.id]);
+        }
+        else {
+            console.error('Product or product ID is undefined', product);
+        }
+    }
+};
+ProductCardComponent = __decorate([
+    Component({
+        selector: 'app-product-card',
+        imports: [CommonModule, ButtonModule, ImageUrlPipe],
+        templateUrl: './product-card.html',
+        styleUrl: './product-card.scss',
+        changeDetection: ChangeDetectionStrategy.OnPush,
+    })
+], ProductCardComponent);
+export { ProductCardComponent };

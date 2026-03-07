@@ -1,0 +1,16 @@
+import { EnrichedWishlistItem } from './enriched-wishlist-item.interface';
+export interface WishListStateInterface {
+    items: EnrichedWishlistItem[];
+    nextCursor: string | null;
+    hasMore: boolean;
+    total: number;
+    itemsMap: Record<string, boolean>;
+    isLoading: boolean;
+    isSubmitting?: boolean;
+    submittingIds: Record<string, boolean>;
+    isLoadingMy?: boolean;
+    error: {
+        message: string;
+    } | null;
+}
+//# sourceMappingURL=wish-list-state.interface.d.ts.map

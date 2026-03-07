@@ -1,0 +1,1 @@
+{"version":3,"file":"ask-question-model.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/product-questions/domain/interfaces/ask-question-model.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface AskQuestionModelInterface {\n  question: string\n}\n"]}

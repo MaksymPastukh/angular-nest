@@ -3,12 +3,14 @@ import { MenuItem } from 'primeng/api'
 import { buildBaseFacetsParams } from '@marketplace/frontend-catalog-util'
 import { CatalogFacetsStore } from './catalog-faceds-preview.store'
 import { ProductFilterStore } from './catalog-filter.store'
+import { ProductStore } from './products.store'
 
 @Injectable({
   providedIn: 'root',
 })
 export class CatalogFilterFacade {
   private readonly store = inject(ProductFilterStore)
+  private readonly productStore = inject(ProductStore)
   private readonly catalogFacetsStore = inject(CatalogFacetsStore)
 
   readonly isLoading = this.store.isLoading
@@ -18,8 +20,16 @@ export class CatalogFilterFacade {
   readonly sizes = this.store.sizes
   readonly brands = this.store.brands
   readonly colors = this.store.colors
-  readonly productTypes = this.store.productTypes
-  readonly dressStyles = this.store.dressStyles
+  readonly productTypes = computed(() => {
+    const facets = this.productStore.facetsProductTypeValues()
+    if (this.selected().selectedCategory) return facets
+    return facets.length > 0 ? facets : this.store.productTypes()
+  })
+  readonly dressStyles = computed(() => {
+    const facets = this.productStore.facetsDressStyleValues()
+    if (this.selected().selectedCategory) return facets
+    return facets.length > 0 ? facets : this.store.dressStyles()
+  })
 
   readonly selected = this.store.selected
 
@@ -98,7 +108,7 @@ export class CatalogFilterFacade {
     const sorted = [...brands].sort((a, b) => b.count - a.count)
 
     return sorted.map((b) => ({
-      label: `${b.value}`,
+      label: b.value.trim(),
       disabled: b.count === 0,
       command: () => this.store.toggleType(category, b.value),
     }))
@@ -122,7 +132,7 @@ export class CatalogFilterFacade {
     const sorted = [...brands].sort((a, b) => b.count - a.count)
 
     return sorted.map((b) => ({
-      label: `${b.value}`,
+      label: b.value.trim(),
       disabled: b.count === 0,
       command: () => this.store.toggleStyle(style, b.value),
     }))
