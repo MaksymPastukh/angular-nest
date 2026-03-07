@@ -20,7 +20,7 @@ import {
     (onClick)="onToggle()"
     [attr.aria-label]="ariaLabel()"
     [styleClass]="styleClass()"
-  ></p-button>`,
+  />`,
 })
 export class WishlistButton {
   private readonly facade = inject(WishlistFacade)

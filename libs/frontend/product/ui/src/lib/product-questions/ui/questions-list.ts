@@ -17,7 +17,7 @@ import { QuestionsPageChangeInterface } from '@marketplace/frontend-product-util
 
       @if (isLoading()) {
         <div class="flex items-center justify-center py-10">
-          <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
+          <p-progressSpinner ariaLabel="loading" />
         </div>
       } @else {
         @if (items().length === 0) {

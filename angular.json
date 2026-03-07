@@ -83,6 +83,15 @@
           },
           "defaultConfiguration": "development"
         },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/marketplace-web/src/**/*.ts",
+              "apps/marketplace-web/src/**/*.html"
+            ]
+          }
+        },
         "test": {
           "builder": "@angular/build:unit-test"
         }

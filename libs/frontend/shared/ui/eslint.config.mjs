@@ -1,5 +1,6 @@
 import nx from "@nx/eslint-plugin";
 import baseConfig from "../../../../eslint.config.mjs";
+import { frontendTemplateRules, frontendTsRules } from "../../../../tools/util/eslint.frontend-rules.mjs";
 
 export default [
     ...baseConfig,
@@ -9,7 +10,14 @@ export default [
         files: [
             "**/*.ts"
         ],
+        languageOptions: {
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname
+            }
+        },
         rules: {
+            ...frontendTsRules,
             "@angular-eslint/directive-selector": [
                 "error",
                 {
@@ -32,7 +40,10 @@ export default [
         files: [
             "**/*.html"
         ],
-        // Override or add rules here
-        rules: {}
+        rules: {
+            ...frontendTemplateRules
+        }
     }
 ];
+
+

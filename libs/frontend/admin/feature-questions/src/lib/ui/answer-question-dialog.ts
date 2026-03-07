@@ -18,7 +18,7 @@ import { AnswerModelInterface } from '@marketplace/frontend-admin-data-access'
       [resizable]="false"
       [visible]="visible()"
       (visibleChange)="visibleChange.emit($event)"
-      [style]="{ width: '40rem' }"
+      styleClass="w-[40rem]"
     >
       @if (question(); as q) {
         <div class="space-y-3">
