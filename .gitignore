@@ -10,5 +10,5 @@ vitest.config.*.timestamp*
 .github
 .vscode
 /docs
-/dist
+/dist/out-tsc
 .nx/polygraph
