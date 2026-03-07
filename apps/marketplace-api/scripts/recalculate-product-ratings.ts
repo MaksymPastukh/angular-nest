@@ -11,7 +11,7 @@ interface RatingDistribution {
   5: number;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/online-shop';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27018/marketplace';
 
 const ProductModel = mongoose.model('Product', ProductSchema);
 const ReviewModel = mongoose.model('Review', ReviewSchema);

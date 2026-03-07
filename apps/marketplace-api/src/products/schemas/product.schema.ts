@@ -113,7 +113,7 @@ export class Product {
    * Цена продукта
    * @example 1999.99
    */
-  @Prop({ required: true, type: Number, min: 0, index: true })
+  @Prop({ required: true, type: Number, min: 0 })
   public price: number;
 
   /**

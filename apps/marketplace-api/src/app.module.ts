@@ -27,7 +27,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
 
     // Подключение к MongoDB через Mongoose
     // Используем ConfigModule для получения строки подключения из .env
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/online-shop'),
+    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27018/marketplace'),
 
     // Модуль защиты от частых запросов (rate limiting)
     // Глобальные настройки: max 100 запросов за 60 секунд

@@ -47,7 +47,7 @@ export class Review {
   /**
    * ID пользователя, оставившего отзыв
    */
-  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'User' })
   public userId: string;
 
   /**
