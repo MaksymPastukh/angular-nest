@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["libs/frontend/cart/feature-cart-page/src/lib/cart.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router'\n\nexport const CART_ROUTES: Routes = [\n  {\n    path: '',\n    loadComponent: () => import('./pages/card/cart').then((c) => c.Cart),\n  },\n]\n"],
-  "mappings": ";;;;;;AAEO,IAAM,cAAsB;EACjC;IACE,MAAM;IACN,eAAe,MAAM,OAAO,qBAAmB,EAAE,KAAK,CAAC,MAAM,EAAE,IAAI;;;",
-  "names": []
-}

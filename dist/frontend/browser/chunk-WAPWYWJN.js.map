@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["libs/frontend/shared/util/src/lib/pipes/image-url.pipe.ts"],
-  "sourcesContent": ["import { Pipe, PipeTransform } from '@angular/core'\nimport { FRONTEND_CONFIG } from '@marketplace/frontend-core-config'\n@Pipe({\n  name: 'imageUrl',\n  standalone: true,\n})\nexport class ImageUrlPipe implements PipeTransform {\n  transform(imagePath: string | null | undefined): string {\n    if (!imagePath) {\n      return 'data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"400\"%3E%3Crect width=\"400\" height=\"400\" fill=\"%23e5e7eb\"/%3E%3Ctext x=\"50%25\" y=\"50%25\" dominant-baseline=\"middle\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"24\" fill=\"%239ca3af\"%3ENo Image%3C/text%3E%3C/svg%3E'\n    }\n    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {\n      return imagePath\n    }\n    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath\n    return `${FRONTEND_CONFIG.staticUrl}/${cleanPath}`\n  }\n}\n\r\n"],
-  "mappings": ";;;;;;;;;;AAMM,IAAO,eAAP,MAAO,cAAY;EACvB,UAAU,WAAoC;AAC5C,QAAI,CAAC,WAAW;AACd,aAAO;IACT;AACA,QAAI,UAAU,WAAW,SAAS,KAAK,UAAU,WAAW,UAAU,GAAG;AACvE,aAAO;IACT;AACA,UAAM,YAAY,UAAU,WAAW,GAAG,IAAI,UAAU,UAAU,CAAC,IAAI;AACvE,WAAO,GAAG,gBAAgB,SAAS,IAAI,SAAS;EAClD;;qCAVW,eAAY;EAAA;uFAAZ,eAAY,MAAA,KAAA,CAAA;;;sEAAZ,cAAY,CAAA;UAJxB;WAAK;MACJ,MAAM;MACN,YAAY;KACb;;;",
-  "names": []
-}

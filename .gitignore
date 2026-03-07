@@ -9,5 +9,5 @@ vitest.config.*.timestamp*
 /**/mongo_data/
 .github/
 .vscode/
-/dist/out-tsc
+/dist/
 .nx/polygraph

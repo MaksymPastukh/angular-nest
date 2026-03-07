@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["ui-breadcrumb.component.ts"],
-  "sourcesContent": ["\n    :host ::ng-deep .ui-breadcrumb__root {\n      background: transparent;\n      border: 0;\n      padding: 0;\n      margin-bottom: 1.25rem;\n    }\n    :host\n      ::ng-deep\n      .ui-breadcrumb\n      li.p-breadcrumb-item:last-of-type\n      a.p-breadcrumb-item-link\n      .p-breadcrumb-item-label {\n      color: #7c3aed !important;\n      font-weight: 600;\n    }\n    :host ::ng-deep .ui-breadcrumb li.p-breadcrumb-item:last-of-type a.p-breadcrumb-item-link {\n      pointer-events: none;\n      cursor: default;\n    }\n  "],
-  "mappings": ";AACI,MAAA,UAAA,CAAA;AACE,cAAA;AACA,UAAA;AACA,WAAA;AACA,iBAAA;AACF;AACA;AAME,SAAA;AACA,eAAA;AACF;AACA,MAAA,UAAA,eAAA,EAAA,kBAAA,cAAA,CAAA;AACE,kBAAA;AACA,UAAA;AACF;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["libs/frontend/cart/feature-cart-page/src/lib/pages/card/cart.ts", "libs/frontend/cart/feature-cart-page/src/lib/pages/card/cart.html"],
-  "sourcesContent": ["import { ChangeDetectionStrategy, Component } from '@angular/core'\n\n@Component({\n  selector: 'app-cart',\n  imports: [],\n  templateUrl: './cart.html',\n  styleUrl: './cart.scss',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n})\nexport class Cart {}\n", "<p>Component is work</p>;\n"],
-  "mappings": ";;;;;;;;;;;;AASM,IAAO,OAAP,MAAO,MAAI;;qCAAJ,OAAI;EAAA;yEAAJ,OAAI,WAAA,CAAA,CAAA,UAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,cAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;ACTjB,MAAA,4BAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,mBAAA;AAAiB,MAAA,0BAAA;AAAI,MAAA,iBAAA,GAAA,KAAA;;;;;sEDSX,MAAI,CAAA;UAPhB;uBACW,YAAU,SACX,CAAA,GAAE,iBAGM,wBAAwB,QAAM,UAAA,+BAAA,QAAA,CAAA,gJAAA,EAAA,CAAA;;;;6EAEpC,MAAI,EAAA,WAAA,QAAA,UAAA,mEAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
-  "names": []
-}
