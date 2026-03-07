@@ -1,0 +1,17 @@
+{
+    "name":  "frontend-home-feature-home-page",
+    "$schema":  "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot":  "libs/frontend/home/feature-home-page/src",
+    "prefix":  "app",
+    "projectType":  "library",
+    "tags":  [
+                 "scope:frontend",
+                 "type:feature",
+                 "domain:home"
+             ],
+    "targets":  {
+                    "lint":  {
+                                 "executor":  "@nx/eslint:lint"
+                             }
+                }
+}

@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["apps/marketplace-web/src/app/features/cart/pages/card/cart.scss", "apps/marketplace-web/src/app/features/cart/pages/card/cart.scss"],
-  "sourcesContent": [":host {\n  display: block;\n}\n", ":host {\n  display: block;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0Q6L0Zyb250ZW5kJTIwRGV2ZWxvcGVyL0FuZ3VsYXIvTWFya2V0cGxhY2UvYXBwcy9tYXJrZXRwbGFjZS13ZWIvc3JjL2FwcC9mZWF0dXJlcy9jYXJ0L3BhZ2VzL2NhcmQvY2FydC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UiLCJzb3VyY2VzQ29udGVudCI6WyI6aG9zdCB7XG4gIGRpc3BsYXk6IGJsb2NrO1xufVxuIl19 */"],
+  "sources": ["libs/frontend/cart/feature-cart-page/src/lib/pages/card/cart.scss", "libs/frontend/cart/feature-cart-page/src/lib/pages/card/cart.scss"],
+  "sourcesContent": [":host {\n  display: block;\n}\n", ":host {\n  display: block;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0Q6L0Zyb250ZW5kJTIwRGV2ZWxvcGVyL0FuZ3VsYXIvTWFya2V0cGxhY2UvbGlicy9mcm9udGVuZC9jYXJ0L2ZlYXR1cmUtY2FydC1wYWdlL3NyYy9saWIvcGFnZXMvY2FyZC9jYXJ0LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSIsInNvdXJjZXNDb250ZW50IjpbIjpob3N0IHtcbiAgZGlzcGxheTogYmxvY2s7XG59XG4iXX0= */"],
   "mappings": ";AAAA;AACE,WAAA;ACCF;",
   "names": []
 }

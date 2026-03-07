@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["libs/frontend/personal/feature-account/src/lib/pages/wishlist/wishlist.ts", "libs/frontend/personal/feature-account/src/lib/pages/wishlist/wishlist.html"],
+  "sourcesContent": ["import { Component } from '@angular/core'\n\n@Component({\n  selector: 'app-wishlist',\n  imports: [],\n  templateUrl: './wishlist.html',\n  styleUrl: './wishlist.scss',\n})\nexport class Wishlist {}\n", "<p>wishlist works!</p>\n"],
+  "mappings": ";;;;;;;;;;;AAQM,IAAO,WAAP,MAAO,UAAQ;;qCAAR,WAAQ;EAAA;yEAAR,WAAQ,WAAA,CAAA,CAAA,cAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,kBAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;ACRrB,MAAA,4BAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,iBAAA;AAAe,MAAA,0BAAA;;;;;sEDQL,UAAQ,CAAA;UANpB;uBACW,gBAAc,SACf,CAAA,GAAE,UAAA,2BAAA,CAAA;;;;6EAIA,UAAQ,EAAA,WAAA,YAAA,UAAA,6EAAA,YAAA,EAAA,CAAA;AAAA,GAAA;",
+  "names": []
+}

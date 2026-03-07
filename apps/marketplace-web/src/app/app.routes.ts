@@ -2,14 +2,17 @@ import { Routes } from '@angular/router'
 import { authForwardGuard } from '@marketplace/frontend-core-auth'
 import { authGuard } from '@marketplace/frontend-core-auth'
 import { LayoutComponent } from '@marketplace/frontend-core-layout'
-import { MainComponent } from './features/main/main'
 
 export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', component: MainComponent },
+      {
+        path: '',
+        loadComponent: () =>
+          import('@marketplace/frontend-home-feature-home-page').then((m) => m.MainComponent),
+      },
       {
         path: 'auth',
         canActivate: [authForwardGuard],
@@ -49,7 +52,8 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
-        loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+        loadChildren: () =>
+          import('@marketplace/frontend-admin-feature-dashboard').then((m) => m.ADMIN_ROUTES),
       },
       {
         path: 'product',
@@ -59,17 +63,18 @@ export const routes: Routes = [
       {
         path: '',
         loadChildren: () =>
-          import('./features/personal/personal.routes').then((m) => m.PERSONAL_ROUTES),
+          import('@marketplace/frontend-personal-feature-account').then((m) => m.PERSONAL_ROUTES),
       },
       {
         path: 'cart',
-        loadChildren: () => import('./features/cart/cart.routes').then((m) => m.CART_ROUTES),
+        loadChildren: () =>
+          import('@marketplace/frontend-cart-feature-cart-page').then((m) => m.CART_ROUTES),
       },
       {
         path: 'wishlist',
         canActivate: [authGuard],
         loadChildren: () =>
-          import('./features/wishlist/wishlist.routes').then((m) => m.WISHLIST_ROUTES),
+          import('@marketplace/frontend-wishlist-ui').then((m) => m.WISHLIST_ROUTES),
       },
     ],
   },

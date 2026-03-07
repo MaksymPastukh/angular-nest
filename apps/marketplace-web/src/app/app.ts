@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { RouterOutlet } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { Toast } from 'primeng/toast'
+import { CreateProductStore } from '@marketplace/frontend-admin-data-access'
 import { AuthState } from '@marketplace/frontend-core-auth'
-import { CreateProductStore } from './features/admin/pages/admin-products/store/create-product.store'
 
 @Component({
   selector: 'app-root',
@@ -45,7 +45,7 @@ export class App {
           })
           break
 
-        case 'imageUploaded':
+        case 'imagesUploaded':
           this.messageService.add({
             severity: 'success',
             summary: 'Изображение загружено',
@@ -54,7 +54,7 @@ export class App {
           })
           break
 
-        case 'imageUploadError':
+        case 'imagesUploadError':
           this.messageService.add({
             severity: 'error',
             summary: 'Ошибка загрузки',

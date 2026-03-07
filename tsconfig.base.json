@@ -84,6 +84,39 @@
       ],
       "@marketplace/frontend-wishlist-ui": [
         "libs/frontend/wishlist/ui/src/index.ts"
+      ],
+      "@marketplace/frontend-personal-feature-account": [
+        "libs/frontend/personal/feature-account/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-data-access": [
+        "libs/frontend/admin/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-ui": [
+        "libs/frontend/admin/ui/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-feature-dashboard": [
+        "libs/frontend/admin/feature-dashboard/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-feature-products": [
+        "libs/frontend/admin/feature-products/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-feature-questions": [
+        "libs/frontend/admin/feature-questions/src/index.ts"
+      ],
+      "@marketplace/frontend-cart-feature-cart-page": [
+        "libs/frontend/cart/feature-cart-page/src/index.ts"
+      ],
+      "@marketplace/frontend-home-util": [
+        "libs/frontend/home/util/src/index.ts"
+      ],
+      "@marketplace/frontend-home-data-access": [
+        "libs/frontend/home/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-home-ui": [
+        "libs/frontend/home/ui/src/index.ts"
+      ],
+      "@marketplace/frontend-home-feature-home-page": [
+        "libs/frontend/home/feature-home-page/src/index.ts"
       ]
     }
   }

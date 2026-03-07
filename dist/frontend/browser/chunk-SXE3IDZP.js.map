@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["libs/frontend/core/config/src/lib/frontend-config.ts"],
+  "sourcesContent": ["export interface FrontendConfigInterface {\n  api: string\n  staticUrl: string\n}\n\nexport const FRONTEND_CONFIG: FrontendConfigInterface = {\n  api: 'http://localhost:3000/api/',\n  staticUrl: 'http://localhost:3000',\n}\n"],
+  "mappings": ";AAKO,IAAM,kBAA2C;EACtD,KAAK;EACL,WAAW;;",
+  "names": []
+}

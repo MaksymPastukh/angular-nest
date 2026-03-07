@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["apps/marketplace-web/src/app/features/wishlist/wishlist.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router'\n\nexport const WISHLIST_ROUTES: Routes = [\n  {\n    path: '',\n    loadComponent: () => import('./pages/wishlist/wishlist').then((c) => c.Wishlist),\n  },\n]\n"],
-  "mappings": ";;;AAEO,IAAM,kBAA0B;EACrC;IACE,MAAM;IACN,eAAe,MAAM,OAAO,qBAA2B,EAAE,KAAK,CAAC,MAAM,EAAE,QAAQ;;;",
-  "names": []
-}
