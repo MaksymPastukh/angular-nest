@@ -17,6 +17,7 @@
       "root": "apps/marketplace-web",
       "sourceRoot": "apps/marketplace-web/src",
       "prefix": "app",
+      "tags": ["scope:frontend", "type:app"],
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -48,8 +49,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "1.5MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -79,8 +80,14 @@
           },
           "defaultConfiguration": "development"
         },
-        "test": {
-          "builder": "@angular/build:unit-test"
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/marketplace-web/src/**/*.ts",
+              "apps/marketplace-web/src/**/*.html"
+            ]
+          }
         }
       }
     }

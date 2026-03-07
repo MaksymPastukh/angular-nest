@@ -11,11 +11,30 @@
   "targetDefaults": {
     "@nx/vitest:test": {
       "cache": true,
+      "inputs": ["default", "^default"]
+    },
+    "@nx/eslint:lint": {
+      "cache": true,
       "inputs": [
         "default",
-        "^default"
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.mjs"
       ]
     }
   },
-  "nxCloudId": "69a71a8510aeb8fa2b6a803b"
+  "nxCloudId": "69a71a8510aeb8fa2b6a803b",
+  "namedInputs": {
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/xam-ci.yml"],
+    "default": ["sharedGlobals"]
+  },
+  "generators": {
+    "@nx/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "none"
+    },
+    "@nx/angular:component": {
+      "style": "scss"
+    }
+  }
 }

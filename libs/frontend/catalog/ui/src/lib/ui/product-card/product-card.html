@@ -1,0 +1,42 @@
+@if (product()) {
+  <div
+    class="w-70.5 h-auto xs:w-full xs:h-auto overflow-hidden cursor-pointer hover:border-gray-600"
+    (click)="navigateToDetail()"
+    (keyup.enter)="navigateToDetail()"
+    (keyup.space)="navigateToDetail()"
+    tabindex="0"
+  >
+    <div class="relative h-92.5 overflow-hidden rounded-lg">
+      <div class="absolute top-2 right-2 z-10">
+        <p-button
+          type="button"
+          [rounded]="true"
+          [text]="true"
+          [icon]="wishlistIcon()"
+          [loading]="wishlistLoading()"
+          [disabled]="wishlistDisabled()"
+          [attr.aria-label]="wishlistAriaLabel()"
+          styleClass="p-0 w-10 h-10 inline-flex items-center justify-center transition-transform duration-150 hover:scale-110 active:scale-95"
+          (onClick)="onToggleWishlist($event)"
+        />
+      </div>
+      <img
+        [src]="product().images[0] | imageUrl"
+        [alt]="product().title"
+        (error)="onImageError($event)"
+        class="w-full h-full object-cover"
+      />
+    </div>
+    <div class="flex justify-between items-center mt-7.5">
+      <div>
+        <h2 class="font-bold text-[#3c4242] text-lg">{{ product().title }}</h2>
+        <h3 class="font-medium text-sm text-[#807d7e] mt-2">{{ product().brand }}</h3>
+      </div>
+      <span
+        class="inline-block w-20.5 h-9 rounded-lg bg-gray-100 text-center leading-9 text-sm font-medium"
+      >
+        {{ product().price | currency: 'USD' : 'symbol-narrow' : '1.2-2' }}
+      </span>
+    </div>
+  </div>
+}

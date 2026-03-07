@@ -1,0 +1,17 @@
+{
+    "name":  "frontend-admin-feature-questions",
+    "$schema":  "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot":  "libs/frontend/admin/feature-questions/src",
+    "prefix":  "app",
+    "projectType":  "library",
+    "tags":  [
+                 "scope:frontend",
+                 "type:feature",
+                 "domain:admin"
+             ],
+    "targets":  {
+                    "lint":  {
+                                 "executor":  "@nx/eslint:lint"
+                             }
+                }
+}

@@ -1,7 +1,9 @@
 .idea
-/angular-nest-marketplace
+/angular-nest-marketplace/
 /node_modules/
 .nx/cache
 .nx/workspace-data
 vitest.config.*.timestamp*
 .angular
+/mongo_data/
+/**/mongo_data/

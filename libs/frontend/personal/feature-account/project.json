@@ -1,0 +1,17 @@
+{
+  "name": "frontend-personal-feature-account",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/personal/feature-account/src",
+  "prefix": "app",
+  "projectType": "library",
+  "tags": [
+    "scope:frontend",
+    "type:feature",
+    "domain:personal"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

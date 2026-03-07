@@ -1,0 +1,269 @@
+@use 'tailwindcss';
+@use 'fonts';
+@use 'variables';
+@import 'primeicons/primeicons.css';
+@import '@angular/cdk/overlay-prebuilt.css';
+
+@theme {
+  // Шрифты (для Tailwind)
+  --font-family: 'Causten', sans-serif;
+  --font-coresans: 'CoreSans', sans-serif;
+  --font-causten: 'Causten', sans-serif;
+
+  // Цвета (для Tailwind)
+  --color-reggg: #344343;
+  --color-primary: #8a33fd;
+  --color-text-base: #3c4242;
+  --color-text-gray: #807d7e;
+  --color-text-menu-gray: #8a8989;
+}
+
+// PrimeNG компоненты - светлая тема
+p-accordion-panel {
+  border-top: 1px solid rgba(190, 188, 189, 0.4) !important;
+  border-bottom: 1px solid rgba(190, 188, 189, 0.4) !important;
+  background-color: #ffffff !important; // Белый фон
+}
+
+p-accordion-header {
+  background-color: #ffffff !important; // Белый фон вместо темного
+  color: #3c4242 !important; // Темный текст на светлом фоне
+}
+
+.p-accordioncontent-content {
+  background-color: #ffffff !important; // Белый фон вместо темного
+
+  p {
+    color: #3c4242; // Темный текст на светлом фоне
+  }
+}
+
+.p-dropdown {
+  height: 44px !important;
+  align-items: center !important;
+  border: none !important;
+  background: #ffffff !important; // Белый фон
+}
+
+.p-inputtext {
+  background: #f6f6f6 !important;
+  border: none !important;
+  color: #3c4242 !important; // Темный текст
+}
+
+// Компоненты
+@layer components {
+  .label {
+    @apply block text-sm font-medium text-gray-700;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-gray-300 bg-white
+    px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400
+    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+
+  .error-text {
+    @apply text-xs text-red-600;
+  }
+
+  .hint-text {
+    @apply text-xs text-gray-500;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-gray-500 mt-1;
+  }
+
+  .size-btn {
+    @apply px-4 py-2 rounded-lg border text-sm hover:border-black;
+  }
+
+  .size-btn.active {
+    @apply border-black font-semibold;
+  }
+
+  .color-dot {
+    @apply w-6 h-6 rounded-full border cursor-pointer;
+  }
+
+  .info-box {
+    @apply bg-gray-50 rounded-lg p-4 text-gray-500;
+  }
+
+  .info-box span {
+    @apply block text-gray-900 font-medium;
+  }
+
+  .footer-title {
+    @apply font-family font-bold text-[28px] leading-[217%] text-[#f6f6f6];
+  }
+
+  .footer-menu li {
+    @apply font-family font-medium text-lg leading-[217%] text-[#f6f6f6];
+  }
+
+  .menu li {
+    @apply font-family font-medium text-[22px] text-[#807d7e] transition-colors;
+
+    &.active {
+      @apply text-[#3c4242];
+    }
+  }
+
+  .header-button {
+    @apply px-12 h-[46px] inline-flex items-center justify-center
+    rounded-lg border border-[#3c4242]
+    font-family font-medium text-lg text-[#8a33fd]
+    transition-all duration-300
+    hover:bg-[#8a33fd] hover:text-white hover:border-transparent;
+
+    &.active {
+      @apply bg-[#8a33fd] text-white border-transparent;
+    }
+  }
+
+  .auth-button {
+    @apply flex items-center justify-center w-full max-w-xl
+    p-4 rounded-lg border border-[#3c4242]
+    cursor-pointer transition-all duration-300
+    hover:bg-[#8a33fd]/5;
+  }
+
+  .auth-input {
+    @apply w-full max-w-xl p-4 rounded-lg border border-[#3c4242]
+    outline-none transition-all duration-200
+    focus:ring-2 focus:ring-[#8a33fd]/40 focus:border-[#8a33fd];
+  }
+
+  .auth-checkbox {
+    @apply flex items-start;
+
+    input[type='checkbox'] {
+      @apply mt-1 cursor-pointer;
+    }
+
+    label {
+      @apply ml-2 font-family cursor-pointer select-none;
+    }
+  }
+  .authResponseButton {
+    @apply mt-4 w-[184px] max-w-xl p-4 rounded-lg
+    font-[var(--font-coresans)] font-medium text-lg text-white cursor-pointer
+    bg-[#8a33fd] hover:bg-[#7a2ee0]
+    transition-all duration-300;
+  }
+
+  .errors {
+    @apply flex flex-col gap-1;
+    animation: slideDown 0.2s ease-out;
+
+    .error {
+      @apply text-red-500 text-sm;
+    }
+  }
+
+  .color-text-base {
+    @apply text-[#3c4242];
+  }
+}
+
+// Анимация появления ошибок
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:root {
+  color-scheme: light !important;
+}
+
+// Accordion
+.p-accordion {
+  .p-accordionheader a {
+    background: #ffffff !important;
+    color: #3c4242 !important;
+
+    &:hover {
+      background: #f6f6f6 !important;
+    }
+  }
+
+  .p-accordioncontent {
+    background: #ffffff !important;
+    color: #3c4242 !important;
+  }
+}
+
+// Carousel
+.p-carousel {
+  background: transparent !important;
+
+  .p-carousel-content {
+    background: transparent !important;
+  }
+
+  .p-carousel-indicators {
+    .p-carousel-indicator button {
+      background: #e0e0e0 !important;
+
+      &:hover {
+        background: #c0c0c0 !important;
+      }
+    }
+
+    .p-carousel-indicator-active button {
+      background: #8a33fd !important;
+    }
+  }
+}
+
+// Button
+.p-button {
+  background: #8a33fd !important;
+  border-color: #8a33fd !important;
+  color: #ffffff !important;
+
+  &:hover {
+    background: #7a2ee0 !important;
+    border-color: #7a2ee0 !important;
+  }
+
+  &.p-button-secondary {
+    background: #f6f6f6 !important;
+    color: #3c4242 !important;
+    border-color: #e0e0e0 !important;
+
+    &:hover {
+      background: #e0e0e0 !important;
+    }
+  }
+
+  &.p-button-text {
+    background: transparent !important;
+    color: #3c4242 !important;
+    border-color: transparent !important;
+  }
+}
+
+// Overlay панели
+.p-overlaypanel,
+.p-dialog,
+.p-sidebar {
+  background: #ffffff !important;
+  color: #3c4242 !important;
+}

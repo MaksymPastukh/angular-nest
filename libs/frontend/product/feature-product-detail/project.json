@@ -1,0 +1,18 @@
+{
+  "name": "frontend-product-feature-product-detail",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/product/feature-product-detail/src",
+  "prefix": "app",
+  "projectType": "library",
+  "tags": [
+    "scope:frontend",
+    "type:feature",
+    "domain:product"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
+

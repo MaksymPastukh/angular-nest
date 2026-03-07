@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["libs/frontend/personal/feature-account/src/lib/pages/order/order.ts", "libs/frontend/personal/feature-account/src/lib/pages/order/order.html"],
+  "sourcesContent": ["import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-order',\n  imports: [],\n  templateUrl: './order.html',\n  styleUrl: './order.scss',\n})\nexport class Order {\n\n}\n", "<p>order works!</p>\n"],
+  "mappings": ";;;;;;;;;;;AAQM,IAAO,QAAP,MAAO,OAAK;;qCAAL,QAAK;EAAA;yEAAL,QAAK,WAAA,CAAA,CAAA,WAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,eAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;ACRlB,MAAA,4BAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,cAAA;AAAY,MAAA,0BAAA;;;;;sEDQF,OAAK,CAAA;UANjB;uBACW,aAAW,SACZ,CAAA,GAAE,UAAA,wBAAA,CAAA;;;;6EAIA,OAAK,EAAA,WAAA,SAAA,UAAA,uEAAA,YAAA,EAAA,CAAA;AAAA,GAAA;",
+  "names": []
+}

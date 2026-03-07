@@ -1,0 +1,17 @@
+{
+    "name":  "frontend-admin-data-access",
+    "$schema":  "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot":  "libs/frontend/admin/data-access/src",
+    "prefix":  "app",
+    "projectType":  "library",
+    "tags":  [
+                 "scope:frontend",
+                 "type:data-access",
+                 "domain:admin"
+             ],
+    "targets":  {
+                    "lint":  {
+                                 "executor":  "@nx/eslint:lint"
+                             }
+                }
+}

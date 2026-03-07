@@ -1,0 +1,30 @@
+<section class="container mx-auto flex mb-25">
+  <app-catalog-filter />
+
+  <div class="ml-10 mt-10 flex flex-col z-1">
+    <h2 class="font-bold text-2xl font-family color-active">{{ title() }} {{ titleSuffix() }}</h2>
+
+    <div class="flex flex-wrap mt-10 gap-x-5 gap-y-6">
+      @if (productFacade.isLoading()) {
+        <div class="w-full text-center py-8">
+          <p class="text-lg text-gray-600">Загружаем продукты...</p>
+        </div>
+      } @else if (productFacade.products().length === 0) {
+        <div class="w-full text-center py-8">
+          <p class="text-lg text-gray-600">Продукты не найдены</p>
+          <p class="text-sm text-gray-500 mt-2">Попробуйте изменить фильтры или сбросить их</p>
+        </div>
+      } @else {
+        @for (product of productFacade.products(); track product.id) {
+          <app-product-card
+            [product]="product"
+            [inWishlist]="isInWishlist(product.id)"
+            (toggleWishlist)="toggleWishlist(product.id)"
+          />
+        }
+      }
+    </div>
+  </div>
+</section>
+
+<app-table-best-price [itemsTableBestPrice]="itemsTableBestPrice" />

@@ -1,50 +1,112 @@
 import { Routes } from '@angular/router'
-import { authForwardGuard } from './core/auth/guards/auth-forward.guard'
-import { authGuard } from './core/auth/guards/auth.guard'
-import { LayoutComponent } from './core/layout/layout'
-import { MainComponent } from './features/main/main'
+import { AdminLayout } from '@marketplace/frontend-admin-ui'
+import { authForwardGuard } from '@marketplace/frontend-core-auth'
+import { authGuard } from '@marketplace/frontend-core-auth'
+import { adminGuard } from '@marketplace/frontend-core-auth'
+import { LayoutComponent } from '@marketplace/frontend-core-layout'
 
 export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', component: MainComponent },
+      {
+        path: '',
+        loadComponent: () =>
+          import('@marketplace/frontend-home-feature-home-page').then((m) => m.MainComponent),
+      },
       {
         path: 'auth',
-        loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
         canActivate: [authForwardGuard],
         data: { hideFooter: true },
+        children: [
+          {
+            path: 'login',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.LoginPage),
+          },
+          {
+            path: 'register',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-register').then((m) => m.RegisterPage),
+          },
+          {
+            path: 'request-reset-password',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.RequestResetPassword),
+          },
+          {
+            path: 'reset',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.ResetComponent),
+          },
+          {
+            path: 'verification',
+            loadComponent: () =>
+              import('@marketplace/frontend-auth-feature-login').then((m) => m.Verification),
+          },
+        ],
       },
       {
         path: 'catalog',
         loadChildren: () =>
-          import('./features/catalog/catalog.routes').then((m) => m.CATALOG_ROUTES),
+          import('@marketplace/frontend-catalog-feature-catalog-page').then((m) => m.CATALOG_ROUTES),
       },
       {
         path: 'admin',
-        loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+        children: [
+          {
+            path: 'panel',
+            canActivate: [adminGuard],
+            component: AdminLayout,
+            children: [
+              {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'create-product-page',
+              },
+              {
+                path: 'create-product-page',
+                loadComponent: () =>
+                  import('@marketplace/frontend-admin-feature-products').then(
+                    (c) => c.CreateProductPage
+                  ),
+                data: { breadcrumb: 'Create product' },
+              },
+              {
+                path: 'questions',
+                loadComponent: () =>
+                  import('@marketplace/frontend-admin-feature-questions').then(
+                    (c) => c.AdminQuestionsPageComponent
+                  ),
+                data: { breadcrumb: 'Answer on question' },
+              },
+            ],
+          },
+        ],
       },
       {
         path: 'product',
         loadChildren: () =>
-          import('./features/product-detail/product-detail.routes').then((m) => m.PRODUCTS_ROUTES),
+          import('@marketplace/frontend-product-feature-product-detail').then((m) => m.PRODUCTS_ROUTES),
       },
       {
         path: '',
         loadChildren: () =>
-          import('./features/personal/personal.routes').then((m) => m.PERSONAL_ROUTES),
+          import('@marketplace/frontend-personal-feature-account').then((m) => m.PERSONAL_ROUTES),
       },
       {
         path: 'cart',
-        loadChildren: () => import('./features/cart/cart.routes').then((m) => m.CART_ROUTES),
+        loadChildren: () =>
+          import('@marketplace/frontend-cart-feature-cart-page').then((m) => m.CART_ROUTES),
       },
       {
         path: 'wishlist',
         canActivate: [authGuard],
         loadChildren: () =>
-          import('./features/wishlist/wishlist.routes').then((m) => m.WISHLIST_ROUTES),
+          import('@marketplace/frontend-wishlist-ui').then((m) => m.WISHLIST_ROUTES),
       },
     ],
   },
 ]
+

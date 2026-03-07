@@ -1,5 +1,3 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -19,7 +17,81 @@
       "@/*": ["app/*"],
       "@shared/*": ["app/shared/*"],
       "@features/*": ["app/features/*"],
-      "@core/*": ["app/core/*"]
+      "@core/*": ["app/core/*"],
+      "@marketplace/frontend-auth-data-access": [
+        "../../../libs/frontend/auth/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-auth-ui": ["../../../libs/frontend/auth/ui/src/index.ts"],
+      "@marketplace/frontend-auth-feature-login": [
+        "../../../libs/frontend/auth/feature-login/src/index.ts"
+      ],
+      "@marketplace/frontend-auth-feature-register": [
+        "../../../libs/frontend/auth/feature-register/src/index.ts"
+      ],
+      "@marketplace/frontend-shared-ui": ["../../../libs/frontend/shared/ui/src/index.ts"],
+      "@marketplace/frontend-shared-util": [
+        "../../../libs/frontend/shared/util/src/index.ts"
+      ],
+      "@marketplace/frontend-shared-types": [
+        "../../../libs/frontend/shared/types/src/index.ts"
+      ],
+      "@marketplace/frontend-core-auth": ["../../../libs/frontend/core/auth/src/index.ts"],
+      "@marketplace/frontend-core-config": ["../../../libs/frontend/core/config/src/index.ts"],
+      "@marketplace/frontend-core-http": ["../../../libs/frontend/core/http/src/index.ts"],
+      "@marketplace/frontend-core-layout": ["../../../libs/frontend/core/layout/src/index.ts"],
+      "@marketplace/frontend-catalog-data-access": [
+        "../../../libs/frontend/catalog/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-feature-catalog-page": [
+        "../../../libs/frontend/catalog/feature-catalog-page/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-feature-filters": [
+        "../../../libs/frontend/catalog/feature-filters/src/index.ts"
+      ],
+      "@marketplace/frontend-catalog-ui": ["../../../libs/frontend/catalog/ui/src/index.ts"],
+      "@marketplace/frontend-catalog-util": ["../../../libs/frontend/catalog/util/src/index.ts"],
+      "@marketplace/frontend-product-data-access": [
+        "../../../libs/frontend/product/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-product-feature-product-detail": [
+        "../../../libs/frontend/product/feature-product-detail/src/index.ts"
+      ],
+      "@marketplace/frontend-product-feature-product-questions": [
+        "../../../libs/frontend/product/feature-product-questions/src/index.ts"
+      ],
+      "@marketplace/frontend-product-ui": ["../../../libs/frontend/product/ui/src/index.ts"],
+      "@marketplace/frontend-product-util": ["../../../libs/frontend/product/util/src/index.ts"],
+      "@marketplace/frontend-wishlist-data-access": [
+        "../../../libs/frontend/wishlist/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-wishlist-ui": ["../../../libs/frontend/wishlist/ui/src/index.ts"],
+      "@marketplace/frontend-personal-feature-account": [
+        "../../../libs/frontend/personal/feature-account/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-data-access": [
+        "../../../libs/frontend/admin/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-ui": ["../../../libs/frontend/admin/ui/src/index.ts"],
+      "@marketplace/frontend-admin-feature-dashboard": [
+        "../../../libs/frontend/admin/feature-dashboard/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-feature-products": [
+        "../../../libs/frontend/admin/feature-products/src/index.ts"
+      ],
+      "@marketplace/frontend-admin-feature-questions": [
+        "../../../libs/frontend/admin/feature-questions/src/index.ts"
+      ],
+      "@marketplace/frontend-cart-feature-cart-page": [
+        "../../../libs/frontend/cart/feature-cart-page/src/index.ts"
+      ],
+      "@marketplace/frontend-home-util": ["../../../libs/frontend/home/util/src/index.ts"],
+      "@marketplace/frontend-home-data-access": [
+        "../../../libs/frontend/home/data-access/src/index.ts"
+      ],
+      "@marketplace/frontend-home-ui": ["../../../libs/frontend/home/ui/src/index.ts"],
+      "@marketplace/frontend-home-feature-home-page": [
+        "../../../libs/frontend/home/feature-home-page/src/index.ts"
+      ]
     }
   },
   "angularCompilerOptions": {
