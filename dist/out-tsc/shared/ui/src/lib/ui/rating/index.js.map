@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/ui/src/lib/ui/rating/index.ts"],"names":[],"mappings":"AAAA,cAAc,uBAAuB,CAAA;AACrC,cAAc,kBAAkB,CAAA","sourcesContent":["export * from './ui-rating.component'\nexport * from './ui-rating.type'\n"]}

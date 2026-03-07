@@ -1,1 +1,0 @@
-{"version":3,"file":"status.type.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/product-detail/domain/types/status.type.ts"],"names":[],"mappings":"","sourcesContent":["export type StatusType = 'idle' | 'loading' | 'success' | 'error'\n"]}

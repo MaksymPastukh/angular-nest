@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/ui/src/lib/ui/breadcrumb/index.ts"],"names":[],"mappings":"AAAA,cAAc,sBAAsB,CAAA;AACpC,cAAc,oBAAoB,CAAA;AAClC,cAAc,2BAA2B,CAAA","sourcesContent":["export * from './breadcrumb.adapter'\nexport * from './breadcrumb.types'\nexport * from './ui-breadcrumb.component'\n"]}

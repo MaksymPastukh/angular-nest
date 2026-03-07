@@ -1,1 +1,0 @@
-{"version":3,"file":"color-option.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/admin/data-access/src/lib/admin-products/domain/interfaces/color-option.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface ColorOptionInterface {\n  id: string\n  name: string\n  hex: string\n}\n"]}

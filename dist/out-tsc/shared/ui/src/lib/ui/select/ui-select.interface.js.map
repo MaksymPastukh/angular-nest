@@ -1,1 +1,0 @@
-{"version":3,"file":"ui-select.interface.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/ui/src/lib/ui/select/ui-select.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface UISelectOption<T = string> {\n  label: string | string[]\n  value: T\n  disabled?: boolean\n}\n"]}

@@ -1,1 +1,0 @@
-{"version":3,"file":"add-wishlist-response.interface.d.ts","sourceRoot":"","sources":["../../../../../../../../libs/frontend/wishlist/data-access/src/lib/domain/interfaces/add-wishlist-response.interface.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,uBAAuB;IACtC,SAAS,EAAE,MAAM,CAAA;IACjB,OAAO,EAAE,IAAI,CAAA;IACb,KAAK,EAAE,OAAO,CAAA;CACf"}

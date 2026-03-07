@@ -1,1 +1,0 @@
-{"version":3,"file":"gruped-style.type.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/admin/data-access/src/lib/admin-products/domain/types/gruped-style.type.ts"],"names":[],"mappings":"","sourcesContent":["export interface Grouped<T> {\n  label: string\n  items: T[]\n}\n"]}

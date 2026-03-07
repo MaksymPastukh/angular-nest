@@ -1,1 +1,0 @@
-{"version":3,"file":"question-page-change.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/product-questions/domain/interfaces/question-page-change.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface QuestionsPageChangeInterface {\n  page: number\n  pageSize: number\n}\n"]}

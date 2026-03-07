@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/types/src/lib/domain/types/index.ts"],"names":[],"mappings":"AAAA,cAAc,kBAAkB,CAAA","sourcesContent":["export * from './load-kind.type'\n"]}

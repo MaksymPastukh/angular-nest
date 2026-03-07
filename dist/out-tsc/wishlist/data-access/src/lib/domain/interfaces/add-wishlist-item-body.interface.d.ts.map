@@ -1,1 +1,0 @@
-{"version":3,"file":"add-wishlist-item-body.interface.d.ts","sourceRoot":"","sources":["../../../../../../../../libs/frontend/wishlist/data-access/src/lib/domain/interfaces/add-wishlist-item-body.interface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,6CAA6C,CAAA;AAEhF,MAAM,WAAW,mBAAmB;IAClC,MAAM,CAAC,EAAE,kBAAkB,CAAA;IAC3B,IAAI,CAAC,EAAE,MAAM,CAAA;CACd"}

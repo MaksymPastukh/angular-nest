@@ -1,1 +1,0 @@
-{"version":3,"file":"prime-pagination.interface.d.ts","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/types/src/lib/domain/interfaces/prime-pagination.interface.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,mBAAmB;IAClC,IAAI,EAAE,MAAM,CAAA;IACZ,KAAK,EAAE,MAAM,CAAA;IACb,IAAI,EAAE,MAAM,CAAA;IACZ,SAAS,EAAE,MAAM,CAAA;CAClB"}

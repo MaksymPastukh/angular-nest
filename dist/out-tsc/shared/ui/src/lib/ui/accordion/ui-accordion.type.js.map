@@ -1,1 +1,0 @@
-{"version":3,"file":"ui-accordion.type.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/ui/src/lib/ui/accordion/ui-accordion.type.ts"],"names":[],"mappings":"","sourcesContent":["export type AccordionValue = string | string[] | number | number[] | null | undefined\n"]}

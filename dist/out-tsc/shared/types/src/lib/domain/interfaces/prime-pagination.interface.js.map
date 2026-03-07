@@ -1,1 +1,0 @@
-{"version":3,"file":"prime-pagination.interface.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/types/src/lib/domain/interfaces/prime-pagination.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface PrimePaginatorEvent {\n  page: number\n  first: number\n  rows: number\n  pageCount: number\n}\n"]}

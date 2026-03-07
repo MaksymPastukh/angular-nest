@@ -1,1 +1,0 @@
-{"version":3,"file":"create-questin.inteface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/product-questions/domain/interfaces/create-questin.inteface.ts"],"names":[],"mappings":"","sourcesContent":["export interface CreateQuestionInterface {\n  productId: string\n  question: string\n}\n"]}

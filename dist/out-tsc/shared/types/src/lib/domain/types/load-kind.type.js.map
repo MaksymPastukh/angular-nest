@@ -1,1 +1,0 @@
-{"version":3,"file":"load-kind.type.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/types/src/lib/domain/types/load-kind.type.ts"],"names":[],"mappings":"","sourcesContent":["export type LoadKindType = 'list' | 'my' | 'submit'\n"]}

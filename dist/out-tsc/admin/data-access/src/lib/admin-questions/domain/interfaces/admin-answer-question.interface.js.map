@@ -1,1 +1,0 @@
-{"version":3,"file":"admin-answer-question.interface.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/admin/data-access/src/lib/admin-questions/domain/interfaces/admin-answer-question.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface AnswerModelInterface {\n  answer: string\n}\n"]}

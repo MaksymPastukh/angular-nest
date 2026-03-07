@@ -1,1 +1,0 @@
-{"version":3,"file":"question-status.type.js","sourceRoot":"","sources":["../../../../../../../../../libs/frontend/product/util/src/lib/product-questions/domain/types/question-status.type.ts"],"names":[],"mappings":"","sourcesContent":["export type QuestionStatusType = 'PENDING' | 'ANSWERED' | 'HIDDEN' | 'DELETED'\n"]}

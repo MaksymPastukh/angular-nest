@@ -1,1 +1,0 @@
-{"version":3,"file":"ui-rating.type.js","sourceRoot":"","sources":["../../../../../../../../libs/frontend/shared/ui/src/lib/ui/rating/ui-rating.type.ts"],"names":[],"mappings":"","sourcesContent":["export type RatingValueType = number | null\n"]}
