@@ -7,3 +7,6 @@ vitest.config.*.timestamp*
 .angular
 /mongo_data/
 /**/mongo_data/
+.github
+
+.nx/polygraph
