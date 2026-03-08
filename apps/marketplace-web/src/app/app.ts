@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core'
-import { RouterOutlet } from '@angular/router'
-import { MessageService } from 'primeng/api'
-import { Toast } from 'primeng/toast'
-import { CreateProductStore } from '@marketplace/frontend-admin-data-access'
-import { AuthState } from '@marketplace/frontend-core-auth'
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { CreateProductStore } from '@marketplace/frontend-admin-data-access';
+import { AuthState } from '@marketplace/frontend-core-auth';
+import { MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
@@ -13,17 +13,17 @@ import { AuthState } from '@marketplace/frontend-core-auth'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly productStore = inject(CreateProductStore)
-  private readonly messageService = inject(MessageService)
-  private readonly authState = inject(AuthState)
+  protected readonly productStore = inject(CreateProductStore);
+  private readonly messageService = inject(MessageService);
+  private readonly authState = inject(AuthState);
 
   constructor() {
     // Восстанавливаем сессию пользователя из localStorage при старте приложения
-    this.authState.bootstrap()
+    this.authState.bootstrap();
     // Effect для обработки событий создания продукта
     effect(() => {
-      const event = this.productStore.event()
-      if (!event) return
+      const event = this.productStore.event();
+      if (!event) return;
 
       switch (event.type) {
         case 'productCreated':
@@ -32,8 +32,8 @@ export class App {
             summary: 'Продукт создан!',
             detail: `Продукт "${event.productTitle}" успешно создан`,
             life: 3000,
-          })
-          break
+          });
+          break;
 
         case 'productCreateError':
           this.messageService.add({
@@ -41,8 +41,8 @@ export class App {
             summary: 'Ошибка создания',
             detail: event.message,
             life: 3000,
-          })
-          break
+          });
+          break;
 
         case 'imagesUploaded':
           this.messageService.add({
@@ -50,8 +50,8 @@ export class App {
             summary: 'Изображение загружено',
             detail: 'Изображение успешно загружено на сервер',
             life: 2000,
-          })
-          break
+          });
+          break;
 
         case 'imagesUploadError':
           this.messageService.add({
@@ -59,13 +59,12 @@ export class App {
             summary: 'Ошибка загрузки',
             detail: event.message,
             life: 3000,
-          })
-          break
+          });
+          break;
       }
 
       // Очищаем event после обработки
-      this.productStore.clearEvent()
-    })
+      this.productStore.clearEvent();
+    });
   }
 }
-
