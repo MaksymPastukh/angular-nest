@@ -1,9 +1,7 @@
-import { Routes } from '@angular/router'
-import { AdminLayout } from '@marketplace/frontend-admin-ui'
-import { authForwardGuard } from '@marketplace/frontend-core-auth'
-import { authGuard } from '@marketplace/frontend-core-auth'
-import { adminGuard } from '@marketplace/frontend-core-auth'
-import { LayoutComponent } from '@marketplace/frontend-core-layout'
+import { Routes } from '@angular/router';
+import { AdminLayout } from '@marketplace/frontend-admin-ui';
+import { adminGuard, authForwardGuard, authGuard } from '@marketplace/frontend-core-auth';
+import { LayoutComponent } from '@marketplace/frontend-core-layout';
 
 export const routes: Routes = [
   {
@@ -33,7 +31,9 @@ export const routes: Routes = [
           {
             path: 'request-reset-password',
             loadComponent: () =>
-              import('@marketplace/frontend-auth-feature-login').then((m) => m.RequestResetPassword),
+              import('@marketplace/frontend-auth-feature-login').then(
+                (m) => m.RequestResetPassword,
+              ),
           },
           {
             path: 'reset',
@@ -50,7 +50,9 @@ export const routes: Routes = [
       {
         path: 'catalog',
         loadChildren: () =>
-          import('@marketplace/frontend-catalog-feature-catalog-page').then((m) => m.CATALOG_ROUTES),
+          import('@marketplace/frontend-catalog-feature-catalog-page').then(
+            (m) => m.CATALOG_ROUTES,
+          ),
       },
       {
         path: 'admin',
@@ -69,7 +71,7 @@ export const routes: Routes = [
                 path: 'create-product-page',
                 loadComponent: () =>
                   import('@marketplace/frontend-admin-feature-products').then(
-                    (c) => c.CreateProductPage
+                    (c) => c.CreateProductPage,
                   ),
                 data: { breadcrumb: 'Create product' },
               },
@@ -77,7 +79,7 @@ export const routes: Routes = [
                 path: 'questions',
                 loadComponent: () =>
                   import('@marketplace/frontend-admin-feature-questions').then(
-                    (c) => c.AdminQuestionsPageComponent
+                    (c) => c.AdminQuestionsPageComponent,
                   ),
                 data: { breadcrumb: 'Answer on question' },
               },
@@ -88,7 +90,9 @@ export const routes: Routes = [
       {
         path: 'product',
         loadChildren: () =>
-          import('@marketplace/frontend-product-feature-product-detail').then((m) => m.PRODUCTS_ROUTES),
+          import('@marketplace/frontend-product-feature-product-detail').then(
+            (m) => m.PRODUCTS_ROUTES,
+          ),
       },
       {
         path: '',
@@ -108,5 +112,4 @@ export const routes: Routes = [
       },
     ],
   },
-]
-
+];

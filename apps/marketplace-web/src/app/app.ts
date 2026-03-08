@@ -14,7 +14,6 @@ import { AuthState } from '@marketplace/frontend-core-auth'
 })
 export class App {
   protected readonly productStore = inject(CreateProductStore)
-  protected readonly title = signal('Euphoria')
   private readonly messageService = inject(MessageService)
   private readonly authState = inject(AuthState)
 
