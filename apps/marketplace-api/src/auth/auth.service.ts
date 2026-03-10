@@ -5,12 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { AuthRepository } from './auth.repository';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { WeakPasswordException } from './exceptions/weak-password.exception';
 import { AuthResponse, JwtPayload } from './interfaces/auth-response.interface';
 import { UserDocument } from './schemas/user.schema';
+import { hashPassword, isPasswordStrong, verifyPassword } from './utils/password.util';
 
 @Injectable()
 export class AuthService {
@@ -60,7 +61,11 @@ export class AuthService {
       throw new ConflictException('User with this email already exists');
     }
 
-    const passwordHash = await bcrypt.hash(registerDto.password, 10);
+    if (!isPasswordStrong(registerDto.password)) {
+      throw new WeakPasswordException();
+    }
+
+    const passwordHash = await hashPassword(registerDto.password);
     const user = await this.authRepository.createUser({
       firstName: registerDto.firstName,
       email: normalizedEmail,
@@ -88,7 +93,7 @@ export class AuthService {
       return null;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    const isPasswordValid = await verifyPassword(user.passwordHash, password);
     if (!isPasswordValid) {
       return null;
     }
