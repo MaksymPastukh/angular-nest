@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
@@ -7,33 +8,32 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterDto {
   @ApiProperty({ example: 'Max' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  firstName: string;
+  public firstName: string;
 
   @ApiProperty({ example: 'max@example.com' })
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  public email: string;
 
   @ApiProperty({ example: 'StrongPass1' })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
-  password: string;
+  public password: string;
 
   @ApiProperty({ example: true })
   @IsBoolean()
   @IsNotEmpty()
-  agreeToTerms: boolean;
+  public agreeToTerms: boolean;
 
   @ApiPropertyOptional({ example: false })
   @IsOptional()
   @IsBoolean()
-  subscribeToNewsletter?: boolean;
+  public subscribeToNewsletter?: boolean;
 }

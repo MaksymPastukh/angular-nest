@@ -5,5 +5,5 @@ export class CheckEmailQueryDto {
   @ApiProperty({ example: 'max@example.com' })
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  public email: string;
 }
