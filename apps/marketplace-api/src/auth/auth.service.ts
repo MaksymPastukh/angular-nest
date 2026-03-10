@@ -24,7 +24,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private generateTokens(user: UserDocument): AuthResponse {
+  private async generateTokens(user: UserDocument): Promise<AuthResponse> {
     const payload: JwtPayload = {
       sub: user._id.toString(),
       email: user.email,
@@ -37,6 +37,8 @@ export class AuthService {
     const refresh_token = this.jwtService.sign(payload, {
       expiresIn: '7d',
     });
+    const refreshTokenHash = await hashPassword(refresh_token);
+    await this.authRepository.saveRefreshTokenHash(user._id.toString(), refreshTokenHash);
 
     return {
       access_token,
@@ -118,14 +120,23 @@ export class AuthService {
       const payload = this.jwtService.verify<JwtPayload>(refreshToken);
       const user = await this.authRepository.findById(payload.sub);
 
-      if (!user) {
-        throw new UnauthorizedException('User not found');
+      if (!user || !user.refreshTokenHash) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const isRefreshTokenValid = await verifyPassword(user.refreshTokenHash, refreshToken);
+      if (!isRefreshTokenValid) {
+        throw new UnauthorizedException('Invalid refresh token');
       }
 
       return this.generateTokens(user);
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  public async logout(userId: string): Promise<void> {
+    await this.authRepository.saveRefreshTokenHash(userId, null);
   }
 
   public async getProfile(userId: string) {
