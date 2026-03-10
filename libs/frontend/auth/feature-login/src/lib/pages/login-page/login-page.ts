@@ -8,7 +8,7 @@ import { AuthFacade, LoginDataInterface } from '@marketplace/frontend-auth-data-
 const LOGIN_INITIAL_MODEL: LoginDataInterface = {
   email: '',
   password: '',
-}
+} as const
 
 @Component({
   selector: 'app-login',

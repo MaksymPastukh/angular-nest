@@ -24,7 +24,7 @@ const REGISTER_INITIAL_MODEL: RegisterDataInterface = {
   confirmPassword: '',
   agreeToTerms: false,
   subscribeToNewsletter: false,
-}
+} as const
 
 const EMAIL_TAKEN_MESSAGE = 'User with this email already exists.'
 
