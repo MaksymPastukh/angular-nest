@@ -105,7 +105,7 @@ const loginFieldFromMessage = (message: string): 'email' | 'password' | null => 
   return null
 }
 
-export const mapRegisterHttpErrorToSubmitResult = (error: unknown): RegisterSubmitResult => {
+export const mapRegisterHttpErrorToSubmitResult  = (error: unknown): RegisterSubmitResult => {
   const message = getApiErrorMessage(error, DEFAULT_REGISTER_ERROR_MESSAGE)
   const code = extractApiErrorCode(error)
 

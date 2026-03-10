@@ -74,8 +74,10 @@ export const AuthStore = signalStore(
         setSuccess(response)
         return { ok: true }
       } catch (error) {
-        const submitResult = mapRegisterHttpErrorToSubmitResult(error)
-        setFailure(submitResult.message)
+        const submitResult: RegisterSubmitResult = mapRegisterHttpErrorToSubmitResult(error)
+        if (!submitResult.ok) {
+          setFailure(submitResult.message)
+        }
         return submitResult
       } finally {
         stop()
@@ -91,7 +93,9 @@ export const AuthStore = signalStore(
         return { ok: true }
       } catch (error) {
         const submitResult = mapLoginHttpErrorToSubmitResult(error)
-        setFailure(submitResult.message)
+        if (!submitResult.ok) {
+          setFailure(submitResult.message)
+        }
         return submitResult
       } finally {
         stop()
