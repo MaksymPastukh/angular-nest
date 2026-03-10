@@ -70,7 +70,7 @@ export const AuthStore = signalStore(
       setPending()
 
       try {
-        const response = await firstValueFrom(authService.register(data))
+        const response: CurrentUserResponseInterface  = await firstValueFrom(authService.register(data))
         setSuccess(response)
         return { ok: true }
       } catch (error) {
@@ -88,11 +88,11 @@ export const AuthStore = signalStore(
       setPending()
 
       try {
-        const response = await firstValueFrom(authService.login(data))
+        const response: CurrentUserResponseInterface = await firstValueFrom(authService.login(data))
         setSuccess(response)
         return { ok: true }
       } catch (error) {
-        const submitResult = mapLoginHttpErrorToSubmitResult(error)
+        const submitResult: LoginSubmitResult = mapLoginHttpErrorToSubmitResult(error)
         if (!submitResult.ok) {
           setFailure(submitResult.message)
         }
