@@ -1,56 +1,32 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
+import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
+import { User, UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
-/**
- * Модуль аутентификации
- * Отвечает за регистрацию, вход и проверку JWT токенов
- */
 @Module({
   imports: [
-    // Импортируем UsersModule для доступа к UsersService
-    UsersModule,
-
-    // Настраиваем Passport для использования JWT стратегии по умолчанию
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-
-    // Настраиваем JWT модуль
-    // Используем async конфигурацию для получения секрета из .env
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        return {
-          // Секретный ключ для подписи токенов (из .env файла)
-          secret: configService.get<string>('JWT_SECRET') || 'fallback-secret',
-
-          // Опции подписи токена по умолчанию
-          // В AuthService переопределяются для access (15m) и refresh (7d) токенов
-          signOptions: {
-            expiresIn: '7d' as const,
-          },
-        };
-      },
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET') || 'fallback-secret',
+        signOptions: {
+          expiresIn: '7d' as const,
+        },
+      }),
     }),
   ],
-
-  // Контроллеры модуля
   controllers: [AuthController],
-
-  // Провайдеры (сервисы и стратегии)
-  providers: [
-    AuthService, // Бизнес-логика аутентификации
-    LocalStrategy, // Стратегия для проверки email/password
-    JwtStrategy, // Стратегия для проверки JWT токенов
-  ],
-
-  // Экспортируем AuthService для использования в других модулях
-  exports: [AuthService],
+  providers: [AuthService, AuthRepository, LocalStrategy, JwtStrategy],
+  exports: [AuthService, AuthRepository],
 })
 export class AuthModule {}

@@ -9,7 +9,6 @@ import { ProductsModule } from './products/products.module';
 import { QuestionsModule } from './questions/questions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StaticModule } from './static/static.module';
-import { UsersModule } from './users/users.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 
 /**
@@ -41,7 +40,6 @@ import { WishlistModule } from './wishlist/wishlist.module';
 
     // Подключаем модули приложения
     StaticModule, // Модуль раздачи статических файлов (изображения)
-    UsersModule, // Модуль управления пользователями
     AuthModule, // Модуль аутентификации и авторизации
     ProductsModule, // Модуль управления продуктами магазина
     ReviewsModule, // Модуль управления отзывами и рейтингами
