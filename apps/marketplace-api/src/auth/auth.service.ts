@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './auth.repository';
+import { CheckEmailResponse } from './contracts/check-email-response.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { EmailTakenException } from './exceptions/email-taken.exception';
@@ -103,6 +104,13 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  public async checkEmailAvailability(email: string): Promise<CheckEmailResponse> {
+    const normalizedEmail = normalizeEmail(email);
+    const user = await this.authRepository.findByEmail(normalizedEmail);
+
+    return { available: !user };
   }
 
   public async refreshTokens(refreshToken: string): Promise<AuthResponse> {
