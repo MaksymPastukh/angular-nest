@@ -1,25 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-/**
- * DTO (Data Transfer Object) для входа пользователя
- * Определяет структуру данных и правила валидации для запроса входа
- */
 export class LoginDto {
-  /**
-   * Email пользователя
-   * @IsEmail - валидация формата email
-   * @IsNotEmpty - поле не должно быть пустым
-   */
-  @IsEmail({}, { message: 'Некорректный формат email' })
-  @IsNotEmpty({ message: 'Email обязателен' })
+  @ApiProperty({ example: 'max@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
 
-  /**
-   * Пароль пользователя
-   * @IsString - должен быть строкой
-   * @IsNotEmpty - не должен быть пустым
-   */
-  @IsString({ message: 'Пароль должен быть строкой' })
-  @IsNotEmpty({ message: 'Пароль обязателен' })
+  @ApiProperty({ example: 'StrongPass1' })
+  @IsString()
+  @IsNotEmpty()
   password: string;
 }
