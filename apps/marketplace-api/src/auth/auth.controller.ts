@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { CheckEmailResponse } from './contracts/check-email-response.interface';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -25,18 +26,21 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @Throttle({ default: { limit: 8, ttl: 60000 } })
   public async register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
     return this.authService.register(registerDto);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   public async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
     return this.authService.login(loginDto);
   }
 
   @Get('check-email')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   public async checkEmail(@Query() query: CheckEmailQueryDto): Promise<CheckEmailResponse> {
     return this.authService.checkEmailAvailability(query.email);
   }
