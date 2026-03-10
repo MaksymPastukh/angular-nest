@@ -16,7 +16,7 @@
       class="flex flex-col w-full max-w-xl"
       novalidate
       autocomplete="on"
-      (submit)="login($event)"
+      [formRoot]="loginForm"
     >
       <h1 class="font-coresans font-semibold text-3xl sm:text-4xl">Sign In</h1>
 
@@ -97,7 +97,7 @@
             role="alert"
             aria-live="polite"
           >
-            <div class="error">{{ loginForm.password().errors()[0].message }}</div>
+            <div class="error">{{ loginForm.email().errors()[0].message }}</div>
           </div>
         }
       </div>
@@ -172,7 +172,7 @@
 
       <button
         type="submit"
-        [disabled]="loginForm().invalid()"
+        [disabled]="loginForm().invalid() || authFacade.isLoading()"
         class="authResponseButton mt-8 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#8a33fd] disabled:hover:border-[#3c4242]"
       >
         Sign In

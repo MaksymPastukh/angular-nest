@@ -17,7 +17,7 @@
       class="flex flex-col w-full max-w-xl"
       novalidate
       autocomplete="on"
-      (submit)="register($event)"
+      [formRoot]="registerForm"
     >
       <h1 class="font-coresans font-semibold text-3xl sm:text-4xl">Sign Up</h1>
       <h3 class="font-causten-medium text-gray-600/80 mt-4">
@@ -281,7 +281,12 @@
 
       <div class="mt-1 flex flex-col">
         <div class="auth-checkbox color-text-base">
-          <input type="checkbox" id="news" class="signup-checkbox" />
+          <input
+            type="checkbox"
+            id="news"
+            [formField]="registerForm.subscribeToNewsletter"
+            class="signup-checkbox"
+          />
           <label for="news">Subscribe to our monthly newsletter</label>
         </div>
       </div>
