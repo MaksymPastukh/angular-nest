@@ -8,6 +8,7 @@ import { AuthRepository } from './auth.repository';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { EmailTakenException } from './exceptions/email-taken.exception';
+import { InvalidCredentialsException } from './exceptions/invalid-credentials.exception';
 import { WeakPasswordException } from './exceptions/weak-password.exception';
 import { AuthResponse, JwtPayload } from './interfaces/auth-response.interface';
 import { UserDocument } from './schemas/user.schema';
@@ -81,7 +82,7 @@ export class AuthService {
   public async login(loginDto: LoginDto): Promise<AuthResponse> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new InvalidCredentialsException();
     }
 
     await this.authRepository.updateLastLogin(user._id.toString(), new Date());
