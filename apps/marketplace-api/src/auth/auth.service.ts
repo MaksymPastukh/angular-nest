@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -8,9 +7,12 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './auth.repository';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { EmailTakenException } from './exceptions/email-taken.exception';
 import { WeakPasswordException } from './exceptions/weak-password.exception';
 import { AuthResponse, JwtPayload } from './interfaces/auth-response.interface';
 import { UserDocument } from './schemas/user.schema';
+import { isEmailDuplicateKeyError } from './utils/auth-error.util';
+import { normalizeEmail } from './utils/email.util';
 import { hashPassword, isPasswordStrong, verifyPassword } from './utils/password.util';
 
 @Injectable()
@@ -19,10 +21,6 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
   ) {}
-
-  private normalizeEmail(email: string): string {
-    return email.trim().toLowerCase();
-  }
 
   private generateTokens(user: UserDocument): AuthResponse {
     const payload: JwtPayload = {
@@ -51,14 +49,10 @@ export class AuthService {
   }
 
   public async register(registerDto: RegisterDto): Promise<AuthResponse> {
-    if (registerDto.password !== registerDto.confirmPassword) {
-      throw new UnauthorizedException('Passwords do not match');
-    }
-
-    const normalizedEmail = this.normalizeEmail(registerDto.email);
+    const normalizedEmail = normalizeEmail(registerDto.email);
     const existingUser = await this.authRepository.findByEmail(normalizedEmail);
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new EmailTakenException();
     }
 
     if (!isPasswordStrong(registerDto.password)) {
@@ -66,11 +60,20 @@ export class AuthService {
     }
 
     const passwordHash = await hashPassword(registerDto.password);
-    const user = await this.authRepository.createUser({
-      firstName: registerDto.firstName,
-      email: normalizedEmail,
-      passwordHash,
-    });
+    let user: UserDocument;
+    try {
+      user = await this.authRepository.createUser({
+        firstName: registerDto.firstName,
+        email: normalizedEmail,
+        passwordHash,
+      });
+    } catch (error: unknown) {
+      if (isEmailDuplicateKeyError(error)) {
+        throw new EmailTakenException();
+      }
+
+      throw error;
+    }
 
     return this.generateTokens(user);
   }
@@ -87,7 +90,7 @@ export class AuthService {
   }
 
   public async validateUser(email: string, password: string): Promise<UserDocument | null> {
-    const normalizedEmail = this.normalizeEmail(email);
+    const normalizedEmail = normalizeEmail(email);
     const user = await this.authRepository.findByEmail(normalizedEmail);
     if (!user) {
       return null;
