@@ -10,8 +10,10 @@ import {
   pattern,
   required,
   validate,
+  validateHttp,
 } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
+import { FRONTEND_CONFIG } from '@marketplace/frontend-core-config'
 import { Toast } from 'primeng/toast'
 import { AuthFacade, RegisterDataInterface } from '@marketplace/frontend-auth-data-access'
 
@@ -23,6 +25,8 @@ const REGISTER_INITIAL_MODEL: RegisterDataInterface = {
   agreeToTerms: false,
   subscribeToNewsletter: false,
 }
+
+const EMAIL_TAKEN_MESSAGE = 'User with this email already exists.'
 
 @Component({
   selector: 'app-register',
@@ -47,6 +51,23 @@ export class RegisterPage {
       debounce(controlSchema.email, 300)
       required(controlSchema.email, { message: 'Email is required.' })
       email(controlSchema.email, { message: 'Please enter a valid email address.' })
+      validateHttp<string, { available: boolean }>(controlSchema.email, {
+        request: ({ value }) => {
+          const emailValue = value()?.trim()
+          if (!emailValue) return undefined
+
+          return `${FRONTEND_CONFIG.api}auth/check-email?email=${encodeURIComponent(emailValue)}`
+        },
+        onSuccess: (response) => {
+          if (response.available) return null
+
+          return {
+            kind: 'emailTaken',
+            message: EMAIL_TAKEN_MESSAGE,
+          }
+        },
+        onError: () => null,
+      })
 
       required(controlSchema.password, { message: 'Password is required.' })
       minLength(controlSchema.password, 6, {
