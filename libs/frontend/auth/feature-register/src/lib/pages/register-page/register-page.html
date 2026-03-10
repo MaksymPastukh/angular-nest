@@ -24,7 +24,7 @@
         Sign up for free to access to in any of our products
       </h3>
 
-      <button type="button" class="auth-button mt-[50px]">
+      <button type="button" class="auth-button mt-12.5">
         <svg
           class="mr-3"
           width="21"
@@ -87,7 +87,7 @@
         />
         @if (registerForm.firstName().touched() && registerForm.firstName().invalid()) {
           <div
-            class="errors absolute top-1/2 -translate-y-1/2 right-[12px]"
+            class="errors absolute top-1/2 -translate-y-1/2 right-3"
             role="alert"
             aria-live="polite"
             id="firstName-error"
@@ -113,7 +113,7 @@
         />
         @if (registerForm.email().touched() && registerForm.email().invalid()) {
           <div
-            class="errors absolute top-1/2 -translate-y-1/2 right-[12px]"
+            class="errors absolute top-1/2 -translate-y-1/2 right-3"
             role="alert"
             aria-live="polite"
             id="email-error"
@@ -150,7 +150,7 @@
                   fill="#807D7E"
                 />
               </svg>
-              <span class="ml-1 w-[42px]">Show</span>
+              <span class="ml-1 w-10.5">Show</span>
             } @else {
               <svg
                 width="18"
@@ -164,7 +164,7 @@
                   fill="#807D7E"
                 />
               </svg>
-              <span class="ml-1 w-[42px]">Hide</span>
+              <span class="ml-1 w-10.5">Hide</span>
             }
           </button>
         </div>
@@ -182,7 +182,7 @@
         />
 
         @if (registerForm.password().touched() && registerForm.password().invalid()) {
-          <div class="errors absolute top-1/2 -translate-y-1/2 right-[12px]">
+          <div class="errors absolute top-1/2 -translate-y-1/2 right-3">
             <div class="error">{{ registerForm.password().errors()[0].message }}</div>
           </div>
         }
@@ -215,7 +215,7 @@
                   fill="#807D7E"
                 />
               </svg>
-              <span class="ml-1 w-[42px]">Show</span>
+              <span class="ml-1 w-10.5">Show</span>
             } @else {
               <svg
                 width="18"
@@ -229,7 +229,7 @@
                   fill="#807D7E"
                 />
               </svg>
-              <span class="ml-1 w-[42px]">Hide</span>
+              <span class="ml-1 w-10.5">Hide</span>
             }
           </button>
         </div>
@@ -247,7 +247,7 @@
         />
 
         @if (registerForm.confirmPassword().touched() && registerForm.confirmPassword().invalid()) {
-          <div class="errors absolute top-1/2 -translate-y-1/2 right-[12px]">
+          <div class="errors absolute top-1/2 -translate-y-1/2 right-3">
             <div class="error">{{ registerForm.confirmPassword().errors()[0].message }}</div>
           </div>
         }
@@ -266,7 +266,7 @@
             <a class="underline cursor-pointer" routerLink="/#">Privacy Policy</a>
           </label>
         </div>
-        <div class="min-h-[20px]">
+        <div class="min-h-5">
           <div class="ml-6">
             @if (registerForm.agreeToTerms().touched() && registerForm.agreeToTerms().invalid()) {
               <div class="errors" role="alert" aria-live="polite" id="terms-error">
