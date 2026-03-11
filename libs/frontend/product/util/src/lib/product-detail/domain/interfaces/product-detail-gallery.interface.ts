@@ -1,4 +1,6 @@
+import { ProductImageInterface } from '@marketplace/frontend-shared-types'
+
 export interface ProductDetailGalleryInterface {
-  image: string
+  image: ProductImageInterface
   alt: string
 }

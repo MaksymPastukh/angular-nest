@@ -1,9 +1,11 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
+import { IMAGE_LOADER } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from '@marketplace/frontend-core-http';
+import { marketplaceImageLoader } from '@marketplace/frontend-shared-util';
 import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { AuraLight } from '../assets/theme/aura-light';
@@ -20,6 +22,10 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withInterceptors([authInterceptor])),
+    {
+      provide: IMAGE_LOADER,
+      useValue: marketplaceImageLoader,
+    },
     provideAnimationsAsync(),
     providePrimeNG({
       overlayAppendTo: 'body',

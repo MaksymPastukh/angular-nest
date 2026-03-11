@@ -70,7 +70,7 @@ export const ProductDetailStore = signalStore(
     const galleryImages = computed((): ProductDetailGalleryInterface[] => {
       const product = store.product()
       if (!product?.images?.length) return []
-      return product.images.map((image) => ({ image, alt: product.title }))
+      return product.images.map((image) => ({ image, alt: image.alt || product.title }))
     })
 
     const activeImage = computed(() => galleryImages()[store.activeImageIndex()] ?? null)

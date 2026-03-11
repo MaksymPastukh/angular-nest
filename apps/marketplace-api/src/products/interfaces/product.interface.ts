@@ -1,6 +1,13 @@
 import { Document } from 'mongoose';
 import { IProductFacets } from './facet.interface';
 
+export interface IProductImage {
+  key: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
 /**
  * Интерфейс для продукта
  * Описывает структуру данных продукта в магазине
@@ -19,7 +26,7 @@ export interface IProduct {
   brand: string;
 
   /** Массив путей к изображениям продукта */
-  images: string[];
+  images: IProductImage[];
 
   /** Цена продукта */
   price: number;

@@ -1,7 +1,8 @@
 import { RatingStatsInterface } from './product-rating-stats.interface'
+import { ProductImageInterface } from './product-image.interface'
 
 export interface ProductInterface {
-  images: string[]
+  images: ProductImageInterface[]
   title: string
   rating: number
   brand: string

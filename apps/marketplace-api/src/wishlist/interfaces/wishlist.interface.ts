@@ -1,4 +1,5 @@
 import { WishlistItemSource } from '../schemas/wishlist-item.schema';
+import { IProductImage } from '../../products/interfaces/product.interface';
 
 /**
  * Базовый интерфейс элемента wishlist
@@ -28,7 +29,7 @@ export interface IWishlistProductData {
   brand: string;
   price: number;
   rating: number;
-  images: string[];
+  images: IProductImage[];
   category: string;
   isHidden: boolean;
   inStock: boolean;
