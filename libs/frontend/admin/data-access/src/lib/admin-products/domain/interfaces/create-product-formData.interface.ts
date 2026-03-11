@@ -1,5 +1,7 @@
+import { ProductImageInterface } from '@marketplace/frontend-shared-types'
+
 export interface CreateProductFormDataInterface {
-  images: string[]
+  images: ProductImageInterface[]
   title: string
   rating: number
   brand: string

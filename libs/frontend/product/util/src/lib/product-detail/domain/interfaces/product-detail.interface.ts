@@ -1,7 +1,7 @@
-import { RatingStatsInterface } from '@marketplace/frontend-shared-types'
+import { ProductImageInterface, RatingStatsInterface } from '@marketplace/frontend-shared-types'
 
 export interface ProductDetailInterface {
-  images: string[]
+  images: ProductImageInterface[]
   title: string
   rating: number
   brand: string

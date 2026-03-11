@@ -36,6 +36,23 @@ export class ProductRatingStats {
   public updatedAt: Date | null;
 }
 
+@Schema({ _id: false })
+export class ProductImage {
+  @Prop({ required: true, type: String, trim: true })
+  public key: string;
+
+  @Prop({ required: true, type: String, trim: true })
+  public alt: string;
+
+  @Prop({ required: false, type: Number, min: 1 })
+  public width?: number;
+
+  @Prop({ required: false, type: Number, min: 1 })
+  public height?: number;
+}
+
+export const ProductImageSchema = SchemaFactory.createForClass(ProductImage);
+
 /**
  * Схема продукта для MongoDB
  * Определяет структуру документа продукта в базе данных
@@ -106,8 +123,15 @@ export class Product {
    * Массив путей к изображениям продукта (минимум 3, максимум 10 изображений)
    * @example ["/images/products/nike-air-shirt-1.jpg", "/images/products/nike-air-shirt-2.jpg"]
    */
-  @Prop({ required: true, type: [String], validate: [(val: string[]) => val.length >= 3 && val.length <= 10, 'Minimum 3 and maximum 10 images allowed'] })
-  public images: string[];
+  @Prop({
+    required: true,
+    type: [ProductImageSchema],
+    validate: [
+      (val: ProductImage[]) => Array.isArray(val) && val.length >= 3 && val.length <= 10,
+      'Minimum 3 and maximum 10 images allowed',
+    ],
+  })
+  public images: ProductImage[];
 
   /**
    * Цена продукта

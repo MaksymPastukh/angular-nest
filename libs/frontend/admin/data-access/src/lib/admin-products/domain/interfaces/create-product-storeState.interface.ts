@@ -5,10 +5,11 @@ import {
   PRODUCT_TYPES,
   SIZES,
 } from '../constants/create-product.canstants'
+import { ProductImageInterface } from '@marketplace/frontend-shared-types'
 
 export interface CreateProductStoreStateInterface {
   options: CreateProductOptionsInterface
-  uploadedImagePaths: string[]
+  uploadedImages: ProductImageInterface[]
   isUploadingImages: boolean
   isLoading: boolean
   error: string | null

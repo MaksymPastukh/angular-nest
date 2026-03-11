@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Product, ProductDocument } from '../products/schemas/product.schema';
+import {
+  Product,
+  ProductDocument,
+  ProductImage,
+} from '../products/schemas/product.schema';
 import { AddWishlistItemDto } from './dto/add-wishlist-item.dto';
 import {
   IAddWishlistItemResponse,
@@ -12,6 +16,15 @@ import {
   IWishlistProductData,
 } from './interfaces/wishlist.interface';
 import { WishlistItem, WishlistItemDocument } from './schemas/wishlist-item.schema';
+
+type ProductImageInput =
+  | string
+  | {
+      key?: string;
+      alt?: string;
+      width?: number;
+      height?: number;
+    };
 
 /**
  * Сервис для работы с wishlist
@@ -154,7 +167,7 @@ export class WishlistService {
         brand: product.brand,
         price: product.price,
         rating: product.rating,
-        images: product.images,
+        images: this.normalizeImages(product.images as ProductImageInput[]),
         category: product.category,
         isHidden: false, // Поле для будущего расширения
         inStock: true, // Поле для будущего расширения
@@ -264,5 +277,76 @@ export class WishlistService {
     } catch {
       return null;
     }
+  }
+
+  private normalizeImages(images: ProductImageInput[] | undefined): ProductImage[] {
+    if (!Array.isArray(images)) {
+      return [];
+    }
+
+    return images
+      .map((image) => this.normalizeImage(image))
+      .filter((image): image is ProductImage => image !== null);
+  }
+
+  private normalizeImage(image: ProductImageInput): ProductImage | null {
+    if (typeof image === 'string') {
+      const key = this.normalizeImageKey(image);
+      if (!key) return null;
+
+      return {
+        key,
+        alt: this.buildAltFromKey(key),
+      };
+    }
+
+    if (!image || typeof image !== 'object') {
+      return null;
+    }
+
+    const key = this.normalizeImageKey(image.key ?? '');
+    if (!key) {
+      return null;
+    }
+
+    const width = this.toPositiveInt(image.width);
+    const height = this.toPositiveInt(image.height);
+
+    return {
+      key,
+      alt: image.alt?.trim() || this.buildAltFromKey(key),
+      ...(width ? { width } : {}),
+      ...(height ? { height } : {}),
+    };
+  }
+
+  private normalizeImageKey(rawKey: string): string {
+    const key = rawKey.trim();
+    if (!key) return '';
+
+    if (key.startsWith('/images/products/')) {
+      return key.replace('/images/products/', 'products/');
+    }
+
+    if (key.startsWith('images/products/')) {
+      return key.replace('images/products/', 'products/');
+    }
+
+    return key.startsWith('/') ? key.slice(1) : key;
+  }
+
+  private buildAltFromKey(key: string): string {
+    const filename = key.split('/').pop() ?? 'product-image';
+    const normalized = filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
+    return normalized.length > 0 ? normalized : 'Product image';
+  }
+
+  private toPositiveInt(value: unknown): number | undefined {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return undefined;
+    }
+
+    const parsed = Math.trunc(value);
+    return parsed > 0 ? parsed : undefined;
   }
 }

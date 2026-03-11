@@ -20,22 +20,34 @@
           (onClick)="onToggleWishlist($event)"
         />
       </div>
-      <img
-        [src]="product().images[0] | imageUrl"
-        [alt]="product().title"
-        (error)="onImageError($event)"
-        class="w-full h-full object-cover"
-      />
+      @if (primaryImage(); as image) {
+        <img
+          [ngSrc]="image.key"
+          [alt]="image.alt || product().title"
+          [width]="getImageWidth(image)"
+          [height]="getImageHeight(image)"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          [loaderParams]="imagePresets.productCard"
+          (error)="onImageError($event)"
+          class="w-full h-full object-cover"
+        />
+      } @else {
+        <img
+          [src]="fallbackImageSrc"
+          [alt]="product().title"
+          class="w-full h-full object-cover"
+        />
+      }
     </div>
     <div class="flex justify-between items-center mt-7.5">
       <div>
-        <h2 class="font-bold text-[#3c4242] text-lg">{{ product().title }}</h2>
+        <h2 class="font-bold text-[#3c4242] text-lg">{{ product().title | slice:0:40 }}{{ product().title.length > 40 ? '…' : '' }}</h2>
         <h3 class="font-medium text-sm text-[#807d7e] mt-2">{{ product().brand }}</h3>
       </div>
       <span
         class="inline-block w-20.5 h-9 rounded-lg bg-gray-100 text-center leading-9 text-sm font-medium"
       >
-        {{ product().price | currency: 'USD' : 'symbol-narrow' : '1.2-2' }}
+        {{ product().price | currency: 'USD':'symbol':'1.0-0' }}
       </span>
     </div>
   </div>

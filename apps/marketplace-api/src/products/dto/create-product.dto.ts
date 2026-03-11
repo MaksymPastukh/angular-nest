@@ -3,6 +3,7 @@ import {
     ArrayMaxSize,
     ArrayMinSize,
     IsArray,
+    IsInt,
     IsNotEmpty,
     IsNumber,
     IsOptional,
@@ -10,7 +11,30 @@ import {
     Max,
     Min,
     MinLength,
+    ValidateNested,
 } from 'class-validator';
+
+class CreateProductImageDto {
+  @IsString()
+  @IsNotEmpty()
+  key: string;
+
+  @IsString()
+  @IsNotEmpty()
+  alt: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  width?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  height?: number;
+}
 
 /**
  * DTO для создания нового продукта
@@ -51,8 +75,9 @@ export class CreateProductDto {
   @IsArray()
   @ArrayMinSize(3)
   @ArrayMaxSize(10)
-  @IsString({ each: true })
-  images: string[];
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductImageDto)
+  images: CreateProductImageDto[];
 
   /**
    * Цена продукта
