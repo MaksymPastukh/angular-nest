@@ -42,88 +42,82 @@
             <div class="order-1 flex-1 sm:order-2">
               @if (facade.activeImage(); as img) {
                 <div
-                  class="w-full max-w-xl aspect-4/5 overflow-hidden rounded-3xl border border-gray-100"
+                  class="w-full max-w-xl aspect-4/5 overflow-hidden rounded-3xl"
                 >
                   <img
-                    class="h-full w-full object-cover"
-                    [src]="img.image | imageUrl"
+                    class="h-full w-full object-cover product-main-image"
+                    [ngSrc]="img.image.key"
                     [alt]="img.alt"
+                    [width]="getMainImageWidth(img.image)"
+                    [height]="getMainImageHeight(img.image)"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    [loaderParams]="imagePresets.productGallery"
+                    priority
+                    placeholder
                     (error)="onImageError($event)"
                   />
                 </div>
               }
             </div>
 
-            <div class="order-2 flex gap-3 sm:order-1 sm:flex-col">
-              <div class="flex gap-3 overflow-x-auto sm:flex-col sm:overflow-visible">
-                @for (img of facade.galleryImages(); track img.image) {
-                  <button
-                    type="button"
-                    class="group shrink-0 rounded-lg border-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
-                    [class.border-transparent]="facade.activeImageIndex() === $index"
-                    [class.border-gray-200]="facade.activeImageIndex() !== $index"
-                    [attr.aria-current]="facade.activeImageIndex() === $index ? 'true' : null"
-                    [attr.aria-label]="'Open image ' + ($index + 1)"
-                    (mouseenter)="onThumbHover($index)"
-                    (focus)="onThumbFocus($index)"
-                    (click)="onThumbClick($index)"
-                  >
-                    <img
-                      class="h-24 w-20 rounded-md object-cover transition-opacity duration-200"
-                      [class.opacity-60]="facade.activeImageIndex() !== $index"
-                      [class.group-hover:opacity-100]="facade.activeImageIndex() !== $index"
-                      [src]="img.image | imageUrl"
-                      [alt]="img.alt"
-                    />
-                  </button>
-                }
-              </div>
+<div
+  class="flex gap-3 overflow-x-auto sm:flex-col sm:overflow-visible"
+  (wheel)="onThumbWheel($event)"
+>
+  @if (facade.canScrollThumbsUp()) {
+    
+  }
 
-              <!-- Arrow controls -->
-              <div class="mt-2 flex items-center justify-center gap-2 sm:flex-col sm:gap-2">
-                <button
-                  type="button"
-                  class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white transition-all duration-200 hover:border-purple-600 hover:bg-purple-50 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
-                  (click)="facade.prevImage()"
-                  aria-label="Previous image"
-                >
-                  <svg
-                    class="h-5 w-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
-                </button>
+  @for (img of facade.visibleGalleryImages(); track img.image.key; let visibleIndex = $index) {
+    @let realIndex = facade.thumbStartIndex() + visibleIndex;
 
-                <button
-                  type="button"
-                  class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white transition-all duration-200 hover:border-purple-600 hover:bg-purple-50 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
-                  (click)="facade.nextImage()"
-                  aria-label="Next image"
-                >
-                  <svg
-                    class="h-5 w-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
+    <button
+      type="button"
+      class="group shrink-0 rounded-lg border-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+      [class.border-transparent]="facade.activeImageIndex() === realIndex"
+      [class.border-gray-200]="facade.activeImageIndex() !== realIndex"
+      [attr.aria-current]="facade.activeImageIndex() === realIndex ? 'true' : null"
+      [attr.aria-label]="'Open image ' + (realIndex + 1)"
+      (mouseenter)="onThumbHover(realIndex)"
+      (focus)="onThumbFocus(realIndex)"
+      (click)="onThumbClick(realIndex)"
+    >
+      <img
+        class="h-24 w-20 rounded-md object-cover transition-opacity duration-200"
+        [class.opacity-60]="facade.activeImageIndex() !== realIndex"
+        [class.group-hover:opacity-100]="facade.activeImageIndex() !== realIndex"
+        [ngSrc]="img.image.key"
+        [alt]="img.alt"
+        [width]="getThumbWidth(img.image)"
+        [height]="getThumbHeight(img.image)"
+        [loaderParams]="imagePresets.productThumb"
+      />
+    </button>
+  }
+
+  <div class="mt-2 flex items-center justify-center gap-2 sm:flex-col sm:gap-2">
+    <button
+      type="button"
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 bg-white transition-all duration-200 hover:border-purple-600 hover:bg-purple-50 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+      (click)="facade.prevImage()"
+      aria-label="Scroll thumbnails up"
+    >
+      <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 bg-white transition-all duration-200 hover:border-purple-600 hover:bg-purple-50 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+      (click)="facade.nextImage()"
+      aria-label="Scroll thumbnails down"
+    >
+      <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  </div>
+</div>
           </div>
         </div>
         <div class="space-y-6">
@@ -445,8 +439,11 @@
             >
               @if (facade.activeImage(); as img) {
                 <img
-                  [src]="img.image | imageUrl"
+                  [ngSrc]="img.image.key"
                   [alt]="img.alt"
+                  [width]="getVideoPreviewWidth(img.image)"
+                  [height]="getVideoPreviewHeight(img.image)"
+                  [loaderParams]="imagePresets.hero"
                   (error)="onImageError($event)"
                   class="w-full object-cover"
                 />

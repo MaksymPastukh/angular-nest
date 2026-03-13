@@ -3,13 +3,35 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
   Max,
   Min,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
+
+class UpdateProductImageDto {
+  @IsString()
+  key: string;
+
+  @IsString()
+  alt: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  width?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  height?: number;
+}
 
 /**
  * DTO для обновления продукта
@@ -51,9 +73,10 @@ export class UpdateProductDto {
   @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
-  @ArrayMaxSize(3)
-  @IsString({ each: true })
-  images?: string[];
+  @ArrayMaxSize(10)
+  @ValidateNested({ each: true })
+  @Type(() => UpdateProductImageDto)
+  images?: UpdateProductImageDto[];
 
   /**
    * Цена продукта

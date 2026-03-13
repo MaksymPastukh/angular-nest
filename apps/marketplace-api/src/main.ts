@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.setGlobalPrefix('api', {
-    exclude: ['images/*'],
+    exclude: ['images/*path'],
   });
   const config = new DocumentBuilder()
     .setTitle('Marketplace API')

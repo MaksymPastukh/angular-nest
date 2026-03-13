@@ -16,12 +16,23 @@
   </button>
   <div class="h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-slate-100">
     <div class="w-full max-w-xl aspect-4/5 overflow-hidden">
-      <img
-        class="h-full w-full object-cover"
-        [src]="imageSrc() | imageUrl"
-        [alt]="title()"
-        (error)="onImageError($event)"
-      />
+      @if (imageSrc(); as image) {
+        <img
+          class="h-full w-full object-cover"
+          [ngSrc]="image.key"
+          [alt]="image.alt || title()"
+          [width]="getImageWidth(image)"
+          [height]="getImageHeight(image)"
+          [loaderParams]="imagePresets.productThumb"
+          (error)="onImageError($event)"
+        />
+      } @else {
+        <img
+          class="h-full w-full object-cover"
+          [src]="fallbackImageSrc"
+          [alt]="title()"
+        />
+      }
     </div>
   </div>
   <div class="min-w-0 flex-1">

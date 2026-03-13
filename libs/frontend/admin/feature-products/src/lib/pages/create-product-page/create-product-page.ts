@@ -82,9 +82,9 @@ export class CreateProductPage {
 
   constructor() {
     effect(() => {
-      const uploadedPaths = this.store.uploadedImagePaths()
-      if (uploadedPaths.length > 0) {
-        this.model.update((m) => ({ ...m, images: uploadedPaths }))
+      const uploadedImages = this.store.uploadedImages()
+      if (uploadedImages.length > 0) {
+        this.model.update((m) => ({ ...m, images: uploadedImages }))
       }
     })
   }
@@ -155,12 +155,12 @@ export class CreateProductPage {
         // Загружаем изображения на сервер
         this.store.uploadImages(files)
 
-        // Ждем пока uploadedImagePaths обновится
+        // Ждем пока uploadedImages обновится
         // Effect выше автоматически обновит model().images
         await new Promise<void>((resolve) => {
           const checkInterval = setInterval(() => {
-            const paths = this.store.uploadedImagePaths()
-            if (paths.length > 0 && !this.store.isUploadingImages()) {
+            const uploadedImages = this.store.uploadedImages()
+            if (uploadedImages.length > 0 && !this.store.isUploadingImages()) {
               clearInterval(checkInterval)
               resolve()
             }

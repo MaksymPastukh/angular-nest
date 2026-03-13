@@ -4,6 +4,7 @@ import { tapResponse } from '@ngrx/operators'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { pipe, switchMap, tap } from 'rxjs'
+import { ProductImageInterface } from '@marketplace/frontend-shared-types'
 
 import { AdminShopService } from '../data-access/admin-shop.service'
 import {
@@ -27,7 +28,7 @@ const initialState: CreateProductStoreStateInterface = {
     colors: COLORS,
     sizes: SIZES,
   },
-  uploadedImagePaths: [],
+  uploadedImages: [],
   isUploadingImages: false,
   isLoading: false,
   error: null,
@@ -44,7 +45,7 @@ export const CreateProductStore = signalStore(
       patchState(store, {
         isUploadingImages: true,
         error: null,
-        uploadedImagePaths: [],
+        uploadedImages: [],
         event: null,
       })
     }
@@ -84,19 +85,19 @@ export const CreateProductStore = signalStore(
         switchMap((files: File[]) =>
           productService.uploadImages(files).pipe(
             tapResponse({
-              next: (response: { imagePaths: string[] }) => {
+              next: (response: { imageKeys: ProductImageInterface[] }) => {
                 patchState(store, {
-                  uploadedImagePaths: response.imagePaths,
+                  uploadedImages: response.imageKeys,
                   event: {
                     type: 'imagesUploaded',
-                    count: response.imagePaths.length,
+                    count: response.imageKeys.length,
                   } satisfies UploadEventType,
                 })
               },
               error: (e) => {
                 const message = getErrorMessage(e, 'Не удалось загрузить изображения')
                 patchState(store, {
-                  uploadedImagePaths: [],
+                  uploadedImages: [],
                   event: { type: 'imagesUploadError', message } satisfies UploadEventType,
                 })
                 setFailure(message)
@@ -141,7 +142,7 @@ export const CreateProductStore = signalStore(
 
     const resetState = (): void => {
       patchState(store, {
-        uploadedImagePaths: [],
+        uploadedImages: [],
         error: null,
         success: false,
         isLoading: false,

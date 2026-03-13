@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { FRONTEND_CONFIG } from '@marketplace/frontend-core-config'
-import { ProductInterface } from '@marketplace/frontend-shared-types'
+import { ProductImageInterface, ProductInterface } from '@marketplace/frontend-shared-types'
 import { Observable } from 'rxjs'
 import { CreateProductFormDataInterface } from '../domain/interfaces/create-product-formData.interface'
 
@@ -21,7 +21,7 @@ export class AdminShopService {
    * @param files - массив файлов изображений (максимум 3)
    * @returns Observable с массивом путей к загруженным изображениям
    */
-  uploadImages(files: File[]): Observable<{ imagePaths: string[] }> {
+  uploadImages(files: File[]): Observable<{ imageKeys: ProductImageInterface[]; imagePaths: string[] }> {
     const formData = new FormData()
 
     // Добавляем все файлы в FormData с одинаковым ключом 'images'
@@ -29,7 +29,10 @@ export class AdminShopService {
       formData.append('images', file)
     })
 
-    return this.http.post<{ imagePaths: string[] }>(`${this.apiUrl}/upload-images`, formData)
+    return this.http.post<{ imageKeys: ProductImageInterface[]; imagePaths: string[] }>(
+      `${this.apiUrl}/upload-images`,
+      formData
+    )
   }
 }
 

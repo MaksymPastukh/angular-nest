@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -15,8 +16,10 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, parse } from 'path';
+import sharp from 'sharp';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
@@ -25,6 +28,13 @@ import { IProductFacets } from './interfaces/facet.interface';
 import { IProductsResponse } from './interfaces/product.interface';
 import { ProductsService } from './products.service';
 import { ProductDocument } from './schemas/product.schema';
+
+interface UploadedProductImage {
+  key: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
 
 /**
  * Контроллер для управления продуктами
@@ -61,7 +71,11 @@ export class ProductsController {
   @UseInterceptors(
     FilesInterceptor('images', 10, {
       storage: diskStorage({
-        destination: './public/images/products',
+        destination: (_req, _file, callback) => {
+          const destination = './public/media/originals/products';
+          mkdirSync(destination, { recursive: true });
+          callback(null, destination);
+        },
         filename: (_req, file, callback) => {
           // Генерируем уникальное имя файла
           const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -84,22 +98,39 @@ export class ProductsController {
   )
   public async uploadImages(
     @UploadedFiles() files: Express.Multer.File[],
-  ): Promise<{ imagePaths: string[] }> {
+  ): Promise<{ imageKeys: UploadedProductImage[]; imagePaths: string[] }> {
     if (!files || files.length === 0) {
-      throw new Error('Файлы не загружены');
+      throw new BadRequestException('Файлы не загружены');
     }
 
     if (files.length < 3) {
-      throw new Error('Минимум 3 изображения требуются');
+      throw new BadRequestException('Минимум 3 изображения требуются');
     }
 
     if (files.length > 10) {
-      throw new Error('Максимум 10 изображений разрешены');
+      throw new BadRequestException('Максимум 10 изображений разрешены');
     }
 
-    // Возвращаем пути относительно public директории
-    const imagePaths = files.map((file) => `/images/products/${file.filename}`);
-    return { imagePaths };
+    const imageKeys = await Promise.all(
+      files.map(async (file): Promise<UploadedProductImage> => {
+        const metadata = await sharp(file.path).metadata();
+        const key = `products/${file.filename}`;
+        const fallbackAlt = parse(file.originalname).name.replace(/[-_]+/g, ' ').trim();
+
+        return {
+          key,
+          alt: fallbackAlt || 'Product image',
+          ...(metadata.width ? { width: metadata.width } : {}),
+          ...(metadata.height ? { height: metadata.height } : {}),
+        };
+      }),
+    );
+
+    // `imagePaths` оставлен для временной backward compatibility.
+    return {
+      imageKeys,
+      imagePaths: imageKeys.map((image) => image.key),
+    };
   }
 
   /**

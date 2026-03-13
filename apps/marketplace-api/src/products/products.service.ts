@@ -6,7 +6,16 @@ import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { IFacetItem, IProductFacets } from './interfaces/facet.interface';
 import { IProductsResponse } from './interfaces/product.interface';
-import { Product, ProductDocument } from './schemas/product.schema';
+import { Product, ProductDocument, ProductImage } from './schemas/product.schema';
+
+type ProductImageInput =
+  | string
+  | {
+      key?: string;
+      alt?: string;
+      width?: number;
+      height?: number;
+    };
 
 /**
  * Сервис для работы с продуктами
@@ -29,7 +38,12 @@ export class ProductsService {
    * @returns Созданный продукт
    */
   public async create(createProductDto: CreateProductDto): Promise<ProductDocument> {
-    const newProduct = new this.productModel(createProductDto);
+    const payload = {
+      ...createProductDto,
+      images: this.normalizeImages(createProductDto.images as ProductImageInput[]),
+    };
+
+    const newProduct = new this.productModel(payload);
     return (await newProduct.save()) as ProductDocument;
   }
 
@@ -113,8 +127,15 @@ export class ProductsService {
    * @throws NotFoundException если продукт не найден
    */
   public async update(id: string, updateProductDto: UpdateProductDto): Promise<ProductDocument> {
+    const payload = {
+      ...updateProductDto,
+      ...(updateProductDto.images
+        ? { images: this.normalizeImages(updateProductDto.images as ProductImageInput[]) }
+        : {}),
+    };
+
     const updatedProduct = await this.productModel
-      .findByIdAndUpdate(id, updateProductDto, { new: true })
+      .findByIdAndUpdate(id, payload, { new: true })
       .exec();
 
     if (!updatedProduct) {
@@ -423,6 +444,8 @@ export class ProductsService {
     const productObj = (product as any).toObject ? (product as any).toObject() : product;
     const isLiked = userId ? (productObj.likedBy as string[]).includes(userId) : false;
 
+    productObj.images = this.normalizeImages(productObj.images as ProductImageInput[]);
+
     // Очищаем ratingStats.sum (служебное поле для инкрементов)
     if (productObj.ratingStats && productObj.ratingStats.sum !== undefined) {
       const { sum, ...cleanRatingStats } = productObj.ratingStats;
@@ -436,6 +459,77 @@ export class ProductsService {
       ...rest,
       isLiked,
     };
+  }
+
+  private normalizeImages(images: ProductImageInput[] | undefined): ProductImage[] {
+    if (!Array.isArray(images)) {
+      return [];
+    }
+
+    return images
+      .map((image) => this.normalizeImage(image))
+      .filter((image): image is ProductImage => image !== null);
+  }
+
+  private normalizeImage(image: ProductImageInput): ProductImage | null {
+    if (typeof image === 'string') {
+      const key = this.normalizeImageKey(image);
+      if (!key) return null;
+
+      return {
+        key,
+        alt: this.buildAltFromKey(key),
+      };
+    }
+
+    if (!image || typeof image !== 'object') {
+      return null;
+    }
+
+    const key = this.normalizeImageKey(image.key ?? '');
+    if (!key) {
+      return null;
+    }
+
+    const width = this.toPositiveInt(image.width);
+    const height = this.toPositiveInt(image.height);
+
+    return {
+      key,
+      alt: image.alt?.trim() || this.buildAltFromKey(key),
+      ...(width ? { width } : {}),
+      ...(height ? { height } : {}),
+    };
+  }
+
+  private normalizeImageKey(rawKey: string): string {
+    const key = rawKey.trim();
+    if (!key) return '';
+
+    if (key.startsWith('/images/products/')) {
+      return key.replace('/images/products/', 'products/');
+    }
+
+    if (key.startsWith('images/products/')) {
+      return key.replace('images/products/', 'products/');
+    }
+
+    return key.startsWith('/') ? key.slice(1) : key;
+  }
+
+  private buildAltFromKey(key: string): string {
+    const filename = key.split('/').pop() ?? 'product-image';
+    const rawAlt = filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
+    return rawAlt.length > 0 ? rawAlt : 'Product image';
+  }
+
+  private toPositiveInt(value: unknown): number | undefined {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return undefined;
+    }
+
+    const normalized = Math.trunc(value);
+    return normalized > 0 ? normalized : undefined;
   }
 
   /**
