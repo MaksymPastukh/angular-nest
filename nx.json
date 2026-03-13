@@ -25,7 +25,10 @@
   },
   "nxCloudId": "69a71a8510aeb8fa2b6a803b",
   "namedInputs": {
-    "sharedGlobals": ["{workspaceRoot}/.github/workflows/xam-ci.yml"],
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/xam-ci.yml",
+      "{workspaceRoot}/.github/workflows/ci.yml"
+    ],
     "default": ["sharedGlobals"]
   },
   "generators": {
