@@ -1,8 +1,80 @@
 <section class="container mx-auto px-7 py-10.5">
   <app-ui-breadcrumb [items]="breadcrumbItems()" />
   <div class="mt-8">
-    @for (item of facadeWishlist.items(); track item.productId) {
+    @if (facadeWishlist.total() > 0) {
+    <div class="space-y-4">
+      @for (item of facadeWishlist.items(); track item.productId) {
       <app-wishlist-item [item]="item" />
+      }
+    </div>
+
+    @if (facadeWishlist.canLoadMore()) {
+    <div class="mt-8 flex justify-center">
+      <button
+        type="button"
+        (click)="onLoadMore()"
+        [disabled]="facadeWishlist.isLoading()"
+        class="inline-flex min-h-11 items-center justify-center rounded-xl bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2 sm:px-8 sm:text-base"
+      >
+        {{ facadeWishlist.isLoading() ? 'Loading...' : 'Load more' }}
+      </button>
+    </div>
+    }} @else {
+    <div
+      class="flex min-h-[70svh] items-center justify-center bg-white px-4 py-8 sm:px-6 sm:py-10 lg:px-8"
+      aria-labelledby="wishlist-empty-title"
+    >
+      <div
+        class="w-full max-w-md rounded-2xl border border-zinc-200 bg-white px-5 py-8 text-center shadow-sm sm:px-8 sm:py-10 lg:max-w-2xl lg:px-12 lg:py-14"
+      >
+        <div
+          class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-emerald-50 sm:h-28 sm:w-28"
+          aria-hidden="true"
+        >
+          <svg
+            width="170"
+            height="170"
+            viewBox="0 0 170 170"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="85" cy="85" r="85" fill="#F0F9F4" />
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M85.4787 63.46C79.2557 56.2078 68.8785 54.257 61.0815 60.8978C53.2845 67.5387 52.1868 78.6418 58.3098 86.4959C63.4007 93.0261 78.8074 106.799 83.8569 111.256C84.4218 111.755 84.7043 112.005 85.0338 112.103C85.3214 112.188 85.636 112.188 85.9236 112.103C86.2531 112.005 86.5355 111.755 87.1005 111.256C92.15 106.799 107.557 93.0261 112.648 86.4959C118.771 78.6418 117.807 67.4688 109.876 60.8978C101.945 54.3269 91.7017 56.2078 85.4787 63.46Z"
+              stroke="#28A642"
+              stroke-width="6.225"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <h1
+          id="wishlist-empty-title"
+          class="mt-6 text-2xl font-coresans font-semibold tracking-tight text-zinc-800 sm:mt-7 sm:text-3xl lg:text-4xl"
+        >
+          Your wishlist is empty.
+        </h1>
+
+        <p
+          class="mx-auto mt-3 max-w-xl font-coresans text-sm leading-6 text-zinc-500 sm:mt-4 sm:text-base lg:text-lg"
+        >
+          You don't have any products in the wishlist yet. You will find a lot of interesting
+          products on our Shop page.
+        </p>
+
+        <div class="mt-7 flex justify-center sm:mt-8">
+          <a
+            routerLink="/catalog"
+            class="inline-flex font-family cursor-pointer w-full items-center justify-center rounded-lg bg-[#8a33fd] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2 sm:w-auto sm:min-w-56 sm:px-8 sm:text-base"
+          >
+            Continue Shopping
+          </a>
+        </div>
+      </div>
+    </div>
     }
   </div>
 </section>
