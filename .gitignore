@@ -11,3 +11,6 @@ vitest.config.*.timestamp*
 .vscode/
 /dist/
 .nx/polygraph
+/docs/
+AGENTS.md
+README.md
