@@ -11,7 +11,7 @@
   </div>
 
   <nav
-    class="[&>a]:flex [&>a]:cursor-pointer [&>a]:items-center [&>a]:gap-3 [&>a]:rounded-xl [&>a]:px-3 [&>a]:py-2.5 [&>a]:text-sm [&>a]:text-[var(--color-text-menu-gray)] [&>a:hover]:bg-gray-50 [&>a:hover]:text-[var(--color-text-base)] [&>a]:transition-colors [&_i]:text-base [&>a.active]:bg-gray-50 [&>a.active]:text-[var(--color-text-base)] [&>a.active]:relative [&>a.active]:pl-4 [&>a.active]:before:content-[''] [&>a.active]:before:absolute [&>a.active]:before:left-0 [&>a.active]:before:top-2.5 [&>a.active]:before:bottom-2.5 [&>a.active]:before:w-0.5 [&>a.active]:before:rounded-full [&>a.active]:before:bg-[var(--color-text-base)]"
+    class="[&>a]:flex [&>a]:cursor-pointer [&>a]:items-center [&>a]:gap-3 [&>a]:rounded-xl [&>a]:px-3 [&>a]:py-2.5 [&>a]:text-sm [&>a]:text-(--color-text-menu-gray) [&>a:hover]:bg-gray-50 [&>a:hover]:text-(--color-text-base) [&>a]:transition-colors [&_i]:text-base [&>a.active]:bg-gray-50 [&>a.active]:text-(--color-text-base) [&>a.active]:relative [&>a.active]:pl-4 [&>a.active]:before:content-[''] [&>a.active]:before:absolute [&>a.active]:before:left-0 [&>a.active]:before:top-2.5 [&>a.active]:before:bottom-2.5 [&>a.active]:before:w-0.5 [&>a.active]:before:rounded-full [&>a.active]:before:bg-(--color-text-base)"
   >
     @if (authState.isAdmin()) {
       <a
