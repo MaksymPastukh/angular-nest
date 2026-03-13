@@ -108,7 +108,7 @@ export const routes: Routes = [
         path: 'wishlist',
         canActivate: [authGuard],
         loadChildren: () =>
-          import('@marketplace/frontend-wishlist-ui').then((m) => m.WISHLIST_ROUTES),
+          import('@marketplace/frontend-wishlist-feature-wishlist').then((m) => m.WISHLIST_ROUTES),
       },
     ],
   },

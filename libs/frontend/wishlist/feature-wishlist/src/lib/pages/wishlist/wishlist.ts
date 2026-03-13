@@ -1,13 +1,13 @@
-import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@marketplace/frontend-shared-ui'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
-import { filter, map } from 'rxjs'
+import { BreadcrumbItemInterface, UiBreadcrumbComponent } from '@marketplace/frontend-shared-ui'
 import { WishlistFacade } from '@marketplace/frontend-wishlist-data-access'
+import { filter, map } from 'rxjs'
 import { WishlistItem } from '../../ui/wishlist-item-ui/wishlist-item'
 
 @Component({
-  selector: 'app-component',
+  selector: 'app-wishlist',
   imports: [WishlistItem, UiBreadcrumbComponent],
   templateUrl: './wishlist.html',
   styleUrls: ['./wishlist.scss'],

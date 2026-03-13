@@ -1,13 +1,13 @@
 {
-  "name": "frontend-catalog-feature-filters",
+  "name": "frontend-wishlist-feature-wishlist",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/frontend/catalog/feature-filters/src",
+  "sourceRoot": "libs/frontend/wishlist/feature-wishlist/src",
   "prefix": "app",
   "projectType": "library",
   "tags": [
     "scope:frontend",
     "type:feature",
-    "domain:catalog"
+    "domain:wishlist"
   ],
   "targets": {
     "lint": {

@@ -51,7 +51,9 @@
       "@marketplace/frontend-wishlist-data-access": [
         "libs/frontend/wishlist/data-access/src/index.ts"
       ],
-      "@marketplace/frontend-wishlist-ui": ["libs/frontend/wishlist/ui/src/index.ts"],
+      "@marketplace/frontend-wishlist-feature-wishlist": [
+        "libs/frontend/wishlist/feature-wishlist/src/index.ts"
+      ],
       "@marketplace/frontend-personal-feature-account": [
         "libs/frontend/personal/feature-account/src/index.ts"
       ],
